@@ -1,0 +1,254 @@
+
+:root {
+    --color-bg: #ffffff;
+    --color-fg: #000000;
+    --cinza-generico: #d9d9d9;
+    --cinza-nota: #d9d9d9;
+    --azul-generico: #1c69e3;
+    --azul-header: #1c69e3;
+    --cinza-botao: #EDEDED;
+    --cinza-bola: #D8D9D9;
+    --color-box-perfil: #FAFAFA;
+}
+
+[data-theme="dark"] {
+    --color-bg: #272727;
+    --color-fg: #ffffff;
+    --cinza-generico: #838383;
+    --cinza-nota: #515151;
+    --azul-generico: #1c69e3;
+    --azul-header: #ffffff;
+    --cinza-botao: #838383;
+    --cinza-bola: #707070;
+    --color-box-perfil: #838383;
+}
+
+body {
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    font-family: sans-serif;
+    margin: 20px;
+    transition: background-color 0.3s ease, color 0.3s ease; /* Transição suave para mudanças de tema */
+}
+
+h1 {
+    color: var(--color-fg);
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+button {
+    background-color: var(--cinza-generico);
+    color: var(--color-fg);
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: var(--azul-generico);
+    color: var(--color-bg)
+}
+
+#dataContainer {
+    margin-top: 20px;
+    padding: 15px;
+    border: 1px solid var(--cinza-generico);
+    border-radius: 5px;
+}
+
+#FormContribuinte {
+    background-color: var(--fundo-tabela);
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 30px;
+}
+
+#FormContribuinte h1 {
+    color: var(--azul-generico);
+    text-align: left;
+    margin-bottom: 15px;
+}
+
+#FormContribuinte fieldset {
+    border: none;
+    padding: 10px 0;
+    margin-bottom: 10px;
+}
+
+#FormContribuinte label {
+    display: inline-block;
+    margin-right: 10px;
+    margin-bottom: 5px;
+}
+
+#FormContribuinte input[type="text"],
+#FormContribuinte input[type="email"],
+#FormContribuinte input[type="number"],
+#FormContribuinte input[type="date"],
+#FormContribuinte select,
+#FormContribuinte input[type="file"] {
+    padding: 8px;
+    border: 1px solid var(--color-box-perfil);
+    border-radius: 4px;
+    margin-bottom: 10px;
+    width: calc(50% - 15px); /* Para alinhar lado a lado */
+    box-sizing: border-box;
+    background-color: var(--color-bg);
+}
+
+#FormContribuinte select {
+    width: calc(100% - 15px);
+}
+
+#FormContribuinte input[type="file"] {
+    width: auto;
+}
+
+#FormContribuinte input[type="checkbox"] {
+    margin-right: 5px;
+}
+
+#FormContribuinte button[type="submit"] {
+    background-color: var(--azul-generico);
+    color: var(--color-bg);
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+#FormContribuinte button[type="submit"]:disabled {
+    background-color: var(--cinza-generico);
+    cursor: not-allowed;
+}
+
+#FormContribuinte button[type="submit"]:hover:enabled {
+    background-color: #1552b5;
+}
+
+#qr-code-buttum {
+    background-color: var(--cinza-bola);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5em;
+    cursor: pointer;
+    margin-top: 20px;
+    transition: background-color 0.3s ease;
+}
+
+#qr-code-buttum:hover {
+    background-color: #c0c0c0;
+}
+
+#feedback-button {
+    background-color: var(--azul-generico);
+    color: var(--color-bg);
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.2em;
+    cursor: pointer;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    transition: background-color 0.3s ease;
+}
+
+#feedback-button:hover {
+    background-color: #1552b5;
+}
+
+#feedback-section {
+    display: none; /* Inicialmente escondido */
+    background-color: var(--fundo-tabela);
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+#feedback-section h3 {
+    color: var(--azul-generico);
+    margin-top: 0;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.feedback-form input[type="text"],
+.feedback-form input[type="email"],
+.feedback-form textarea {
+    width: calc(100% - 16px);
+    padding: 8px;
+    margin-bottom: 10px;
+    border: 1px solid var(--cinza-generico);
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+.feedback-form textarea {
+    resize: vertical;
+}
+
+.feedback-form button[type="submit"] {
+    background-color: var(--azul-generico);
+    color: var(--color-bg);
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1em;
+    transition: background-color 0.3s ease;
+}
+
+.feedback-form button[type="submit"]:hover {
+    background-color: #1552b5;
+}
+
+
+.cracha {
+    background-color: var(--cinza-bola);
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.cracha h2 {
+    color: var(--azul-generico);
+    margin-top: 0;
+    margin-bottom: 5px;
+}
+
+.cracha p {
+    color: var(--color-fg);
+    margin-bottom: 0;
+    font-size: 0.9em;
+}
+
+
+#FormContribuinte input[type="text"],
+#FormContribuinte input[type="email"],
+#FormContribuinte input[type="number"],
+#FormContribuinte input[type="date"],
+#FormContribuinte select,
+#FormContribuinte input[type="file"] {
+    display: block; /* Faz o input ocupar uma linha inteira */
+    padding: 8px;
+    border: 1px solid var(--cinza-generico);
+    border-radius: 4px;
+    margin-bottom: 10px; /* Adiciona um espaço abaixo do input */
+    width: calc(100% - 16px); /* Ocupa a largura total do fieldset */
+    box-sizing: border-box;
+}

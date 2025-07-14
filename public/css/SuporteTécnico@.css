@@ -1,0 +1,260 @@
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');
+
+[data-theme="light"]{
+    --color-bg: #ffffff;
+    --color-fg: #000000;
+    --cinza-generico: #d9d9d9;
+    --cinza-nota: #d9d9d9;
+    --azul-generico: #1c69e3;
+    --azul-header: #1c69e3;
+    --cinza-botao: #EDEDED;
+    --cinza-bola: #D8D9D9;
+    --color-sat: #ffffff;
+}
+
+[data-theme="dark"] {
+    --color-bg: #272727;
+    --color-fg: #ffffff;
+    --cinza-generico: #838383;
+    --cinza-nota: #515151;
+    --azul-generico: #1c69e3;
+    --azul-header: #ffffff;
+    --cinza-botao: #838383;
+    --cinza-bola: #707070;
+    --color-sat: #838383;
+}
+
+* {
+    font-family: "Lexend", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-weight: 400;
+    margin: 0px;
+    padding: 0px;
+    border: none;
+    outline: none;
+    text-decoration: none;
+    background-color: transparent;
+    color: var(--color-fg);
+}
+
+body {
+    background-color: var(--color-bg);
+    width: 100dvw;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+body {
+    background-color: var(--color-bg);
+    width: 100dvw;
+    height: 100dvh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#mudarTema {
+    position: fixed;
+}
+
+header {
+    margin-top: 10dvh;
+    max-width: 78dvw;
+}
+
+h1 {
+    color: var(--azul-header);
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.form-busca-hospital {
+    margin-top: 5vh;
+    display: flex;
+    position: relative;
+    justify-content: center;
+    max-width: fit-content;
+    
+}
+
+.inp-busca-hospital {
+    width: 78dvw;
+    max-width: 383px;
+    background-color: var(--cinza-generico);
+    padding: 1.3dvh 0px 1.3dvh 30px;
+    border-radius: 25px;
+    font-size: large;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+}
+
+.inp-busca-hospital::placeholder {
+    color: var(--color-fg);
+}
+
+
+.btn-busca-hospital {
+    width: fit-content;
+    height: fit-content;
+    position: absolute;
+    top: 50%;
+    right: 3.5dvw;
+    transform: translate(0%, -50%);
+}
+
+.div-butoes {
+    margin-top: 5vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    height: 55dvh;
+    border-radius: 25px;
+    max-width: 383px;
+}
+
+.botao-hospital {
+    width: 78dvw;
+    height: 7dvh;
+    max-height: 85%;
+    max-width: 85%;
+    font-size: larger;
+    background-color: var(--cinza-botao);
+    border-radius: 50px;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.botao-hospital:hover .botao-hospital-nota {
+    transition: left 0.5s ease;
+    position: relative;
+    left: calc(100% - 0.5dvw - 6.3dvh);
+}
+
+@keyframes slide-nome {
+    from {
+      left: 0;
+      text-align: left;
+    }
+    to {
+      left: calc(-2% - 0.5dvw - 6.3dvh);
+      text-align: right;
+    }
+  }
+
+.botao-hospital:hover .botao-hospital-nome {
+    position: relative;
+    text-align: right;
+    left: calc(-2% - 0.5dvw - 6.3dvh);
+    animation: slide-nome 0.2s ease forwards;
+}
+
+.botao-hospital-nota {
+    left: 0.5dvw;
+    position: relative;
+    height: 6.3dvh;
+    aspect-ratio: 1/1;
+    border-radius: 50px;
+    margin-right: 5%;
+    aspect-ratio: 1/1;
+    background-color: var(--cinza-bola);
+    align-content: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+}
+
+.botao-hospital-nota img{
+    align-self: center;
+    justify-self: center;
+}
+
+.botao-hospital-nome {
+    text-align: left;
+    width: 100%;
+}
+
+nav {
+    display: flex;
+    justify-content: center;
+}
+
+.nav-list {
+    padding: 1dvh 0dvw;
+    width: 78dvw;
+    max-width: 383px;
+    margin-top: 5vh;
+    list-style: none;
+    background-color: var(--azul-generico);
+    border-radius: 50px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    height: 5dvh;
+}
+
+.nav-item {
+    display: inline;
+    width: fit-content;
+}
+
+.nav-button {
+    background-color: transparent;
+    width: max-content;
+    aspect-ratio: 1/1;
+    border-radius: 100%;
+    padding: 8px;
+    background-color: var(--azul-generico);
+}
+
+.nav-button:hover {
+    transition: transform 0.5s ease;
+    transform: translateY(-6.5dvh);
+    box-shadow: 0 4px 4px rgba(0,0,0,0.3);
+}
+
+svg {
+    width: fit-content;
+    color: var(--color-fg);
+}
+
+
+#tutu {
+    display: flex;
+    position: center;
+    gap: 6dvh;
+    place-content: center;
+    align-items: center;
+    justify-items: center;
+    width: 68dvw;
+    height: 7dvh;
+    min-height: 6dvh;
+    max-width: 180px;
+    border-radius: 50px;
+    background-color: var(--color-sat);
+    transition: transform 0.3s ease;
+    cursor: pointer;
+    border: solid 1px black;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    margin: 2dvh;
+}
+
+#tutu:hover {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    transform: translateY(-3px);
+}
+
+.links {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+    height: 55dvh;
+    border-radius: 25px;
+    max-width: 383px;
+}

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="pt-br" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/styleGenerico.css">
+    <title>Hospitais Cadastrados - Saude Access</title>
+</head>
+<body>
+    <header>
+        <h1 onclick="mudarTema()">Hospitais Cadastrados</h1>
+    </header>
+    <main>
+        <form action="#" class="form-busca-hospital">
+            <input type="search" name="pesquisar-hospitais" class="inp-busca-hospital" placeholder="Pesquisar hospital" autocomplete="off">
+            <button type="submit" class="btn-busca-hospital" aria-label="Pesquisar">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path></svg>
+            </button>
+        </form>
+        <div class="container-hospitais">
+            <div class="div-butoes">
+                <a href="hospital.html" class="botao-hospital" aria-label="Hospital São Rafael">
+                    <span class="botao-hospital-nota">8</span>
+                    <span class="botao-hospital-nome">Hospital São Rafael</span>
+                </a>
+                <a href="#" class="botao-hospital" aria-label="Hospital Português">
+                    <span class="botao-hospital-nota">5</span>
+                    <span class="botao-hospital-nome">Hospital Português</span>
+                </a>
+                <a href="#" class="botao-hospital" aria-label="Hospital Aliança">
+                    <span class="botao-hospital-nota">3</span>
+                    <span class="botao-hospital-nome">Hospital Aliança</span>
+                </a>
+                <a href="#" class="botao-hospital" aria-label="Hospital Roberto Santos">
+                    <span class="botao-hospital-nota">7</span>
+                    <span class="botao-hospital-nome">Hospital Roberto Santos</span>
+                </a>
+                <a href="#" class="botao-hospital" aria-label="Hospital Santa Izabel">
+                    <span class="botao-hospital-nota">6</span>
+                    <span class="botao-hospital-nome">Hospital Santa Izabel</span>
+                </a>
+                <a href="#" class="botao-hospital" aria-label="Hospital Geral do Estado">
+                    <span class="botao-hospital-nota">4</span>
+                    <span class="botao-hospital-nome">Hospital Geral do Estado</span>
+                </a>
+                <a href="#" class="botao-hospital" aria-label="Hospital Cardiopulmonar">
+                    <span class="botao-hospital-nota">9</span>
+                    <span class="botao-hospital-nome">Hospital Cardiopulmonar</span>
+                </a>
+                <a href="#" class="botao-hospital" aria-label="Hospital do Subúrbio">
+                    <span class="botao-hospital-nota">2</span>
+                    <span class="botao-hospital-nome">Hospital do Subúrbio</span>
+                </a>
+                <a href="#" class="botao-hospital" aria-label="Hospital Aristides Maltez">
+                    <span class="botao-hospital-nota">5</span>
+                    <span class="botao-hospital-nome">Hospital Aristides Maltez</span>
+                </a>
+                <a href="#" class="botao-hospital" aria-label="Hospital Jorge Valente">
+                    <span class="botao-hospital-nota">7</span>
+                    <span class="botao-hospital-nome">Hospital Jorge Valente</span>
+                </a>
+            </div>
+        </div>
+    </main>
+    <nav>
+        <ul class="nav-list">
+            <li class="nav-item">
+                <a href="inicio.html">
+                <button type="button" class="nav-button" aria-label="Início">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#fffafa" viewBox="0 0 256 256"><path d="M219.31,108.68l-80-80a16,16,0,0,0-22.62,0l-80,80A15.87,15.87,0,0,0,32,120v96a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V160h32v56a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V120A15.87,15.87,0,0,0,219.31,108.68ZM208,208H160V152a8,8,0,0,0-8-8H104a8,8,0,0,0-8,8v56H48V120l80-80,80,80Z"></path></svg>
+                </button>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="historico.html">
+                <button type="button" class="nav-button" aria-label="Histórico">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#fffafa" viewBox="0 0 256 256"><path d="M136,80v43.47l36.12,21.67a8,8,0,0,1-8.24,13.72l-40-24A8,8,0,0,1,120,128V80a8,8,0,0,1,16,0Zm-8-48A95.44,95.44,0,0,0,60.08,60.15C52.81,67.51,46.35,74.59,40,82V64a8,8,0,0,0-16,0v40a8,8,0,0,0,8,8H72a8,8,0,0,0,0-16H49c7.15-8.42,14.27-16.35,22.39-24.57a80,80,0,1,1,1.66,114.75,8,8,0,1,0-11,11.64A96,96,0,1,0,128,32Z"></path></svg>
+                </button>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="perfil.html">
+                <button type="button" class="nav-button" aria-label="Perfil">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#fffafa" viewBox="0 0 256 256"><path d="M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z"></path></svg>
+                </button>
+                </a>
+            </li>
+            <li class="nav-item">
+                <a href="configuracoes.html">
+                    <button type="button" class="nav-button" aria-label="Localização">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#ffffff" viewBox="0 0 256 256"><path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm88-29.84q.06-2.16,0-4.32l14.92-18.64a8,8,0,0,0,1.48-7.06,107.21,107.21,0,0,0-10.88-26.25,8,8,0,0,0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186,40.54a8,8,0,0,0-3.94-6,107.71,107.71,0,0,0-26.25-10.87,8,8,0,0,0-7.06,1.49L130.16,40Q128,40,125.84,40L107.2,25.11a8,8,0,0,0-7.06-1.48A107.6,107.6,0,0,0,73.89,34.51a8,8,0,0,0-3.93,6L67.32,64.27q-1.56,1.49-3,3L40.54,70a8,8,0,0,0-6,3.94,107.71,107.71,0,0,0-10.87,26.25,8,8,0,0,0,1.49,7.06L40,125.84Q40,128,40,130.16L25.11,148.8a8,8,0,0,0-1.48,7.06,107.21,107.21,0,0,0,10.88,26.25,8,8,0,0,0,6,3.93l23.72,2.64q1.49,1.56,3,3L70,215.46a8,8,0,0,0,3.94,6,107.71,107.71,0,0,0,26.25,10.87,8,8,0,0,0,7.06-1.49L125.84,216q2.16.06,4.32,0l18.64,14.92a8,8,0,0,0,7.06,1.48,107.21,107.21,0,0,0,26.25-10.88,8,8,0,0,0,3.93-6l2.64-23.72q1.56-1.48,3-3L215.46,186a8,8,0,0,0,6-3.94,107.71,107.71,0,0,0,10.87-26.25,8,8,0,0,0-1.49-7.06Zm-16.1-6.5a73.93,73.93,0,0,1,0,8.68,8,8,0,0,0,1.74,5.48l14.19,17.73a91.57,91.57,0,0,1-6.23,15L187,173.11a8,8,0,0,0-5.1,2.64,74.11,74.11,0,0,1-6.14,6.14,8,8,0,0,0-2.64,5.1l-2.51,22.58a91.32,91.32,0,0,1-15,6.23l-17.74-14.19a8,8,0,0,0-5-1.75h-.48a73.93,73.93,0,0,1-8.68,0,8,8,0,0,0-5.48,1.74L100.45,215.8a91.57,91.57,0,0,1-15-6.23L82.89,187a8,8,0,0,0-2.64-5.1,74.11,74.11,0,0,1-6.14-6.14,8,8,0,0,0-5.1-2.64L46.43,170.6a91.32,91.32,0,0,1-6.23-15l14.19-17.74a8,8,0,0,0,1.74-5.48,73.93,73.93,0,0,1,0-8.68,8,8,0,0,0-1.74-5.48L40.2,100.45a91.57,91.57,0,0,1,6.23-15L69,82.89a8,8,0,0,0,5.1-2.64,74.11,74.11,0,0,1,6.14-6.14A8,8,0,0,0,82.89,69L85.4,46.43a91.32,91.32,0,0,1,15-6.23l17.74,14.19a8,8,0,0,0,5.48,1.74,73.93,73.93,0,0,1,8.68,0,8,8,0,0,0,5.48-1.74L155.55,40.2a91.57,91.57,0,0,1,15,6.23L173.11,69a8,8,0,0,0,2.64,5.1,74.11,74.11,0,0,1,6.14,6.14,8,8,0,0,0,5.1,2.64l22.58,2.51a91.32,91.32,0,0,1,6.23,15l-14.19,17.74A8,8,0,0,0,199.87,123.66Z"></path></svg>
+                    </button>
+                </a>
+            </li>
+        </ul>
+    </nav>
+    <script src="js/global.js"></script>
+</body>
+</html>

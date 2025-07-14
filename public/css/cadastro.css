@@ -1,0 +1,282 @@
+@import url('styleGenerico.css');
+
+header {
+    position: relative;
+    width: 100%;
+    text-align: center;
+    padding: 1.5rem 1rem;
+}
+
+h1 {
+    color: var(--azul-header);
+    font-size: clamp(1.5rem, 5vw, 2rem);
+    cursor: pointer;
+}
+
+main {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    flex: 1;
+    padding: 0 1rem;
+    max-width: 600px;
+}
+
+.cadastro-container {
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 2rem;
+}
+
+.cadastro-section {
+    width: 100%;
+    border-radius: 20px;
+    overflow: hidden;
+    padding: 1.5rem;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.cadastro-item {
+    width: 100%;
+    background-color: var(--color-bg);
+    padding: 1.5rem;
+    border-radius: 10px;
+    border: 2px solid var(--cinza-generico);
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.cadastro-item:hover {
+    transform: translateY(-2px);
+    border-color: var(--azul-generico);
+}
+
+.cadastro-item:focus-within {
+    border-color: var(--azul-generico);
+}
+
+.cadastro-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 10px;
+    background-color: var(--cinza-nota);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.input-group {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.label-cadastro {
+    color: var(--color-fg);
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.input-cadastro {
+    width: 100%;
+    border: 1px solid var(--cinza-generico);
+    border-radius: 8px;
+    padding: 0.8rem;
+    background-color: transparent;
+    color: var(--color-fg);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.input-cadastro:focus {
+    border-color: var(--azul-generico);
+}
+
+/* Configuração das etapas de cadastro */
+#form-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+#form-senha {
+    display: none;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.btn-prosseguir {
+    width: 100%;
+    padding: 1rem;
+    background-color: var(--cinza-generico);
+    color: var(--color-fg);
+    border-radius: 25px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.btn-prosseguir:hover {
+    transform: translateY(-2px);
+}
+
+.btn-finalizar {
+    width: 100%;
+    padding: 1rem;
+    background-color: var(--azul-generico);
+    color: white;
+    border-radius: 25px;
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 1rem;
+}
+
+.btn-finalizar:hover {
+    transform: translateY(-2px);
+}
+
+.cadastro-voltar {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+#voltar {
+    display: flex;
+    align-items: center;
+    color: var(--color-fg);
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 8px;
+    transition: background-color 0.2s ease;
+}
+
+#voltar:hover {
+    background-color: var(--cinza-generico);
+}
+
+#voltar svg {
+    margin-right: 0.5rem;
+}
+
+.senha-requisitos {
+    background-color: var(--color-bg);
+    padding: 1rem;
+    border-radius: 10px;
+    border: 1px solid var(--cinza-generico);
+    margin: 0.5rem 0;
+}
+
+.senha-requisitos p {
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+}
+
+.senha-requisitos ul {
+    list-style-position: inside;
+    padding-left: 1rem;
+}
+
+.senha-requisitos li {
+    margin-bottom: 0.3rem;
+    font-size: 0.9rem;
+}
+
+.cadastro-login {
+    margin-top: 3rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.cadastro-login p {
+    color: var(--color-fg);
+    font-size: 1rem;
+}
+
+.btn-login {
+    padding: 0.8rem 2rem;
+    background-color: var(--color-bg);
+    color: var(--azul-generico);
+    border: 2px solid var(--azul-generico);
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.btn-login:hover {
+    transform: translateY(-2px);
+    background-color: rgba(28, 105, 227, 0.05);
+}
+
+/* Responsividade para telas menores */
+@media screen and (max-width: 400px) {
+    .cadastro-container {
+        margin-top: 1rem;
+    }
+    
+    .cadastro-section {
+        padding: 1rem 0.5rem;
+    }
+    
+    .cadastro-item {
+        padding: 1.2rem;
+    }
+    
+    .cadastro-icon {
+        width: 2.2rem;
+        height: 2.2rem;
+        margin-right: 0.8rem;
+    }
+    
+    .input-cadastro {
+        padding: 0.6rem;
+    }
+    
+    .btn-prosseguir,
+    .btn-finalizar {
+        padding: 0.8rem;
+    }
+}
+
+/* Suporte para dispositivos muito pequenos */
+@media screen and (max-height: 600px) {
+    .cadastro-container {
+        margin-top: 0.5rem;
+    }
+    
+    form {
+        gap: 1rem;
+    }
+    
+    .cadastro-login {
+        margin-top: 1rem;
+    }
+}

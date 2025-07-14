@@ -1,0 +1,331 @@
+@import url(global.css);
+
+.config-container {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Estilo para seções semelhante à página inicial */
+.config-section {
+    width: 100%;
+    background-color: var(--color-bg);
+    border: 2px solid var(--section-border);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px var(--section-shadow);
+}
+
+.config-titulo {
+    color: var(--azul-header);
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.config-item {
+    width: 100%;
+    background-color: var(--cinza-botao);
+    padding: 0.8rem 1rem;
+    border-radius: 12px;
+    margin: 0.8rem auto;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.config-item:hover {
+    background-color: var(--hover-bg);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 10px var(--hover-shadow);
+}
+
+.config-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    background-color: var(--cinza-bola);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 1rem;
+    flex-shrink: 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.config-item:hover .config-icon {
+    transform: scale(1.05);
+}
+
+.config-icon svg {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.config-label {
+    flex: 1;
+    font-size: 1rem;
+    font-weight: 500;
+    text-align: left;
+}
+
+.config-value {
+    color: var(--azul-generico);
+    font-weight: 500;
+}
+
+.toggle-switch {
+    position: relative;
+    width: 50px;
+    height: 24px;
+}
+
+.toggle-input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.toggle-label {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--cinza-generico);
+    border-radius: 34px;
+    transition: .4s;
+}
+
+.toggle-label:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: white;
+    border-radius: 50%;
+    transition: .4s;
+}
+
+.toggle-input:checked + .toggle-label {
+    background-color: var(--azul-generico);
+}
+
+.toggle-input:checked + .toggle-label:before {
+    transform: translateX(26px);
+}
+
+.config-select {
+    background-color: var(--cinza-generico);
+    border-radius: 10px;
+    padding: 0.5rem;
+    cursor: pointer;
+    font-size: 0.9rem;
+    min-width: 120px;
+}
+
+.range-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    width: 120px;
+}
+
+.range-slider {
+    width: 100%;
+    height: 6px;
+    -webkit-appearance: none;
+    background: var(--color-bg);
+    outline: none;
+    border-radius: 3px;
+}
+
+.range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--azul-generico);
+    cursor: pointer;
+    border: none;
+}
+
+.range-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--azul-generico);
+    cursor: pointer;
+    border: none;
+}
+
+.range-value {
+    font-size: 0.8rem;
+    color: var(--azul-generico);
+    font-weight: 500;
+    margin-top: 0.3rem;
+}
+
+.config-button {
+    width: 100%;
+    padding: 0.8rem;
+    border-radius: 25px;
+    background-color: var(--cinza-botao);
+    font-size: 1rem;
+    font-weight: 500;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin: 0.8rem 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.config-button:hover {
+    background-color: var(--hover-bg);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 10px var(--hover-shadow);
+}
+
+.config-button-danger {
+    color: #e74c3c;
+    font-weight: 600;
+}
+
+.config-button-primary {
+    background-color: var(--azul-generico);
+    color: white;
+}
+
+.config-button-primary:hover {
+    background-color: #1855b8;
+}
+
+.config-radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.config-radio-option {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.config-radio-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.config-radio-label {
+    padding: 0.4rem 0.8rem;
+    background-color: var(--cinza-generico);
+    border-radius: 15px;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.config-radio-input:checked + .config-radio-label {
+    background-color: var(--azul-generico);
+    color: white;
+}
+
+.checkbox-container {
+    display: flex;
+    align-items: center;
+}
+
+.config-checkbox {
+    width: 20px;
+    height: 20px;
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: var(--cinza-generico);
+    border-radius: 5px;
+    cursor: pointer;
+    position: relative;
+}
+
+.config-checkbox:checked {
+    background-color: var(--azul-generico);
+}
+
+.config-checkbox:checked::after {
+    content: "✓";
+    color: white;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 0.8rem;
+}
+
+.config-checkbox-label {
+    margin-left: 0.5rem;
+    font-size: 0.9rem;
+}
+
+/* Responsividade */
+@media screen and (min-width: 768px) {
+    .config-section {
+        padding: 2rem;
+    }
+    
+    .config-item {
+        padding: 1rem;
+    }
+}
+
+@media screen and (max-width: 400px) {
+    .config-item {
+        padding: 0.6rem 0.8rem;
+    }
+    
+    .config-icon {
+        width: 2.5rem;
+        height: 2.5rem;
+        margin-right: 0.6rem;
+    }
+    
+    .config-label {
+        font-size: 0.9rem;
+    }
+    
+    .config-value {
+        font-size: 0.9rem;
+    }
+    
+    .config-titulo {
+        font-size: 1.1rem;
+    }
+}
+
+@media screen and (max-height: 700px) {
+    .config-section {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    .config-titulo {
+        margin-bottom: 0.5rem;
+    }
+    
+    .config-item {
+        margin: 0.5rem auto;
+    }
+}

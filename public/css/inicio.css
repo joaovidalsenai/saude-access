@@ -1,0 +1,141 @@
+@import url(global.css);
+
+/* Estilo para as seções (semelhante à página do hospital) */
+section {
+    width: 100%;
+    background-color: var(--color-bg);
+    border: 2px solid var(--section-border);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 8px var(--section-shadow);
+}
+
+h2 {
+    color: var(--azul-header);
+    font-size: 1.3rem;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+/* Busca de hospitais */
+.busca-container {
+    margin-top: 1rem;
+}
+
+.form-busca-hospital {
+    display: flex;
+    position: relative;
+    width: 100%;
+    max-width: 100%;
+}
+
+.inp-busca-hospital {
+    width: 100%;
+    background-color: var(--cinza-generico);
+    padding: 1rem 3rem 1rem 1.5rem;
+    border-radius: 25px;
+    font-size: 1rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.inp-busca-hospital::placeholder {
+    color: var(--color-fg);
+    opacity: 0.7;
+}
+
+.btn-busca-hospital {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+}
+
+/* Botões de opções */
+.div-butoes {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+.ajuda-butoes {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+}
+
+.botao-hospital {
+    width: 100%;
+    padding: 0.8rem;
+    font-size: 1rem;
+    background-color: var(--cinza-botao);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.botao-hospital:hover {
+    background-color: var(--hover-bg);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 10px var(--hover-shadow);
+}
+
+.botao-hospital-nota {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    margin-right: 1rem;
+    background-color: var(--cinza-bola);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.botao-hospital:hover .botao-hospital-nota {
+    transform: scale(1.05);
+}
+
+.botao-hospital-nota svg {
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.botao-hospital-nome {
+    text-align: left;
+    font-weight: 500;
+}
+
+svg {
+    width: fit-content;
+    color: var(--color-fg);
+}
+
+/* Responsividade */
+@media screen and (min-width: 768px) {
+    section {
+        padding: 2rem;
+    }
+    
+    .botao-hospital {
+        padding: 1rem;
+    }
+}
+
+@media screen and (max-height: 700px) {
+    section {
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+    
+    h2 {
+        margin-bottom: 0.5rem;
+    }
+}

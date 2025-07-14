@@ -1,0 +1,416 @@
+@import url(global.css);
+
+.voltar-btn {
+    position: absolute;
+    left: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--azul-header);
+    transition: transform 0.2s ease;
+}
+
+.voltar-btn:hover {
+    transform: translateX(-3px);
+}
+
+.avaliacao-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+section {
+    width: 100%;
+    background-color: var(--color-bg);
+    border: 2px solid var(--azul-generico);
+    border-radius: 15px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    color: var(--azul-header);
+    font-size: 1.3rem;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+/* Sliders de Avaliação */
+.slider-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.slider-label {
+    font-weight: 600;
+    color: var(--color-fg);
+    margin-bottom: 0.5rem;
+}
+
+.slider-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.slider {
+    flex: 1;
+    height: 8px;
+    background: var(--cinza-generico);
+    border-radius: 10px;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 24px;
+    height: 24px;
+    background: var(--azul-generico);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease;
+}
+
+.slider::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+}
+
+.slider::-moz-range-thumb {
+    width: 24px;
+    height: 24px;
+    background: var(--azul-generico);
+    border-radius: 50%;
+    cursor: pointer;
+    border: none;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease;
+}
+
+.slider::-moz-range-thumb:hover {
+    transform: scale(1.1);
+}
+
+.slider-value {
+    min-width: 60px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--azul-generico);
+    background: var(--cinza-generico);
+    padding: 0.5rem;
+    border-radius: 8px;
+}
+
+.slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9rem;
+    color: var(--color-fg);
+    opacity: 0.8;
+    margin-top: 0.5rem;
+}
+
+/* Especialidades Grid */
+.especialidades-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.nenhuma-opcao {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--cinza-generico);
+}
+
+.especialidade-item {
+    display: block;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+
+.especialidade-item input[type="checkbox"] {
+    display: none;
+}
+
+.especialidade-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    padding: 1.2rem;
+    background: var(--cinza-generico);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    text-align: center;
+    transition: all 0.3s ease;
+    min-height: 100px;
+    justify-content: center;
+}
+
+.especialidade-item:hover .especialidade-content {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.especialidade-item input[type="checkbox"]:checked + .especialidade-content {
+    background: rgba(59, 130, 246, 0.1);
+    border-color: var(--azul-generico);
+    color: var(--azul-generico);
+}
+
+.especialidade-item input[type="checkbox"]:checked + .especialidade-content svg {
+    color: var(--azul-generico);
+}
+
+.especialidade-content svg {
+    color: var(--color-fg);
+    opacity: 0.7;
+    transition: color 0.3s ease;
+}
+
+.especialidade-content span {
+    font-weight: 500;
+    font-size: 0.9rem;
+    line-height: 1.2;
+}
+
+.especialidade-item.nenhuma .especialidade-content {
+    flex-direction: row;
+    text-align: left;
+    min-height: auto;
+    padding: 1rem;
+}
+
+.especialidade-item.nenhuma .especialidade-content span {
+    font-size: 1rem;
+}
+
+/* Comentários */
+.comentarios-avaliacao textarea {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid var(--cinza-generico);
+    border-radius: 10px;
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.5;
+    resize: vertical;
+    background: var(--color-bg);
+    color: var(--color-fg);
+    transition: border-color 0.3s ease;
+}
+
+.comentarios-avaliacao textarea:focus {
+    outline: none;
+    border-color: var(--azul-generico);
+}
+
+.comentarios-avaliacao textarea::placeholder {
+    color: var(--color-fg);
+    opacity: 0.6;
+}
+
+.char-count {
+    text-align: right;
+    font-size: 0.9rem;
+    color: var(--color-fg);
+    opacity: 0.7;
+    margin-top: 0.5rem;
+}
+
+/* Botões de ação */
+.acoes-container {
+    display: flex;
+    gap: 1rem;
+    padding: 0;
+    background: none;
+    border: none;
+    box-shadow: none;
+}
+
+.acao-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    border: none;
+    border-radius: 10px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    font-size: 1rem;
+}
+
+.acao-btn:hover {
+    transform: translateY(-2px);
+}
+
+.acao-btn:active {
+    opacity: 0.8;
+}
+
+.acao-principal {
+    background-color: var(--azul-generico);
+    color: white;
+}
+
+.acao-secundaria {
+    background-color: var(--cinza-generico);
+    color: var(--color-fg);
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+}
+
+.modal-content {
+    background-color: var(--color-bg);
+    margin: 10% auto;
+    padding: 2rem;
+    border-radius: 15px;
+    width: 90%;
+    max-width: 400px;
+    text-align: center;
+    animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.modal-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.modal-header h3 {
+    color: var(--azul-header);
+    font-size: 1.5rem;
+    margin: 0;
+}
+
+.modal-content p {
+    color: var(--color-fg);
+    line-height: 1.6;
+    margin-bottom: 2rem;
+}
+
+.modal-content .acao-btn {
+    width: 100%;
+    margin: 0;
+}
+
+/* Estados dos sliders baseados no valor */
+.slider[value="0"] ~ .slider-value {
+    color: #22c55e;
+}
+
+.slider[value*="1"], .slider[value*="2"], .slider[value*="3"] {
+    background: linear-gradient(to right, #22c55e 0%, #22c55e 30%, var(--cinza-generico) 30%);
+}
+
+.slider[value*="4"], .slider[value*="5"], .slider[value*="6"] {
+    background: linear-gradient(to right, #22c55e 0%, #eab308 50%, var(--cinza-generico) 60%);
+}
+
+.slider[value*="7"], .slider[value*="8"], .slider[value*="9"] {
+    background: linear-gradient(to right, #eab308 0%, #ef4444 70%, var(--cinza-generico) 80%);
+}
+
+/* Modo escuro */
+[data-theme="dark"] .slider {
+    background: #3a3a3a;
+}
+
+[data-theme="dark"] .slider-value {
+    background: #3a3a3a;
+}
+
+[data-theme="dark"] .especialidade-content {
+    background: #3a3a3a;
+}
+
+[data-theme="dark"] .especialidade-item input[type="checkbox"]:checked + .especialidade-content {
+    background: rgba(59, 130, 246, 0.2);
+}
+
+[data-theme="dark"] .comentarios-avaliacao textarea {
+    background: #2a2a2a;
+    border-color: #3a3a3a;
+}
+
+[data-theme="dark"] .modal-content {
+    background-color: var(--color-bg);
+    border: 1px solid #3a3a3a;
+}
+
+/* Responsividade */
+@media screen and (max-width: 768px) {
+    .acoes-container {
+        flex-direction: column;
+    }
+    
+    .especialidades-grid {
+        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+        gap: 0.8rem;
+    }
+    
+    .especialidade-content {
+        padding: 1rem;
+        min-height: 80px;
+    }
+    
+    .especialidade-content span {
+        font-size: 0.8rem;
+    }
+    
+    .modal-content {
+        margin: 20% auto;
+        padding: 1.5rem;
+    }
+}
+
+@media screen and (max-height: 700px) {
+    section {
+        padding: 1rem;
+    }
+    
+    h2 {
+        margin-bottom: 1rem;
+    }
+    
+    .modal-content {
+        margin: 5% auto;
+    }
+}

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#65D4C1">
+    <title>Saude Access</title>
+    <link rel="stylesheet" href="/css/cadastroContribuinte.css">
+
+</head>
+
+<body>
+    <h1>Teste de Acesso ao Banco de Dados</h1>
+    <button id="loadData">Carregar Dados</button>
+    <div id="dataContainer"></div>
+
+
+    <form id="FormContribuinte" method="POST" action="/api/contribuintes"> <h1>Gerenciador de Contribuintes</h1>
+        <fieldset>
+            Nome: <input type="text" id="nome" name="nome" required> Email: <input type="email" id="email" name="email" required> Id: <input type="number" id="id" name="id" required> Telefone: <input type="text" id="telefone" name="telefone" maxlength="15" placeholder="(xx) xxxxxxxxx" oninput="formatarTelefone(this)"/> Data de Nascimento: <input type="date" id="data_nascimento" name="data_nascimento" required> </fieldset>
+        <fieldset>
+            <label for="funcao" placeholder="Função" required></label>
+            <select id="funcao" name="funcao"> <option value=" ">Função</option><br><br>
+                <option value="anestesista">Anestesista</option><br><br>
+                <option value="assistente_social">Assistente Social</option><br><br>
+                <option value="biomolecular">Biomolecular</option><br><br>
+                <option value="cardiologista">Cardiologista</option><br><br>
+                <option value="cirurgiao_cardio">Cirurgião Cardíaco</option><br><br>
+                <option value="cirurgiao_geral">Cirurgião Geral</option><br><br>
+                <option value="cirurgiao_oncologico">Cirurgião Oncológico</option><br><br>
+                <option value="cirurgiao_ortopedico">Cirurgião Ortopédico</option><br><br>
+                <option value="cirurgiao_pediatrico">Cirurgião Pediátrico</option><br><br>
+                <option value="cirurgiao_toracico">Cirurgião Torácico</option><br><br>
+                <option value="cirurgiao_vascular">Cirurgião Vascular</option><br><br>
+                <option value="dermatologista">Dermatologista</option><br><br>
+                <option value="direitor">Direitor</option><br><br>
+                <option value="enfermeiro">Enfermeiro</option><br><br>
+                <option value="enfermeiro_do_trabalho">Enfermeiro do Trabalho</option><br><br>
+                <option value="enfermeiro_familia">Enfermeiro da Família</option><br><br>
+                <option value="enfermeiro_geral">Enfermeiro Geral</option><br><br>
+                <option value="enfermeiro_gerontologico">Enfermeiro Gerontológico</option><br><br>
+                <option value="enfermeiro_hospitalar">Enfermeiro Hospitalar</option><br><br>
+                <option value="enfermeiro_neonatal">Enfermeiro Neonatal</option><br><br>
+                <option value="enfermeiro_obstetrico">Enfermeiro Obstétrico</option><br><br>
+                <option value="enfermeiro_pediatrico">Enfermeiro Pediátrico</option><br><br>
+                <option value="enfermeiro_perinatal">Enfermeiro Perinatal</option><br><br>
+                <option value="enfermeiro_psiquiatrico">Enfermeiro Psiquiátrico</option><br><br>
+                <option value="enfermeiro_traumatologico">Enfermeiro Traumatológico</option><br><br>
+                <option value="enfermeiro_urgencia">Enfermeiro de Urgência e Emergência</option><br><br>
+                <option value="enfermeiro_oncologico">Enfermeiro Oncológico</option><br><br>
+                <option value="farmaceutico">Farmacêutico</option><br><br>
+                <option value="fisioterapeuta">Fisioterapeuta</option><br><br>
+                <option value="fonoaudiologo">Fonoaudiólogo</option><br><br>
+                <option value="gastroenterologista">Gastroenterologista</option><br><br>
+                <option value="ginecologista">Ginecologista</option><br><br>
+                <option value="infectologista">Infectologista</option><br><br>
+                <option value="medico_do_trabalho">Médico do Trabalho</option><br><br>
+                <option value="neurologista">Neurologista</option><br><br>
+                <option value="nefrologista">Nefrologista</option><br><br>
+                <option value="neurocirurgiao">Neurocirurgião</option><br><br>
+                <option value="nutricionista">Nutricionista</option><br><br>
+                <option value="odontologo">Odontólogo</option><br><br>
+                <option value="obstetra">Obstetra</option><br><br>
+                <option value="oftalmologista">Oftalmologista</option><br><br>
+                <option value="ortopedista">Ortopedista</option><br><br>
+                <option value="pediatra">Pediatra</option><br><br>
+                <option value="pneumologista">Pneumologista</option><br><br>
+                <option value="psiquiatra">Psiquiatra</option><br><br>
+                <option value="psicologo">Psicólogo</option><br><br>
+                <option value="radiologista">Radiologista</option><br><br>
+                <option value="reumatologista">Reumatologista</option><br><br>
+                <option value="tecnico_enfermagem">Técnico de Enfermagem</option><br><br>
+                <option value="terapeuta_ocupacional">Terapeuta Ocupacional</option><br><br>
+                <option value="terceirizado_cozinha">Cozinha (Terceirizado)</option><br><br>
+                <option value="terceirizado_limpeza">Higiene (Terceirizado)</option><br><br>
+                <option value="terceirizado_jardinagem">Jardinagem (Terceirizado)</option><br><br>
+                <option value="terceirizado_porteiro">Porteiro (Terceirizado)</option><br><br>
+                <option value="terceirizado_seguranca">Segurança (Terceirizado)</option><br><br>
+                <option value="terceirizado_transportes">Transportes (Terceirizado)</option><br><br>
+                <option value="urologista">Urologista</option><br><br>
+            </select>
+            <label for="condicao_trabalhista" placeholder="Condição Relacionada ao Trabalho" required></label>
+            <select id="condicao_trabalhista" name="condicao_trabalhista"> <option value=" ">Selecione a Condição Relacionada ao Trabalho</option><br><br>
+                <option value="">Nenhuma</option><br><br>
+                <option value="acidente_trabalho">Acidente de Trabalho</option><br><br>
+                <option value="acidente_trabalho_com_morte">Acidente de Trabalho com Morte</option><br><br>
+                <option value="anemia_falciforme">Anemia Falciforme</option><br><br>
+                <option value="artrite">Artrite</option><br><br>
+                <option value="artrite_reumatoide">Artrite Reumatoide</option><br><br>
+                <option value="artrose">Artrose</option><br><br>
+                <option value="asma">Asma</option><br><br>
+                <option value="asbestose">Asbestose (Doença Pulmonar Ocupacional)</option><br><br>
+                <option value="bursite">Bursite</option><br><br>
+                <option value="bronquite">Bronquite</option><br><br>
+                <option value="cancer_ocupacional">Câncer Ocupacional</option><br><br>
+                <option value="deformidade_articular">Deformidade Articular</option><br><br>
+                <option value="depressao_maior">Depressão Maior</option><br><br>
+                <option value="diabetes">Diabetes</option><br><br>
+                <option value="distimia">Distimia (Transtorno Depressivo Persistente)</option><br><br>
+                <option value="doenca_osteomuscular">Doença Osteomuscular Relacionada ao Trabalho (DORT)</option><br><br>
+                <option value="doencas_autoimunes">Doenças Autoimunes</option><br><br>
+                <option value="doencas_cardiacas">Doenças Cardíacas Relacionadas ao Trabalho</option><br><br>
+                <option value="doencas_dermatologicas_ocupacionais">Doenças Dermatológicas Ocupacionais</option><br><br>
+                <option value="doencas_neurologicas_ocupacionais">Doenças Neurológicas Ocupacionais</option><br><br>
+                <option value="doencas_respiratorias_ocupacionais">Doenças Respiratórias Ocupacionais</option><br><br>
+                <option value="eficondilite">Epicondilite (Cotovelo de Tenista)</option><br><br>
+                <option value="enfisema">Enfisema Pulmonar</option><br><br>
+                <option value="esclerose_amilotrofica">Esclerose Lateral Amiotrófica (ELA)</option><br><br>
+                <option value="esclerose_multipla">Esclerose Múltipla</option><br><br>
+                <option value="esquizofrenia">Esquizofrenia</option><br><br>
+                <option value="fobia_social">Fobia Social</option><br><br>
+                <option value="fibromialgia">Fibromialgia</option><br><br>
+                <option value="glaucoma">Glaucoma</option><br><br>
+                <option value="hipertensao">Hipertensão</option><br><br>
+                <option value="hipotireoidismo">Hipotireoidismo</option><br><br>
+                <option value="ictus">Acidente Vascular Cerebral (AVC)</option><br><br>
+                <option value="insuficiencia_renal">Insuficiência Renal</option><br><br>
+                <option value="intoxicacoes_ocupacionais">Intoxicações Ocupacionais</option><br><br>
+                <option value="lesao_por_esforco_repetitivo">Lesão por Esforço Repetitivo (LER)</option><br><br>
+                <option value="lombalgia">Lombalgia</option><br><br>
+                <option value="lupus">Lúpus Eritematoso Sistêmico</option><br><br>
+                <option value="narcolepsia">Narcolepsia</option><br><br>
+                <option value="osteogenesis_imperfeita">Osteogênese Imperfeita (Ossos de Vidro)</option><br><br>
+                <option value="osteopenia">Osteopenia</option><br><br>
+                <option value="osteoporose">Osteoporose</option><br><br>
+                <option value="paralisia_cerebral">Paralisia Cerebral</option><br><br>
+                <option value="perda_auditiva_ocupacional">Perda Auditiva Ocupacional</option><br><br>
+                <option value="problemas_de_ouvido">Problemas de Audição</option><br><br>
+                <option value="silicose">Silicose (Doença Pulmonar Ocupacional)</option><br><br>
+                <option value="stress_ocupacional">Estresse Ocupacional</option><br><br>
+                <option value="tendinite">Tendinite</option><br><br>
+                <option value="tept">Transtorno de Estresse Pós-Traumático (TEPT)</option><br><br>
+                <option value="transtorno_bipolar">Transtorno Bipolar</option><br><br>
+                <option value="transtorno_de_adaptacao">Transtorno de Adaptação</option><br><br>
+                <option value="transtorno_de_ansiedade_generalizada">Transtorno de Ansiedade Generalizada (TAG)</option><br><br>
+                <option value="transtorno_de_panico">Transtorno de Pânico</option><br><br>
+                <option value="transtorno_de_concentracao">Transtorno de Déficit de Atenção e Hiperatividade (TDAH)</option><br><br>
+                <option value="burnout">Síndrome de Burnout (Esgotamento Profissional)</option><br><br>
+                <option value="sindrome_de_marfan">Síndrome de Marfan</option><br><br>
+                <option value="tuberculose">Tuberculose</option><br><br>
+            </select>
+        </fieldset>
+        <fieldset>
+            <label for="foto">Escolha uma foto:</label>
+            <input type="file" id="foto" name="foto" accept="image/*" required> </fieldset>
+        <label>
+        <br><br>
+        <button type="submit" id="submitBtn" disabled>Enviar</button> </form>
+
+   
+
+   
+
+    <div class="input-container">
+        
+        <input type="text" id="cracha-input-nome" oninput="atualizarCracha()">
+        <label for="cracha-input-cargo">Cargo (Crachá):</label>
+        <input type="text" id="cracha-input-cargo" oninput="atualizarCracha()">
+    </div>
+
+    <div class="cracha" id="cracha-display"> <h2 id="cracha-nome"></h2>
+        <p id="cracha-cargo"></p>
+    </div>
+    
+    <div id="qr-code-buttum">Gerar QR Code</div> <div id="qrcode-display" style="margin-top: 20px;"></div> <div id="feedback-button" onclick="toggleFeedbackForm()">💬</div>
+
+    <script src="https://cdn.rawgit.com/davidshimjs/qrcodejs/gh-pages/qrcode.min.js"></script>
+    <script src="js/contribuinteFrontend_script.js"></script>
+    <script src="js/apiContribuintes.js"></script>
+    <script>
+        
+        
+
+        function formatarTelefone(input) {
+            let value = input.value.replace(/\D/g, '');
+            value = value.replace(/^(\d{2})(\d)/g, '($1) $2'); 
+            value = value.replace(/(\d{5})(\d)/, '$1-$2');
+            input.value = value.substring(0, 15); 
+        }
+
+        function toggleFeedbackForm() {
+            const feedbackSection = document.getElementById('feedback-section');
+            feedbackSection.style.display = feedbackSection.style.display === 'none'? 'block' : 'none';
+        }
+
+        submitButton.disabled =!aceiteCheckbox.checked;
+
+        document.getElementById('loadData').addEventListener('click', () => {
+            console.log('Botão Carregar Dados clicado - Implementar lógica de carregamento');
+            
+        });
+
+        document.getElementById('feedback-form').addEventListener('submit', (event) => {
+            event.preventDefault(); // Impede a submissão padrão
+            console.log('Formulário de feedback enviado - Implementar lógica de envio');
+            
+        });
+
+      
+    </script>
+
+</body>
+
+</html>
