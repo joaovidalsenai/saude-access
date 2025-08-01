@@ -91,10 +91,6 @@ const validacoes = {
         
         if (dataNascimento > hoje) return "Data de nascimento não pode ser no futuro.";
         
-        const idade = calcularIdade(dataNascimento);
-        if (idade < 18) return "É necessário ter mais de 18 anos.";
-        if (idade > 120) return "Data de nascimento inválida.";
-        
         return "";
     },
     
