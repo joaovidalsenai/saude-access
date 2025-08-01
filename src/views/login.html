@@ -14,7 +14,7 @@
     <main>
         <div class="login-container">
             <div class="login-section">
-                <form action="inicio.html">
+                <form id="formLogin">
                     <div class="login-item">
                         <div class="login-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
@@ -22,8 +22,8 @@
                             </svg>
                         </div>
                         <div class="input-group">
-                            <label for="login-credencial" class="label-login">CPF ou E-mail</label>
-                            <input type="text" name="login-credencial" id="login-credencial" placeholder="Digite seu CPF ou E-mail" class="input-login" required>
+                            <label for="cliente_email" class="label-login">CPF ou E-mail</label>
+                            <input type="email" name="cliente_email" id="login-credencial" placeholder="Digite seu E-mail" class="input-login" required>
                         </div>
                     </div>
                     
@@ -34,8 +34,8 @@
                             </svg>
                         </div>
                         <div class="input-group">
-                            <label for="login-senha" class="label-login">Senha</label>
-                            <input type="password" name="login-senha" id="login-senha" placeholder="Digite sua senha" class="input-login" required>
+                            <label for="cliente-senha" class="label-login">Senha</label>
+                            <input type="password" name="cliente-senha" id="login-senha" placeholder="Digite sua senha" class="input-login" required>
                         </div>
                     </div>
                     

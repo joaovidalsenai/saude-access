@@ -160,22 +160,6 @@ function validarCPF(cpf) {
     return true;
 }
 
-// Função para calcular idade
-function calcularIdade(dataNascimento) {
-    const hoje = new Date();
-    let idade = hoje.getFullYear() - dataNascimento.getFullYear();
-    const mesAtual = hoje.getMonth();
-    const diaAtual = hoje.getDate();
-    const mesNascimento = dataNascimento.getMonth();
-    const diaNascimento = dataNascimento.getDate();
-    
-    if (mesAtual < mesNascimento || (mesAtual === mesNascimento && diaAtual < diaNascimento)) {
-        idade--;
-    }
-    
-    return idade;
-}
-
 // Função para exibir mensagem de erro
 function exibirErro(elemento, mensagem) {
     // Remove mensagem de erro existente
