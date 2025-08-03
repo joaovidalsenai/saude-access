@@ -21,9 +21,10 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function mudarTema() {
-    let tema = html.getAttribute("data-theme");
+    const html = document.documentElement;
+    const temaToggle = document.getElementById('tema-toggle');
 
-    if (tema === "light") {
+    if (temaToggle.checked) {
         html.setAttribute("data-theme", "dark");
         localStorage.setItem("theme", "dark");
     } else {
