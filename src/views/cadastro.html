@@ -9,7 +9,7 @@
     <title>Saude Access - Cadastro</title>
 </head>
 <body>
-    <header>       
+    <header>       
         <h1>Cadastro</h1>
     </header>
     <main>
@@ -25,6 +25,7 @@
                         <div class="input-group">
                             <label for="cadastro-email" class="label-cadastro">E-mail</label>
                             <input type="email" name="cadastro-email" id="cadastro-email" placeholder="Insira seu endereço de E-mail" class="input-cadastro" required>
+                            <div class="error-message" id="email-error"></div>
                         </div>
                     </div>
                     
@@ -40,17 +41,6 @@
                         </div>
                     </div>
                     
-                    <div class="senha-requisitos">
-                        <p>Sua senha deve conter:</p>
-                        <ul>
-                            <li id="req-tamanho">Pelo menos 8 caracteres</li>
-                            <li id="req-maiuscula">Pelo menos uma letra maiúscula</li>
-                            <li id="req-minuscula">Pelo menos uma letra minúscula</li>
-                            <li id="req-numero">Pelo menos um número</li>
-                            <li id="req-especial">Pelo menos um caractere especial (@$!%*?&)</li>
-                        </ul>
-                    </div>
-                    
                     <div class="cadastro-item">
                         <div class="cadastro-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
@@ -60,8 +50,11 @@
                         <div class="input-group">
                             <label for="cadastro-confirm-senha" class="label-cadastro">Confirme sua senha</label>
                             <input type="password" name="cadastro-confirm-senha" id="cadastro-confirm-senha" placeholder="Confirme sua senha" class="input-cadastro" required>
+                            <div class="error-message" id="confirm-senha-error"></div>
                         </div>
                     </div>
+                    
+                    <div class="status-mensagem" id="status-mensagem"></div>
                     
                     <button type="submit" class="btn-finalizar" id="btn-cadastrar">
                         Finalizar Cadastro
@@ -70,7 +63,7 @@
                 
                 <div class="cadastro-login">
                     <p>Já tem uma conta?</p>
-                    <a href="login.html" class="btn-login">Fazer Login</a>
+                    <a href="/login" class="btn-login">Fazer Login</a>
                 </div>
             </div>
         </div>

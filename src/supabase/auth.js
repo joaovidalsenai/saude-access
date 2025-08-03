@@ -17,6 +17,7 @@ function getSupabaseClient() {
     return supabase
 }
 
+// A função deve retornar um objeto que indique sucesso ou falha
 export async function cadastro(email, senha) {
     try {
         const client = getSupabaseClient()
@@ -27,12 +28,21 @@ export async function cadastro(email, senha) {
         })
         
         if (error) {
-            throw error
+            // Em caso de erro, retorna um objeto de falha
+            const result = { success: false, error: error.message };
+            console.log('Resposta do servidor (erro):', result);
+            return result;
         }
         
-        return { success: true, data }
+        // Se a operação for bem-sucedida, retorna um objeto de sucesso
+        const result = { success: true, message: "Cadastro realizado com sucesso!" };
+        console.log('Resposta do servidor (sucesso):', result);
+        return result;
     } catch (error) {
-        return { success: false, error: error.message }
+        // Em caso de qualquer outro erro, retorna uma falha genérica
+        const result = { success: false, error: error.message };
+        console.log('Resposta do servidor (exceção):', result);
+        return result;
     }
 }
 

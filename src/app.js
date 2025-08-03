@@ -49,13 +49,14 @@ app.get('/cadastro-contribuintes', (req, res) => res.sendFile(join(viewsPath, 'c
 // Endpoints da API
 app.post('/api/cadastro', async (req, res) => {
     try {
-        const { email, senha } = req.body
-        const result = await cadastro(email, senha)
-        res.json(result)
+        const { email, senha } = req.body;
+        const result = await cadastro(email, senha);
+        res.json(result);
     } catch (error) {
-        res.status(500).json({ success: false, error: error.message })
+        // Em caso de erro inesperado na rota, envia uma resposta de erro genérica
+        res.status(500).json({ success: false, error: 'Erro interno do servidor.' });
     }
-})
+});
 
 app.post('/api/entrada', async (req, res) => {
     try {
