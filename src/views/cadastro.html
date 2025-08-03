@@ -14,124 +14,57 @@
     <main>
         <div class="cadastro-container">
             <div class="cadastro-section">
-                <form action="/inicio" novalidate>
-                    <!-- Primeira etapa do cadastro -->
-                    <div id="form-info">
-                        <div class="cadastro-item">
-                            <div class="cadastro-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
-                                    <path d="M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z"></path>
-                                </svg>
-                            </div>
-                            <div class="input-group">
-                                <label for="cadastro-nome" class="label-cadastro">Nome</label>
-                                <input type="text" name="cadastro-nome" id="cadastro-nome" placeholder="Insira seu nome completo" class="input-cadastro" required>
-                            </div>
+                <form novalidate>
+                    <div class="cadastro-item">
+                        <div class="cadastro-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
+                                <path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48ZM203.43,64,128,133.15,52.57,64ZM216,192H40V74.19l82.59,75.71a8,8,0,0,0,10.82,0L216,74.19V192Z"></path>
+                            </svg>
                         </div>
-                        
-                        <div class="cadastro-item">
-                            <div class="cadastro-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
-                                    <path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48ZM203.43,64,128,133.15,52.57,64ZM216,192H40V74.19l82.59,75.71a8,8,0,0,0,10.82,0L216,74.19V192Z"></path>
-                                </svg>
-                            </div>
-                            <div class="input-group">
-                                <label for="cadastro-email" class="label-cadastro">E-mail</label>
-                                <input type="email" name="cadastro-email" id="cadastro-email" placeholder="Insira seu endereço de E-mail" class="input-cadastro" required>
-                            </div>
+                        <div class="input-group">
+                            <label for="cadastro-email" class="label-cadastro">E-mail</label>
+                            <input type="email" name="cadastro-email" id="cadastro-email" placeholder="Insira seu endereço de E-mail" class="input-cadastro" required>
                         </div>
-                        
-                        <div class="cadastro-item">
-                            <div class="cadastro-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
-                                    <path d="M216,40H40A16,16,0,0,0,24,56V200a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A16,16,0,0,0,216,40Zm0,16V96H40V56Zm0,144H40V112H216v88Zm-24-24a8,8,0,0,1-8,8H168a8,8,0,0,1,0-16h16A8,8,0,0,1,192,176Zm-40,0a8,8,0,0,1-8,8H128a8,8,0,0,1,0-16h16A8,8,0,0,1,152,176Z"></path>
-                                </svg>
-                            </div>
-                            <div class="input-group">
-                                <label for="cadastro-cpf" class="label-cadastro">CPF</label>
-                                <input type="text" name="cadastro-cpf" id="cadastro-cpf" placeholder="Insira seu CPF" class="input-cadastro" maxlength="14" required>
-                            </div>
-                        </div>
-                        
-                        <div class="cadastro-item">
-                            <div class="cadastro-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
-                                    <path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM72,48v8a8,8,0,0,0,16,0V48h80v8a8,8,0,0,0,16,0V48h24V80H48V48ZM208,208H48V96H208V208Z"></path>
-                                </svg>
-                            </div>
-                            <div class="input-group">
-                                <label for="cadastro-nascimento" class="label-cadastro">Data de Nascimento</label>
-                                <input type="date" name="cadastro-nascimento" id="cadastro-nascimento" class="input-cadastro" required>
-                            </div>
-                        </div>
-                        
-                        <button type="button" class="btn-prosseguir" onclick="altCadastro(0)">
-                            Prosseguir
-                        </button>
                     </div>
                     
-                    <!-- Segunda etapa do cadastro -->
-                    <div id="form-senha">
-                        <div class="cadastro-voltar">
-                            <button type="button" id="voltar" onclick="altCadastro(1)">
-                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path d="M15 18L9 12L15 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                                Voltar
-                            </button>
+                    <div class="cadastro-item">
+                        <div class="cadastro-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
+                                <path d="M208,80H176V56a48,48,0,0,0-96,0V80H48A16,16,0,0,0,32,96V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V96A16,16,0,0,0,208,80ZM96,56a32,32,0,0,1,64,0V80H96ZM208,208H48V96H208V208Z"></path>
+                            </svg>
                         </div>
-                        
-                        <div class="cadastro-item">
-                            <div class="cadastro-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
-                                    <path d="M128,64a40,40,0,1,0,40,40A40,40,0,0,0,128,64Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,128Zm0-112a88.1,88.1,0,0,0-88,88c0,31.4,14.51,64.68,42,96.25a254.19,254.19,0,0,0,41.45,38.3,8,8,0,0,0,9.18,0A254.19,254.19,0,0,0,174,200.25c27.45-31.57,42-64.85,42-96.25A88.1,88.1,0,0,0,128,16Zm0,206c-16.53-13-72-60.75-72-118a72,72,0,0,1,144,0C200,161.23,144.53,209,128,222Z"></path>
-                                </svg>
-                            </div>
-                            <div class="input-group">
-                                <label for="cadastro-cep" class="label-cadastro">CEP</label>
-                                <input type="text" name="cadastro-cep" id="cadastro-cep" placeholder="Insira seu CEP" class="input-cadastro" maxlength="9" required>
-                            </div>
+                        <div class="input-group">
+                            <label for="cadastro-senha" class="label-cadastro">Crie uma senha</label>
+                            <input type="password" name="cadastro-senha" id="cadastro-senha" placeholder="Insira uma senha forte" class="input-cadastro" required>
                         </div>
-                        
-                        <div class="cadastro-item">
-                            <div class="cadastro-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
-                                    <path d="M208,80H176V56a48,48,0,0,0-96,0V80H48A16,16,0,0,0,32,96V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V96A16,16,0,0,0,208,80ZM96,56a32,32,0,0,1,64,0V80H96ZM208,208H48V96H208V208Z"></path>
-                                </svg>
-                            </div>
-                            <div class="input-group">
-                                <label for="cadastro-senha" class="label-cadastro">Crie uma senha</label>
-                                <input type="password" name="cadastro-senha" id="cadastro-senha" placeholder="Insira uma senha forte" class="input-cadastro" required>
-                            </div>
-                        </div>
-                        
-                        <div class="senha-requisitos">
-                            <p>Sua senha deve conter:</p>
-                            <ul>
-                                <li id="req-tamanho">Pelo menos 8 caracteres</li>
-                                <li id="req-maiuscula">Pelo menos uma letra maiúscula</li>
-                                <li id="req-minuscula">Pelo menos uma letra minúscula</li>
-                                <li id="req-numero">Pelo menos um número</li>
-                                <li id="req-especial">Pelo menos um caractere especial (@$!%*?&)</li>
-                            </ul>
-                        </div>
-                        
-                        <div class="cadastro-item">
-                            <div class="cadastro-icon">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
-                                    <path d="M208,80H176V56a48,48,0,0,0-96,0V80H48A16,16,0,0,0,32,96V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V96A16,16,0,0,0,208,80ZM96,56a32,32,0,0,1,64,0V80H96ZM208,208H48V96H208V208Z"></path>
-                                </svg>
-                            </div>
-                            <div class="input-group">
-                                <label for="cadastro-confirm-senha" class="label-cadastro">Confirme sua senha</label>
-                                <input type="password" name="cadastro-confirm-senha" id="cadastro-confirm-senha" placeholder="Confirme sua senha" class="input-cadastro" required>
-                            </div>
-                        </div>
-                        
-                        <button type="submit" class="btn-finalizar">
-                            Finalizar Cadastro
-                        </button>
                     </div>
+                    
+                    <div class="senha-requisitos">
+                        <p>Sua senha deve conter:</p>
+                        <ul>
+                            <li id="req-tamanho">Pelo menos 8 caracteres</li>
+                            <li id="req-maiuscula">Pelo menos uma letra maiúscula</li>
+                            <li id="req-minuscula">Pelo menos uma letra minúscula</li>
+                            <li id="req-numero">Pelo menos um número</li>
+                            <li id="req-especial">Pelo menos um caractere especial (@$!%*?&)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="cadastro-item">
+                        <div class="cadastro-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
+                                <path d="M208,80H176V56a48,48,0,0,0-96,0V80H48A16,16,0,0,0,32,96V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V96A16,16,0,0,0,208,80ZM96,56a32,32,0,0,1,64,0V80H96ZM208,208H48V96H208V208Z"></path>
+                            </svg>
+                        </div>
+                        <div class="input-group">
+                            <label for="cadastro-confirm-senha" class="label-cadastro">Confirme sua senha</label>
+                            <input type="password" name="cadastro-confirm-senha" id="cadastro-confirm-senha" placeholder="Confirme sua senha" class="input-cadastro" required>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-finalizar" id="btn-cadastrar">
+                        Finalizar Cadastro
+                    </button>
                 </form>
                 
                 <div class="cadastro-login">
@@ -141,7 +74,14 @@
             </div>
         </div>
     </main>
-    <script src="js/scriptCadastro.js"></script>
+    <script type="importmap">
+    {
+    "imports": {
+        "@supabase/supabase-js": "https://cdn.skypack.dev/@supabase/supabase-js"
+    }
+    }
+    </script>
+    <script type="module" src="/js/cadastro.js"></script>
     <script src="js/global.js"></script>
 </body>
 </html>

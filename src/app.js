@@ -1,12 +1,17 @@
 // src/app.js
+import dotenv from 'dotenv'
+dotenv.config()
+
+console.log('=== DEBUG DOTENV ===')
+console.log('SUPABASE_URL:', process.env.SUPABASE_URL)
+console.log('SUPABASE_ANON_KEY:', process.env.SUPABASE_ANON_KEY ? 'EXISTE' : 'NÃO EXISTE')
+console.log('Pasta atual:', process.cwd())
+console.log('===================')
+
+import { cadastro } from './supabase/auth.js'
 import express from 'express'
 import { fileURLToPath } from 'url'
 import path, { join } from 'path'
-import dotenv from 'dotenv'
-
-import authRoutes from './routes/auth.js'    // 1. importe suas rotas
-
-dotenv.config()
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname  = path.dirname(__filename)
@@ -18,10 +23,6 @@ app.use(express.json())
 // 3) Servir arquivos estáticos da pasta /public
 app.use(express.static(join(__dirname, '../public')))
 
-// 4) Montar rota de API de autenticação
-app.use('/api/auth', authRoutes)
-
-// 5) Rotas para entregar cada HTML em src/views/
 const viewsPath = join(__dirname, 'views');
 app.get('/',                   (req, res) => res.sendFile(join(viewsPath, 'index.html')));
 app.get('/login',              (req, res) => res.sendFile(join(viewsPath, 'login.html')));
@@ -40,6 +41,16 @@ app.get('/hospitais-cadastrados', (req, res) => res.sendFile(join(viewsPath, 'ho
 app.get('/hospitais-lotacao',  (req, res) => res.sendFile(join(viewsPath, 'hospitaisLotacao.html')));
 app.get('/hospitais-procurados', (req, res) => res.sendFile(join(viewsPath, 'hospitaisProcurados.html')));
 app.get('/hospitais-proximos', (req, res) => res.sendFile(join(viewsPath, 'hospitaisProximos.html')));
+
+app.post('/api/cadastro', async (req, res) => {
+    try {
+        const { email, senha } = req.body
+        const result = await cadastro(email, senha)
+        res.json(result)
+    } catch (error) {
+        res.status(500).json({ success: false, error: error.message })
+    }
+})
 
 // 6) Iniciar servidor
 const PORT = process.env.PORT || 3001
