@@ -19,3 +19,15 @@ document.addEventListener('DOMContentLoaded', function () {
         mudarTema();
     });
 });
+
+function mudarTema() {
+    let tema = html.getAttribute("data-theme");
+
+    if (tema === "light") {
+        html.setAttribute("data-theme", "dark");
+        localStorage.setItem("theme", "dark");
+    } else {
+        html.setAttribute("data-theme", "light");
+        localStorage.setItem("theme", "light");
+    }
+}
