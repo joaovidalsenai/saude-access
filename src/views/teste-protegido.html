@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Teste - Página Protegida</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/js/auth.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .user-info { background: #e8f5e8; padding: 15px; border-radius: 5px; margin: 20px 0; }
+        .logout-btn { background: #dc3545; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
+        .logout-btn:hover { background: #c82333; }
+    </style>
+</head>
+<body class="protected">
+    <h1>🔒 Página Protegida - Teste</h1>
+    
+    <div class="user-info">
+        <h3>Informações do Usuário:</h3>
+        <p><strong>Email:</strong> <span class="user-email">Carregando...</span></p>
+        <p><strong>Nome:</strong> <span class="user-name">Carregando...</span></p>
+    </div>
+    
+    <div>
+        <h3>Conteúdo Protegido:</h3>
+        <p>Se você está vendo isso, significa que a autenticação está funcionando! 🎉</p>
+        <p>Esta área só é visível para usuários autenticados.</p>
+    </div>
+    
+    <div style="margin-top: 30px;">
+        <button class="logout-btn" onclick="logout()">🚪 Sair</button>
+        <button onclick="window.location.href='/debug-auth'" style="margin-left: 10px; padding: 10px 20px;">🔍 Ir para Debug</button>
+    </div>
+
+    <script>
+        // Debug adicional específico desta página
+        console.log('📄 Página teste-protegido carregada')
+        
+        // Verificar se o script auth.js foi carregado
+        if (typeof protegerPagina === 'undefined') {
+            console.error('❌ Script auth.js não foi carregado corretamente!')
+            document.body.innerHTML += '<div style="color: red; padding: 20px;"><h2>Erro: Script de autenticação não carregado!</h2></div>'
+        } else {
+            console.log('✅ Script auth.js carregado com sucesso')
+        }
+    </script>
+</body>
+</html>

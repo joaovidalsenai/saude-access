@@ -1,0 +1,21 @@
+/* public/css/protected.css */
+
+/* ESCONDER conteúdo protegido antes da verificação de autenticação */
+body.protected {
+    visibility: hidden;
+}
+
+/* Classe que será aplicada quando usuário estiver autenticado */
+body.protected.authenticated {
+    visibility: visible;
+}
+
+/* Opcional: Animação suave quando o conteúdo aparece */
+body.protected.authenticated {
+    animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}

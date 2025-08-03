@@ -87,21 +87,60 @@ export async function obterUsuarioAtual() {
     }
 }
 
+// Função original (mantida para uso direto)
 export async function verificarSessao() {
     try {
-        const client = getSupabaseClient()
+        const client = getSupabaseClient();
         
-        const { data: { session }, error } = await client.auth.getSession()
+        const { data: { session }, error } = await client.auth.getSession();
         
         if (error) {
-            throw error
+            throw error;
         }
         
-        return { success: true, session }
+        return { success: true, session };
     } catch (error) {
-        return { success: false, error: error.message }
+        return { success: false, error: error.message };
     }
 }
+
+// Nova função para verificar com token do frontend
+export async function verificarSessaoComToken(accessToken) {
+    try {
+        const client = getSupabaseClient();
+        
+        // Verifica o usuário diretamente com o token
+        // Não precisa fazer setSession no servidor
+        const { data: { user }, error } = await client.auth.getUser(accessToken);
+        
+        if (error) {
+            throw error;
+        }
+        
+        if (!user) {
+            return { success: false, error: 'Token inválido ou expirado' };
+        }
+        
+        return {
+            success: true,
+            user: {
+                id: user.id,
+                email: user.email,
+                created_at: user.created_at
+            }
+        };
+        
+    } catch (error) {
+        return { success: false, error: error.message };
+    }
+}
+
+// Função para o endpoint da API (CORRIGIDA)
+export async function verificarSessaoAPI(accessToken) {
+    // Agora está passando o accessToken corretamente
+    return await verificarSessaoComToken(accessToken);
+}
+
 
 export async function recuperarSenha(email) {
     try {

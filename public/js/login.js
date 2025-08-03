@@ -1,225 +1,176 @@
 // public/js/login.js
+let supabase = null
 
-// Apenas regex para validar e-mail
-const REGEX_EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+// Inicializar Supabase
+async function initSupabase() {
+    try {
+        const response = await fetch('/api/config')
+        const config = await response.json()
+        supabase = window.supabase.createClient(config.supabaseUrl, config.supabaseAnonKey)
+        console.log('✅ Supabase inicializado para login')
+        return true
+    } catch (error) {
+        console.error('❌ Erro ao inicializar Supabase:', error)
+        mostrarErro('Erro ao conectar com o servidor')
+        return false
+    }
+}
 
-// Elementos do DOM
-const emailInput = document.getElementById('login-email');
-const senhaInput = document.getElementById('login-senha');
-const lembrarInput = document.getElementById('lembrar-login');
-const btnEntrar = document.querySelector('.btn-entrar');
-const form = document.getElementById('formLogin');
+// Função para mostrar erros na tela
+function mostrarErro(mensagem) {
+    // Remove erro anterior se existir
+    const erroAnterior = document.querySelector('.erro-login')
+    if (erroAnterior) {
+        erroAnterior.remove()
+    }
+    
+    // Cria novo elemento de erro
+    const erroDiv = document.createElement('div')
+    erroDiv.className = 'erro-login'
+    erroDiv.style.cssText = `
+        background: #f8d7da;
+        color: #721c24;
+        padding: 12px;
+        border-radius: 5px;
+        margin: 15px 0;
+        border: 1px solid #f5c6cb;
+        text-align: center;
+    `
+    erroDiv.textContent = mensagem
+    
+    // Insere antes do botão de entrar
+    const botaoEntrar = document.querySelector('.btn-entrar')
+    botaoEntrar.parentNode.insertBefore(erroDiv, botaoEntrar)
+    
+    // Remove o erro após 5 segundos
+    setTimeout(() => {
+        if (erroDiv.parentNode) {
+            erroDiv.remove()
+        }
+    }, 5000)
+}
 
-// Exibe ou limpa mensagem de erro de um campo
-function exibirErro(input, mensagem) {
-    const wrapper = input.parentNode
-    const erroExistente = wrapper.querySelector('.erro-mensagem')
-    if (erroExistente) erroExistente.remove()
+// Função para mostrar sucesso
+function mostrarSucesso(mensagem) {
+    const sucessoDiv = document.createElement('div')
+    sucessoDiv.style.cssText = `
+        background: #d4edda;
+        color: #155724;
+        padding: 12px;
+        border-radius: 5px;
+        margin: 15px 0;
+        border: 1px solid #c3e6cb;
+        text-align: center;
+    `
+    sucessoDiv.textContent = mensagem
+    
+    const botaoEntrar = document.querySelector('.btn-entrar')
+    botaoEntrar.parentNode.insertBefore(sucessoDiv, botaoEntrar)
+}
 
-    if (!mensagem) {
-        input.classList.remove('input-erro')
+// Função principal de login
+async function fazerLogin(event) {
+    event.preventDefault()
+    
+    const email = document.getElementById('login-email').value.trim()
+    const senha = document.getElementById('login-senha').value
+    const botaoEntrar = document.querySelector('.btn-entrar')
+    
+    // Validação básica
+    if (!email || !senha) {
+        mostrarErro('Preencha todos os campos')
         return
     }
-
-    input.classList.add('input-erro')
-    const span = document.createElement('span')
-    span.className = 'erro-mensagem'
-    span.textContent = mensagem
-    wrapper.appendChild(span)
-}
-
-// Exibe mensagem de erro geral no topo do formulário
-function exibirErroLogin(mensagem) {
-    const existente = form.querySelector('.erro-login-geral')
-    if (existente) existente.remove()
-
-    if (!mensagem) return
-
-    const div = document.createElement('div')
-    div.className = 'erro-login-geral'
-    div.textContent = mensagem
-    div.style.cssText = `
-        color: #e74c3c;
-        background: #fdf2f2;
-        border: 1px solid #e74c3c;
-        padding: 10px;
-        border-radius: 5px;
-        margin-bottom: 15px;
-        text-align: center;
-        font-size: 14px;
-    `
-    form.insertBefore(div, form.firstChild)
-}
-
-// Exibe mensagem de sucesso
-function exibirSucessoLogin(mensagem) {
-    const existente = form.querySelector('.sucesso-login')
-    if (existente) existente.remove()
-
-    const div = document.createElement('div')
-    div.className = 'sucesso-login'
-    div.textContent = mensagem
-    div.style.cssText = `
-        color: #27ae60;
-        background: #f0f9f4;
-        border: 1px solid #27ae60;
-        padding: 10px;
-        border-radius: 5px;
-        margin-bottom: 15px;
-        text-align: center;
-        font-size: 14px;
-    `
-    form.insertBefore(div, form.firstChild)
-}
-
-// Valida e-mail
-function validarEmail() {
-    const valor = emailInput.value.trim()
-    if (!valor) return 'E-mail é obrigatório.'
-    if (!REGEX_EMAIL.test(valor)) return 'Formato de e-mail inválido.'
-    return ''
-}
-
-// Valida senha
-function validarSenha() {
-    const valor = senhaInput.value
-    if (!valor) return 'Senha é obrigatória.'
-    if (valor.length < 8) return 'Senha muito curta.'
-    return ''
-}
-
-// Valida cada campo e exibe erro
-function validarCampo(input, fnValidacao) {
-    const msg = fnValidacao()
-    exibirErro(input, msg)
-    return !msg
-}
-
-// Indicador de loading no botão
-function mostrarCarregamento(mostrar = true) {
-    if (mostrar) {
-        btnEntrar.disabled = true
-        btnEntrar.innerHTML = `
-            <span style="display:inline-flex;align-items:center;gap:8px;color:#fff">
-                <div style="width:16px;height:16px;border:2px solid #fff40;border-top:2px solid #fff;border-radius:50%;animation:spin 1s linear infinite;"></div>
-                Entrando...
-            </span>`
+    
+    // Desabilitar botão durante o login
+    const textoOriginal = botaoEntrar.textContent
+    botaoEntrar.disabled = true
+    botaoEntrar.textContent = 'Entrando...'
+    
+    try {
+        // Inicializar Supabase se necessário
+        if (!supabase) {
+            const initialized = await initSupabase()
+            if (!initialized) {
+                return
+            }
+        }
         
-        if (!document.getElementById('spin-style')) {
-            const style = document.createElement('style')
-            style.id = 'spin-style'
-            style.textContent = `@keyframes spin {100%{transform:rotate(360deg)}}`
-            document.head.appendChild(style)
-        }
-    } else {
-        btnEntrar.disabled = false
-        btnEntrar.textContent = 'Entrar'
-    }
-}
-
-// Guarda e-mail se "lembrar-login" estiver checado
-function salvarDadosLogin(email) {
-    if (lembrarInput.checked) {
-        try {
-            localStorage.setItem('meuAppLogin', JSON.stringify({ email, data: Date.now() }))
-        } catch (error) {
-            console.log('Erro ao salvar dados de login:', error)
-        }
-    }
-}
-
-// Carrega e-mail salvo
-function carregarDadosLogin() {
-    try {
-        const saved = JSON.parse(localStorage.getItem('meuAppLogin'))
-        if (saved?.email) {
-            emailInput.value = saved.email
-            lembrarInput.checked = true
-        }
-    } catch (error) {
-        console.log('Erro ao carregar dados salvos:', error)
-    }
-}
-
-// Event listeners para limpar erros ao digitar
-emailInput.addEventListener('input', () => {
-    exibirErro(emailInput, '')
-    exibirErroLogin('')
-});
-
-senhaInput.addEventListener('input', () => {
-    exibirErro(senhaInput, '')
-    exibirErroLogin('')
-});
-
-// Permitir submit com Enter na senha
-senhaInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        form.dispatchEvent(new Event('submit'))
-    }
-});
-
-// Validação e submissão do formulário
-form.addEventListener('submit', async function (e) {
-    e.preventDefault();
-    
-    // Limpar mensagens anteriores
-    exibirErroLogin('');
-
-    const email = emailInput.value.trim();
-    const senha = senhaInput.value;
-
-    // Validar campos
-    const okEmail = validarCampo(emailInput, validarEmail);
-    const okSenha = validarCampo(senhaInput, validarSenha);
-    
-    if (!okEmail || !okSenha) {
-        return;
-    }
-
-    try {
-        // Mostrar loading
-        mostrarCarregamento(true);
-
-        // Chamar endpoint de login
-        const response = await fetch('/api/entrada', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ email, senha })
-        });
-
-        if (!response.ok) {
-            const errorData = await response.json();
-            throw new Error(errorData.error || 'Erro na requisição');
-        }
-
-        const resultado = await response.json();
-
-        if (resultado.success) {
-            // Salvar dados se solicitado
-            salvarDadosLogin(email);
+        console.log('🔐 Tentando fazer login...')
+        
+        // Fazer login com Supabase
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email: email,
+            password: senha,
+        })
+        
+        if (error) {
+            console.error('❌ Erro no login:', error.message)
             
-            // Mostrar sucesso
-            exibirSucessoLogin('Login realizado com sucesso! Redirecionando...');
+            // Traduzir mensagens de erro comuns
+            let mensagemErro = error.message
+            if (error.message.includes('Invalid login credentials')) {
+                mensagemErro = 'Email ou senha incorretos'
+            } else if (error.message.includes('Email not confirmed')) {
+                mensagemErro = 'Email não confirmado. Verifique sua caixa de entrada.'
+            }
             
-            // Redirecionar após delay
-            setTimeout(() => {
-                window.location.href = '/inicio';
-            }, 1500);
+            mostrarErro(mensagemErro)
         } else {
-            // Mostrar erro
-            exibirErroLogin(resultado.error || 'Erro no login. Verifique suas credenciais.');
+            console.log('✅ Login realizado com sucesso!')
+            mostrarSucesso('Login realizado com sucesso! Redirecionando...')
+            
+            // Aguardar um pouco e redirecionar
+            setTimeout(() => {
+                window.location.href = '/inicio'
+            }, 1500)
         }
+        
     } catch (error) {
-        console.error('Erro no login:', error);
-        exibirErroLogin('Erro de conexão. Tente novamente.');
+        console.error('❌ Erro crítico:', error)
+        mostrarErro('Erro inesperado. Tente novamente.')
     } finally {
-        // Remover loading
-        mostrarCarregamento(false);
+        // Reabilitar botão
+        botaoEntrar.disabled = false
+        botaoEntrar.textContent = textoOriginal
     }
-});
+}
 
-// Carrega dados salvos quando a página carrega
-document.addEventListener('DOMContentLoaded', carregarDadosLogin);
+// Verificar se usuário já está logado
+async function verificarSeJaLogado() {
+    const initialized = await initSupabase()
+    if (!initialized) return
+    
+    const { data: { session } } = await supabase.auth.getSession()
+    if (session) {
+        console.log('✅ Usuário já está logado, redirecionando...')
+        window.location.href = '/inicio'
+    }
+}
+
+// Event listeners
+document.addEventListener('DOMContentLoaded', () => {
+    // Verificar se já está logado
+    verificarSeJaLogado()
+    
+    // Adicionar event listener ao formulário
+    const formLogin = document.getElementById('formLogin')
+    if (formLogin) {
+        formLogin.addEventListener('submit', fazerLogin)
+    } else {
+        console.error('❌ Formulário de login não encontrado!')
+    }
+    
+    // Adicionar event listener para Enter nos campos
+    document.getElementById('login-email').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            document.getElementById('login-senha').focus()
+        }
+    })
+    
+    document.getElementById('login-senha').addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            fazerLogin(e)
+        }
+    })
+})
