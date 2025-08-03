@@ -91,46 +91,58 @@ async function logout() {
     }
 }
 
-// Preencher informações do usuário na página
-async function preencherInfoUsuario() {
-    const user = await obterUsuario()
+/**
+ * Preenche um ou mais elementos com os dados do usuário.
+ * @param {string} seletor - O seletor CSS dos elementos a serem preenchidos (ex: '.user-email').
+ * @param {string} tipo - O tipo de dado do usuário a ser exibido ('email', 'nome', etc.).
+ */
+async function preencherInfoUsuario(seletor, tipo) {
+    const user = await obterUsuario();
     if (user) {
-        // Preencher elementos com classe 'user-email'
-        document.querySelectorAll('.user-email').forEach(el => {
-            el.textContent = user.email
-        })
-        
-        // Preencher elementos com classe 'user-name'
-        document.querySelectorAll('.user-name').forEach(el => {
-            el.textContent = user.user_metadata?.name || user.email.split('@')[0]
-        })
+        let valor;
+        switch (tipo) {
+            case 'email':
+                valor = user.email;
+                break;
+            case 'nome':
+                valor = user.user_metadata?.name || user.email.split('@')[0];
+                break;
+            // Você pode adicionar mais casos aqui, se precisar
+            // case 'cpf':
+            //     valor = user.user_metadata?.cpf;
+            //     break;
+            default:
+                console.error(`Tipo de dado desconhecido: ${tipo}`);
+                return;
+        }
+
+        document.querySelectorAll(seletor).forEach(el => {
+            el.textContent = valor;
+        });
     }
 }
 
 // Auto-executar proteção se a página tiver a classe 'protected'
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('🚀 Página carregada, verificando proteção...')
+    console.log('🚀 Página carregada, verificando proteção...');
     
     if (document.body.classList.contains('protected')) {
-        console.log('🛡️ Página marcada como protegida')
+        console.log('🛡️ Página marcada como protegida');
         
         // Aguardar inicialização do Supabase
-        await new Promise(resolve => setTimeout(resolve, 100))
+        await new Promise(resolve => setTimeout(resolve, 100));
         
-        const isAuthenticated = await protegerPagina()
+        const isAuthenticated = await protegerPagina();
         if (isAuthenticated) {
-            console.log('✅ Usuário autenticado, preenchendo informações...')
-            await preencherInfoUsuario()
+            console.log('✅ Usuário autenticado, preenchendo informações...');
+            // Chamadas específicas para preencher os dados
+            await preencherInfoUsuario('.perfil-nome', 'nome');
+            await preencherInfoUsuario('.perfil-email', 'email');
         }
     } else {
-        console.log('ℹ️ Página não protegida')
+        console.log('ℹ️ Página não protegida');
     }
-})
-
-// Remover esta linha que estava causando problema
-// if (document.body && document.body.classList.contains('protected')) {
-//     document.body.style.visibility = 'hidden'
-// }
+});
 
 // Exportar funções para uso global
 window.protegerPagina = protegerPagina
