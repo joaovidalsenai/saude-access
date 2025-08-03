@@ -2,12 +2,6 @@
 import dotenv from 'dotenv'
 dotenv.config()
 
-console.log('=== DEBUG DOTENV ===')
-console.log('SUPABASE_URL:', process.env.SUPABASE_URL)
-console.log('SUPABASE_ANON_KEY:', process.env.SUPABASE_ANON_KEY ? 'EXISTE' : 'NÃO EXISTE')
-console.log('Pasta atual:', process.cwd())
-console.log('===================')
-
 import { cadastro } from './supabase/auth.js'
 import express from 'express'
 import { fileURLToPath } from 'url'
