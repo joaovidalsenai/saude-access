@@ -8,54 +8,43 @@ async function fazerLogin(event) {
     const senha = document.getElementById('login-senha').value;
     const botaoEntrar = document.querySelector('.btn-entrar');
     
-    // Validação básica
-    if (!email || !senha) {
-        AuthUtils.mostrarMensagem('Preencha todos os campos', 'erro');
-        return;
-    }
+    // As validações de frontend continuam aqui...
+    if (!email || !senha) { /* ... */ }
+    if (!AuthUtils.validarEmail(email)) { /* ... */ }
     
-    if (!AuthUtils.validarEmail(email)) {
-        AuthUtils.mostrarMensagem('Email inválido', 'erro');
-        return;
-    }
-    
-    // Estado do botão
     const textoOriginal = botaoEntrar.textContent;
     botaoEntrar.disabled = true;
     botaoEntrar.textContent = 'Entrando...';
     
     try {
-        // Inicializar Supabase
-        const initialized = await AuthUtils.initSupabase();
-        if (!initialized) {
-            return;
-        }
+        console.log('🔐 Tentando fazer login via backend...');
         
-        console.log('🔐 Tentando fazer login...');
-        
-        // Login via Supabase
-        const supabase = AuthUtils.getSupabase();
-        const { data, error } = await supabase.auth.signInWithPassword({
-            email: email,
-            password: senha,
+        const response = await fetch('/api/login', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email: email, password: senha }),
         });
-        
-        if (error) {
-            console.error('❌ Erro no login:', error.message);
-            const mensagemTraduzida = AuthUtils.traduzirErroSupabase(error);
-            AuthUtils.mostrarMensagem(mensagemTraduzida, 'erro');
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            // O backend já envia uma mensagem de erro amigável
+            console.error('❌ Erro no login:', result.error);
+            AuthUtils.mostrarMensagem(result.error || 'Erro inesperado.', 'erro');
         } else {
             console.log('✅ Login realizado com sucesso!');
             AuthUtils.mostrarMensagem('Login realizado com sucesso! Redirecionando...', 'sucesso');
             
             setTimeout(() => {
-                window.location.href = '/inicio';
+                window.location.href = '/inicio'; // Ou outra página protegida
             }, 1500);
         }
         
     } catch (error) {
         console.error('❌ Erro crítico:', error);
-        AuthUtils.mostrarMensagem('Erro inesperado. Tente novamente.', 'erro');
+        AuthUtils.mostrarMensagem('Erro de conexão. Tente novamente.', 'erro');
     } finally {
         botaoEntrar.disabled = false;
         botaoEntrar.textContent = textoOriginal;

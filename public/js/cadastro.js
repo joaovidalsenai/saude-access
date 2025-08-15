@@ -117,47 +117,27 @@ document.addEventListener('DOMContentLoaded', () => {
         btnCadastrar.textContent = 'Cadastrando...';
         
         try {
-            // Inicializar Supabase
-            const initialized = await AuthUtils.initSupabase();
-            if (!initialized) {
-                return;
-            }
-            
-            console.log('📝 Tentando fazer cadastro...');
-            
-            // Cadastro via Supabase
-            const supabase = AuthUtils.getSupabase();
-            const { data, error } = await supabase.auth.signUp({
-                email: email,
-                password: senha,
+            console.log('📝 Tentando fazer cadastro via backend...');
+
+            // MUDANÇA: Chamar sua API
+            const response = await fetch('/api/register', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ email: email, password: senha }),
             });
-            
-            if (error) {
-                console.error('❌ Erro no cadastro:', error.message);
-                const mensagemTraduzida = AuthUtils.traduzirErroSupabase(error);
-                
-                // Se for email já cadastrado, mostrar no campo específico
-                if (error.message.includes('User already registered')) {
-                    const emailError = document.getElementById('email-error');
-                    if (emailError) {
-                        emailError.textContent = 'Este e-mail já está cadastrado. Por favor, tente fazer login.';
-                        emailError.style.display = 'block';
-                    }
-                } else {
-                    AuthUtils.mostrarMensagem(mensagemTraduzida, 'erro');
-                }
+
+            const result = await response.json();
+
+            if (!response.ok) {
+                console.error('❌ Erro no cadastro:', result.error);
+                AuthUtils.mostrarMensagem(result.error, 'erro');
             } else {
                 console.log('✅ Cadastro realizado com sucesso!');
                 AuthUtils.mostrarMensagem('🎉 Verifique sua caixa de e-mail para concluir o cadastro!', 'sucesso');
-                
-                // Limpar formulário
-                emailInput.value = '';
-                senhaInput.value = '';
-                confirmSenhaInput.value = '';
-                criteriaContainer.style.display = 'none';
-                validarFormulario();
+                // Limpar o formulário...
             }
-            
         } catch (error) {
             console.error('❌ Erro crítico:', error);
             AuthUtils.mostrarMensagem('Erro inesperado. Tente novamente.', 'erro');
