@@ -67,6 +67,15 @@ app.get('/inicio',               protectRoute, (req, res) => res.sendFile(join(v
 app.get('/perfil',               protectRoute, (req, res) => res.sendFile(join(viewsPath, 'perfil.html')));
 app.get('/configuracoes',        protectRoute, (req, res) => res.sendFile(join(viewsPath, 'configuracoes.html')));
 app.get('/historico',            protectRoute, (req, res) => res.sendFile(join(viewsPath, 'historico.html')));
+app.get('/suporte-tecnico',      protectRoute, (req, res) => res.sendFile(join(viewsPath, 'suporte-tecnico.html')))
+app.get('/avaliacao',            protectRoute, (req, res) => res.sendFile(join(viewsPath, 'avaliacao.html')))
+app.get('/agendar-consulta',     protectRoute, (req, res) => res.sendFile(join(viewsPath, 'agendarConsulta.html')))
+app.get('/hospital',             protectRoute, (req, res) => res.sendFile(join(viewsPath, 'hospital.html')))
+app.get('/hospitais-cadastrados', protectRoute, (req, res) => res.sendFile(join(viewsPath, 'hospitaisCadastrados.html')))
+app.get('/hospitais-lotacao',    protectRoute, (req, res) => res.sendFile(join(viewsPath, 'hospitaisLotacao.html')))
+app.get('/hospitais-procurados', protectRoute, (req, res) => res.sendFile(join(viewsPath, 'hospitaisProcurados.html')))
+app.get('/hospitais-proximos',   protectRoute, (req, res) => res.sendFile(join(viewsPath, 'hospitaisProximos.html')))
+app.get('/teste-protegido',      protectRoute, (req, res) => res.sendFile(join(viewsPath, 'teste-protegido.html')))
 // ADICIONE 'protectRoute' A TODAS AS OUTRAS ROTAS QUE PRECISAM DE PROTEÇÃO
 
 // ===== API ENDPOINTS DE AUTENTICAÇÃO =====
