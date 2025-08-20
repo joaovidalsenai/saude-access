@@ -1,75 +1,157 @@
 // src/app.js
-import dotenv from 'dotenv'
-dotenv.config()
+import dotenv from 'dotenv';
+dotenv.config();
 
-import express from 'express'
-import { fileURLToPath } from 'url'
-import path, { join } from 'path'
+import express from 'express';
+import { fileURLToPath } from 'url';
+import path, { join } from 'path';
 
-const __filename = fileURLToPath(import.meta.url)
-const __dirname = path.dirname(__filename)
-const app = express()
-const alternativePORT = 3001
+// NOVAS dependências para Supabase no backend e cookies
+import { createClient } from '@supabase/supabase-js';
+import cookieParser from 'cookie-parser';
 
-// Middlewares básicos
-app.use(express.json())
-app.use(express.static(join(__dirname, '../public')))
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const app = express();
+const alternativePORT = 3001;
 
-const viewsPath = join(__dirname, 'views')
+// INICIALIZAÇÃO do Supabase no servidor (seguro)
+const supabase = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY 
+);
 
-// ===== ROTAS PÚBLICAS (sem autenticação) =====
-app.get('/',                     (req, res) => res.sendFile(join(viewsPath, 'index.html')))
-app.get('/login',                (req, res) => res.sendFile(join(viewsPath, 'login.html')))
-app.get('/cadastro',             (req, res) => res.sendFile(join(viewsPath, 'cadastro.html')))
-app.get('/recuperar-senha',      (req, res) => res.sendFile(join(viewsPath, 'recuperar-senha.html')))
-app.get('/cadastro-contribuintes', (req, res) => res.sendFile(join(viewsPath, 'cadastroContribuintes.html')))
+// --- Middlewares ---
+app.use(express.json());
+app.use(cookieParser()); // Essencial para ler os cookies de autenticação
+app.use(express.static(join(__dirname, '../public')));
 
-// Rotas de debug (remover em produção)
-app.get('/debug-auth',           (req, res) => res.sendFile(join(viewsPath, 'debug-auth.html')))
-app.get('/debug-completo',       (req, res) => res.sendFile(join(viewsPath, 'debug-completo.html')))
+const viewsPath = join(__dirname, 'views');
 
-// ===== ROTAS PROTEGIDAS (proteção client-side via auth-utils.js) =====
-// Estas páginas devem ter class="protected" no <body>
-app.get('/inicio',               (req, res) => res.sendFile(join(viewsPath, 'inicio.html')))
-app.get('/perfil',               (req, res) => res.sendFile(join(viewsPath, 'perfil.html')))
-app.get('/configuracoes',        (req, res) => res.sendFile(join(viewsPath, 'configuracoes.html')))
-app.get('/historico',            (req, res) => res.sendFile(join(viewsPath, 'historico.html')))
-app.get('/suporte-tecnico',      (req, res) => res.sendFile(join(viewsPath, 'suporte-tecnico.html')))
-app.get('/avaliacao',            (req, res) => res.sendFile(join(viewsPath, 'avaliacao.html')))
-app.get('/agendar-consulta',     (req, res) => res.sendFile(join(viewsPath, 'agendarConsulta.html')))
-app.get('/hospital',             (req, res) => res.sendFile(join(viewsPath, 'hospital.html')))
-app.get('/hospitais-cadastrados', (req, res) => res.sendFile(join(viewsPath, 'hospitaisCadastrados.html')))
-app.get('/hospitais-lotacao',    (req, res) => res.sendFile(join(viewsPath, 'hospitaisLotacao.html')))
-app.get('/hospitais-procurados', (req, res) => res.sendFile(join(viewsPath, 'hospitaisProcurados.html')))
-app.get('/hospitais-proximos',   (req, res) => res.sendFile(join(viewsPath, 'hospitaisProximos.html')))
-app.get('/teste-protegido',      (req, res) => res.sendFile(join(viewsPath, 'teste-protegido.html')))
+// ===== MIDDLEWARE DE PROTEÇÃO DE ROTAS (NOVO E ESSENCIAL) =====
+const protectRoute = async (req, res, next) => {
+  try {
+    const accessToken = req.cookies['sb-access-token'];
 
-// ===== API ENDPOINTS =====
-app.get('/api/config', (req, res) => {
-    // Verificar se as variáveis de ambiente estão definidas
-    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
-        console.error('❌ Variáveis de ambiente do Supabase não encontradas!')
-        return res.status(500).json({ 
-            error: 'Configuração do servidor incompleta' 
-        })
+    // Se não há token, o usuário não está logado. Redireciona para o login.
+    if (!accessToken) {
+      return res.redirect('/login');
     }
-    
-    res.json({
-        supabaseUrl: process.env.SUPABASE_URL,
-        supabaseAnonKey: process.env.SUPABASE_ANON_KEY
-    })
-})
+
+    // Verifica com o Supabase se o token é válido
+    const { error } = await supabase.auth.getUser(accessToken);
+
+    if (error) {
+      // Se o token for inválido (expirado, etc.), limpa os cookies e redireciona
+      res.clearCookie('sb-access-token');
+      res.clearCookie('sb-refresh-token');
+      return res.redirect('/login');
+    }
+
+    // Se o token for válido, a requisição pode prosseguir para a rota protegida
+    next();
+  } catch (error) {
+    return res.redirect('/login');
+  }
+};
+
+// ===== ROTAS PÚBLICAS =====
+app.get('/', (req, res) => res.sendFile(join(viewsPath, 'index.html')));
+app.get('/login', (req, res) => res.sendFile(join(viewsPath, 'login.html')));
+app.get('/cadastro', (req, res) => res.sendFile(join(viewsPath, 'cadastro.html')));
+// ... (suas outras rotas públicas)
+
+// ===== ROTAS PROTEGIDAS =====
+// O middleware 'protectRoute' é aplicado a cada rota que precisa de login
+app.get('/inicio',               protectRoute, (req, res) => res.sendFile(join(viewsPath, 'inicio.html')));
+app.get('/perfil',               protectRoute, (req, res) => res.sendFile(join(viewsPath, 'perfil.html')));
+app.get('/configuracoes',        protectRoute, (req, res) => res.sendFile(join(viewsPath, 'configuracoes.html')));
+app.get('/historico',            protectRoute, (req, res) => res.sendFile(join(viewsPath, 'historico.html')));
+app.get('/suporte-tecnico',      protectRoute, (req, res) => res.sendFile(join(viewsPath, 'suporte-tecnico.html')))
+app.get('/avaliacao',            protectRoute, (req, res) => res.sendFile(join(viewsPath, 'avaliacao.html')))
+app.get('/agendar-consulta',     protectRoute, (req, res) => res.sendFile(join(viewsPath, 'agendarConsulta.html')))
+app.get('/hospital',             protectRoute, (req, res) => res.sendFile(join(viewsPath, 'hospital.html')))
+app.get('/hospitais-cadastrados', protectRoute, (req, res) => res.sendFile(join(viewsPath, 'hospitaisCadastrados.html')))
+app.get('/hospitais-lotacao',    protectRoute, (req, res) => res.sendFile(join(viewsPath, 'hospitaisLotacao.html')))
+app.get('/hospitais-procurados', protectRoute, (req, res) => res.sendFile(join(viewsPath, 'hospitaisProcurados.html')))
+app.get('/hospitais-proximos',   protectRoute, (req, res) => res.sendFile(join(viewsPath, 'hospitaisProximos.html')))
+app.get('/teste-protegido',      protectRoute, (req, res) => res.sendFile(join(viewsPath, 'teste-protegido.html')))
+// ADICIONE 'protectRoute' A TODAS AS OUTRAS ROTAS QUE PRECISAM DE PROTEÇÃO
+
+// ===== API ENDPOINTS DE AUTENTICAÇÃO =====
+
+// Endpoint de Cadastro
+app.post('/api/register', async (req, res) => {
+    const { email, password } = req.body;
+    if (!email || !password || password.length < 8) {
+        return res.status(400).json({ error: 'Dados de cadastro inválidos.' });
+    }
+    const { error } = await supabase.auth.signUp({ email, password });
+    if (error) {
+        const errorMessage = error.message.includes('User already registered')
+            ? 'Este e-mail já está cadastrado.'
+            : 'Ocorreu um erro ao tentar o cadastro.';
+        return res.status(400).json({ error: errorMessage });
+    }
+    res.status(201).json({ message: 'Cadastro realizado! Verifique seu e-mail.' });
+});
+
+// Endpoint de Login
+app.post('/api/login', async (req, res) => {
+    const { email, password } = req.body;
+    if (!email || !password) {
+        return res.status(400).json({ error: 'Email e senha são obrigatórios.' });
+    }
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+        return res.status(401).json({ error: 'Email ou senha incorretos.' });
+    }
+    res.cookie('sb-access-token', data.session.access_token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+        maxAge: data.session.expires_in * 1000,
+    });
+    res.cookie('sb-refresh-token', data.session.refresh_token, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict',
+    });
+    res.status(200).json({ message: 'Login bem-sucedido!' });
+});
+
+// Endpoint de Logout
+app.post('/api/logout', (req, res) => {
+    res.clearCookie('sb-access-token');
+    res.clearCookie('sb-refresh-token');
+    res.status(200).json({ message: 'Logout realizado com sucesso.' });
+});
+
+app.get('/api/user', protectRoute, async (req, res) => {
+    // Se o middleware 'protectRoute' passou, sabemos que o usuário é válido.
+    // O token de acesso está nos cookies.
+    const accessToken = req.cookies['sb-access-token'];
+
+    // Usamos o token para obter os detalhes do usuário do Supabase.
+    const { data: { user }, error } = await supabase.auth.getUser(accessToken);
+
+    if (error) {
+        // Se houver um erro (improvável se o protectRoute passou), retorna um erro.
+        return res.status(401).json({ error: 'Falha ao autenticar usuário.' });
+    }
+
+    // Retorna apenas as informações seguras do usuário (nunca a sessão inteira ou tokens!)
+    res.status(200).json({
+        id: user.id,
+        email: user.email,
+        // Adicione outros campos que você possa precisar, ex: user.user_metadata.full_name
+    });
+});
+
+// O endpoint /api/config foi removido por segurança.
 
 // ===== INICIALIZAÇÃO DO SERVIDOR =====
-const PORT = process.env.PORT || alternativePORT
-
+const PORT = process.env.PORT || alternativePORT;
 app.listen(PORT, () => {
-    console.log(`Servidor rodando em http://localhost:${PORT}`)
-    // Verificar variáveis de ambiente
-    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_ANON_KEY) {
-        console.warn('⚠️  ATENÇÃO: Variáveis do Supabase não configuradas!')
-        console.warn('   Configure SUPABASE_URL e SUPABASE_ANON_KEY')
-    } else {
-        console.log('Variáveis do Supabase configuradas')
-    }
-})
+    console.log(`Servidor rodando em http://localhost:${PORT}`);
+});

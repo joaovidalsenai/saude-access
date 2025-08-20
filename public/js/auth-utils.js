@@ -1,89 +1,36 @@
 // public/js/auth-utils.js
-// Utilitários compartilhados para autenticação
 
-let supabase = null;
+// REMOVIDO: initSupabase, verificarLogin, verificarSessao, etc.
 
-// Inicializar Supabase (usado em login e cadastro)
-async function initSupabase() {
-    if (supabase) return true; // Já inicializado
-    
-    try {
-        const response = await fetch('/api/config');
-        const config = await response.json();
-        supabase = window.supabase.createClient(config.supabaseUrl, config.supabaseAnonKey);
-        console.log('✅ Supabase inicializado');
-        return true;
-    } catch (error) {
-        console.error('❌ Erro ao inicializar Supabase:', error);
-        mostrarMensagem('Erro ao conectar com o servidor', 'erro');
-        return false;
-    }
-}
-
-// Sistema unificado de mensagens
+// Sistema unificado de mensagens (permanece o mesmo)
 function mostrarMensagem(mensagem, tipo = 'info', elemento = null) {
-    // Remove mensagem anterior
     const mensagemAnterior = document.querySelector('.auth-mensagem');
     if (mensagemAnterior) {
         mensagemAnterior.remove();
     }
-    
-    // Estilos por tipo
     const estilos = {
-        erro: {
-            background: '#f8d7da',
-            color: '#721c24',
-            border: '1px solid #f5c6cb'
-        },
-        sucesso: {
-            background: '#d4edda',
-            color: '#155724',
-            border: '1px solid #c3e6cb'
-        },
-        info: {
-            background: '#d1ecf1',
-            color: '#0c5460',
-            border: '1px solid #bee5eb'
-        }
+        erro: { background: '#f8d7da', color: '#721c24', border: '1px solid #f5c6cb' },
+        sucesso: { background: '#d4edda', color: '#155724', border: '1px solid #c3e6cb' },
+        info: { background: '#d1ecf1', color: '#0c5460', border: '1px solid #bee5eb' }
     };
-    
-    // Cria elemento de mensagem
     const mensagemDiv = document.createElement('div');
     mensagemDiv.className = 'auth-mensagem';
-    mensagemDiv.style.cssText = `
-        padding: 12px;
-        border-radius: 5px;
-        margin: 15px 0;
-        text-align: center;
-        ${Object.entries(estilos[tipo] || estilos.info)
-            .map(([prop, value]) => `${prop}: ${value}`)
-            .join('; ')};
-    `;
+    mensagemDiv.style.cssText = `padding: 12px; border-radius: 5px; margin: 15px 0; text-align: center; ${Object.entries(estilos[tipo] || estilos.info).map(([p, v]) => `${p}: ${v}`).join('; ')}`;
     mensagemDiv.textContent = mensagem;
-    
-    // Posiciona a mensagem
     const container = elemento || document.querySelector('.btn-entrar, #btn-cadastrar')?.parentNode;
     if (container) {
-        const botao = container.querySelector('.btn-entrar, #btn-cadastrar');
-        container.insertBefore(mensagemDiv, botao);
+        container.insertBefore(mensagemDiv, container.querySelector('.btn-entrar, #btn-cadastrar'));
     }
-    
-    // Remove automaticamente após 5 segundos (exceto sucesso)
     if (tipo !== 'sucesso') {
-        setTimeout(() => {
-            if (mensagemDiv.parentNode) {
-                mensagemDiv.remove();
-            }
-        }, 5000);
+        setTimeout(() => { if (mensagemDiv.parentNode) mensagemDiv.remove(); }, 5000);
     }
 }
 
-// Validação de email
+// Funções de validação (permanecem as mesmas)
 function validarEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-// Validação de senha
 function validarSenha(senha) {
     const criterios = [
         { regex: /.{8,}/, texto: 'Mínimo de 8 caracteres' },
@@ -92,177 +39,100 @@ function validarSenha(senha) {
         { regex: /\d/, texto: 'Pelo menos 1 número' },
         { regex: /[@$!%*?&]/, texto: 'Pelo menos 1 caractere especial' }
     ];
-    
     return {
         valida: criterios.every(c => c.regex.test(senha)),
-        criterios: criterios.map(c => ({
-            ...c,
-            atende: c.regex.test(senha)
-        }))
+        criterios: criterios.map(c => ({ ...c, atende: c.regex.test(senha) }))
     };
 }
 
-// Traduzir erros do Supabase
-function traduzirErroSupabase(error) {
-    const traducoes = {
-        'Invalid login credentials': 'Email ou senha incorretos',
-        'Email not confirmed': 'Email não confirmado. Verifique sua caixa de entrada.',
-        'User already registered': 'Este email já está cadastrado',
-        'Password should be at least 6 characters': 'A senha deve ter pelo menos 6 caracteres',
-        'Signup not allowed for this instance': 'Cadastro não permitido'
-    };
-    
-    return traducoes[error.message] || error.message;
-}
-
-// Verificar se usuário está logado
-async function verificarLogin() {
-    const initialized = await initSupabase();
-    if (!initialized) return false;
-    
-    const { data: { session } } = await supabase.auth.getSession();
-    return !!session;
-}
-
-// Fazer logout
+// NOVA: Função de Logout que chama o backend
 async function fazerLogout() {
-    const initialized = await initSupabase();
-    if (!initialized) return false;
-    
-    const { error } = await supabase.auth.signOut();
-    if (!error) {
+    try {
+        await fetch('/api/logout', { method: 'POST' });
+        // Redireciona para a página de login após o logout ser bem-sucedido
         window.location.href = '/login';
-        return true;
+    } catch (error) {
+        console.error('Erro ao fazer logout:', error);
+        mostrarMensagem('Não foi possível fazer logout. Tente novamente.', 'erro');
     }
-    return false;
 }
 
-// Verificar sessão com logs detalhados
-async function verificarSessao() {
-    if (!supabase) {
-        console.log('🔧 Supabase não inicializado, inicializando...');
-        const initialized = await initSupabase();
-        if (!initialized) {
-            console.error('❌ Falha ao inicializar Supabase');
-            return null;
-        }
-    }
-    
+// 1. Função para buscar os dados do usuário no backend
+async function obterDadosUsuario() {
     try {
-        console.log('🔍 Verificando sessão...');
-        const { data: { session }, error } = await supabase.auth.getSession();
-        
-        if (error) {
-            console.error('❌ Erro ao verificar sessão:', error);
+        const response = await fetch('/api/user');
+
+        if (!response.ok) {
+            // Se a resposta não for OK (ex: 401), o cookie é inválido ou expirou.
+            // Redireciona para o login.
+            window.location.href = '/login';
             return null;
         }
-        
-        if (session) {
-            console.log('✅ Sessão encontrada:', session.user.email);
-            console.log('⏰ Sessão expira em:', new Date(session.expires_at * 1000).toLocaleString());
-            return session;
-        } else {
-            console.log('❌ Nenhuma sessão encontrada');
-            return null;
-        }
-        
+
+        const user = await response.json();
+        return user;
+
     } catch (error) {
-        console.error('❌ Erro crítico na verificação:', error);
+        console.error('Erro ao buscar dados do usuário:', error);
+        // Em caso de erro de rede, também redireciona para o login.
+        window.location.href = '/login';
         return null;
     }
 }
 
-// Proteger página atual
-async function protegerPagina() {
-    console.log('🔍 Verificando autenticação...');
-    
-    const session = await verificarSessao();
-    
-    if (!session) {
-        console.log('❌ Usuário não autenticado, redirecionando para login...');
-        window.location.href = '/login';
-        return false;
-    }
-    
-    console.log('✅ Usuário autenticado');
-    document.body.classList.add('authenticated');
-    return true;
+// 2. Função para preencher elementos HTML com os dados do usuário
+function preencherInfoUsuario(user) {
+    if (!user) return;
+
+    // Preenche elementos que exibem o nome/email do usuário
+    const elementosEmail = document.querySelectorAll('.perfil-email');
+    elementosEmail.forEach(el => el.textContent = user.email);
+
 }
 
-// Obter informações do usuário
-async function obterUsuario() {
-    const session = await verificarSessao();
-    return session?.user || null;
-}
+// --- ATUALIZAÇÃO: Gatilho de Carregamento da Página ---
 
-// Preencher elementos com dados do usuário
-async function preencherInfoUsuario(seletor, tipo) {
-    const user = await obterUsuario();
-    if (user) {
-        let valor;
-        switch (tipo) {
-            case 'email':
-                valor = user.email;
-                break;
-            case 'nome':
-                valor = user.user_metadata?.name || user.email.split('@')[0];
-                break;
-            case 'id':
-                valor = user.id;
-                break;
-            default:
-                console.error(`Tipo de dado desconhecido: ${tipo}`);
-                return;
-        }
-
-        document.querySelectorAll(seletor).forEach(el => {
-            if (el.tagName === 'INPUT') {
-                el.value = valor;
-            } else {
-                el.textContent = valor;
-            }
+// Adiciona um listener que roda em TODAS as páginas.
+// Se a página for protegida, ele busca e preenche os dados do usuário.
+document.addEventListener('DOMContentLoaded', async () => {
+    // Adiciona listener aos botões de logout
+    const logoutButtons = document.querySelectorAll('.btn-logout');
+    logoutButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            AuthUtils.fazerLogout();
         });
-    }
-}
+    });
 
-// Auto-proteção de páginas
-async function autoProtegerPagina() {
-    console.log('🚀 Página carregada, verificando proteção...');
-    
+    // VERIFICA SE A PÁGINA É PROTEGIDA
+    // (Você pode adicionar uma classe 'protected' ao <body> das suas páginas restritas)
     if (document.body.classList.contains('protected')) {
-        console.log('🛡️ Página marcada como protegida');
-        
-        const isAuthenticated = await protegerPagina();
-        if (isAuthenticated) {
-            console.log('✅ Usuário autenticado, preenchendo informações...');
-            await preencherInfoUsuario('.perfil-nome, .user-name', 'nome');
-            await preencherInfoUsuario('.perfil-email, .user-email', 'email');
+        const user = await obterDadosUsuario();
+        if (user) {
+            preencherInfoUsuario(user);
+            // Torna o conteúdo principal visível após carregar os dados
+            document.body.style.visibility = 'visible';
         }
-    } else {
-        console.log('ℹ️ Página não protegida');
     }
-}
+});
 
-// Listener para auto-proteção
-document.addEventListener('DOMContentLoaded', autoProtegerPagina);
-
-// Exportar para uso global
+// Exporta as funções úteis para o escopo global (window)
 window.AuthUtils = {
-    initSupabase,
     mostrarMensagem,
     validarEmail,
     validarSenha,
-    traduzirErroSupabase,
-    verificarLogin,
-    verificarSessao,
-    protegerPagina,
-    obterUsuario,
-    preencherInfoUsuario,
     fazerLogout,
-    getSupabase: () => supabase
+    obterDadosUsuario, // Exporta a nova função
+    preencherInfoUsuario // Exporta a nova função
 };
 
-// Compatibilidade com código antigo
-window.protegerPagina = protegerPagina;
-window.logout = fazerLogout;
-window.obterUsuario = obterUsuario;
+// Adiciona um listener para botões de logout em qualquer página
+document.addEventListener('DOMContentLoaded', () => {
+    const logoutButtons = document.querySelectorAll('.btn-logout');
+    logoutButtons.forEach(button => {
+        button.addEventListener('click', (e) => {
+            e.preventDefault();
+            AuthUtils.fazerLogout();
+        });
+    });
+});
