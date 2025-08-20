@@ -59,14 +59,15 @@ const protectRoute = async (req, res, next) => {
 app.get('/', (req, res) => res.sendFile(join(viewsPath, 'index.html')));
 app.get('/login', (req, res) => res.sendFile(join(viewsPath, 'login.html')));
 app.get('/cadastro', (req, res) => res.sendFile(join(viewsPath, 'cadastro.html')));
+app.get('/recuperarSenha', (req, res) => res.render(join(viewsPath, 'recuperarSenha')))
 // ... (suas outras rotas públicas)
 
 // ===== ROTAS PROTEGIDAS =====
 // O middleware 'protectRoute' é aplicado a cada rota que precisa de login
 app.get('/inicio',               protectRoute, (req, res) => res.sendFile(join(viewsPath, 'inicio.html')));
 app.get('/perfil',               protectRoute, (req, res) => res.sendFile(join(viewsPath, 'perfil.html')));
-app.get('/configuracoes',        protectRoute, (req, res) => res.sendFile(join(viewsPath, 'configuracoes.html')));
-app.get('/historico',            protectRoute, (req, res) => res.sendFile(join(viewsPath, 'historico.html')));
+app.get('/configuracoes',        protectRoute, (req, res) => res.render(join(viewsPath, 'configuracoes')));
+app.get('/historico',            protectRoute, (req, res) => res.render(join(viewsPath, 'historico')));
 app.get('/suporte-tecnico',      protectRoute, (req, res) => res.sendFile(join(viewsPath, 'suporte-tecnico.html')))
 app.get('/avaliacao',            protectRoute, (req, res) => res.sendFile(join(viewsPath, 'avaliacao.html')))
 app.get('/agendar-consulta',     protectRoute, (req, res) => res.sendFile(join(viewsPath, 'agendarConsulta.html')))
@@ -76,6 +77,7 @@ app.get('/hospitais-lotacao',    protectRoute, (req, res) => res.sendFile(join(v
 app.get('/hospitais-procurados', protectRoute, (req, res) => res.sendFile(join(viewsPath, 'hospitaisProcurados.html')))
 app.get('/hospitais-proximos',   protectRoute, (req, res) => res.sendFile(join(viewsPath, 'hospitaisProximos.html')))
 app.get('/teste-protegido',      protectRoute, (req, res) => res.sendFile(join(viewsPath, 'teste-protegido.html')))
+
 // ADICIONE 'protectRoute' A TODAS AS OUTRAS ROTAS QUE PRECISAM DE PROTEÇÃO
 
 // ===== API ENDPOINTS DE AUTENTICAÇÃO =====
