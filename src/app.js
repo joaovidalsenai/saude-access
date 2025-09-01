@@ -95,7 +95,7 @@ app.post('/api/register', async (req, res) => {
     if (error) {
         const errorMessage = error.message.includes('User already registered')
             ? 'Este e-mail já está cadastrado.'
-            : 'Ocorreu um erro ao tentar o cadastro.';
+            : error.message;
         return res.status(400).json({ error: errorMessage });
     }
     res.status(201).json({ message: 'Cadastro realizado! Verifique seu e-mail.' });
