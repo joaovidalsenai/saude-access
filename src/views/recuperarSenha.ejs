@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="pt-br" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saúde Access</title>
+    <link rel="stylesheet" href="/css/recuperarSenha.css">
+    <link rel="stylesheet" href="/css/styleGenerico.css">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+    <header>
+        <button class="voltar-btn" onclick="window.location.href='login.html'" title="Voltar ao login">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
+                <path d="M224,128a8,8,0,0,1-8,8H59.31l58.35,58.34a8,8,0,0,1-11.32,11.32l-72-72a8,8,0,0,1,0-11.32l72-72a8,8,0,0,1,11.32,11.32L59.31,120H216A8,8,0,0,1,224,128Z"></path>
+            </svg>
+        </button>       
+        <h1>Recuperar Senha</h1>
+    </header>
+    
+    <main>
+        <div class="recuperar-container">
+            <div class="recuperar-section">
+                <div class="recuperar-info">
+                    <h2>Esqueceu sua senha?</h2>
+                    <p>Digite seu CPF ou e-mail cadastrado e enviaremos um link para redefinir sua senha.</p>
+                </div>
+
+                <form id="recuperarForm">
+                    <div class="form-item">
+                        <div class="form-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" fill="currentColor" viewBox="0 0 256 256">
+                                <path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48ZM203.43,64,128,133.15,52.57,64ZM216,192H40V74.19l82.59,75.71a8,8,0,0,0,10.82,0L216,74.19V192Z"></path>
+                            </svg>
+                        </div>
+                        <div class="input-group">
+                            <label for="credencial-recuperar" class="label-recuperar">CPF ou E-mail</label>
+                            <input type="text" name="credencial-recuperar" id="credencial-recuperar" 
+                                   placeholder="Digite seu CPF ou E-mail cadastrado" 
+                                   class="input-recuperar" required>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-enviar">
+                        Enviar Link de Recuperação
+                    </button>
+                </form>
+
+                <div class="sucesso-msg" id="sucessoMsg">
+                    <h3>✓ Link enviado com sucesso!</h3>
+                    <p>Verifique sua caixa de entrada e spam. O link de recuperação é válido por 1 hora.</p>
+                </div>
+                
+                <div class="recuperar-opcoes">
+                    <p>Lembrou da sua senha ou precisa de ajuda?</p>
+                    <div class="opcoes-links">
+                        <a href="login.html" class="link-opcao">Fazer Login</a>
+                        <a href="cadastro.html" class="link-opcao">Criar Nova Conta</a>
+                        <a href="#" class="link-opcao">Suporte</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    </script>
+    <script src="js/global.js"></script>
+    <script src="js/recuperarSenha.js"></script>
+</body>
+</html>
