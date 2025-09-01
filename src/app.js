@@ -93,6 +93,7 @@ app.post('/api/register', async (req, res) => {
     }
     const { error } = await supabase.auth.signUp({ email, password });
     if (error) {
+        console.error("🔴 Supabase signUp error:", error);
         const errorMessage = error.message.includes('User already registered')
             ? 'Este e-mail já está cadastrado.'
             : error.message;
