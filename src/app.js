@@ -9,6 +9,7 @@ import path, { join } from 'path';
 // NOVAS dependências para Supabase no backend e cookies
 import { createClient } from '@supabase/supabase-js';
 import cookieParser from 'cookie-parser';
+import ejs from 'ejs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -25,6 +26,10 @@ const supabase = createClient(
 app.use(express.json());
 app.use(cookieParser()); // Essencial para ler os cookies de autenticação
 app.use(express.static(join(__dirname, '../public')));
+
+// Configure EJS as view engine
+app.set('view engine', 'ejs');
+app.set('views', join(__dirname, 'views'));
 
 const viewsPath = join(__dirname, 'views');
 
@@ -56,28 +61,26 @@ const protectRoute = async (req, res, next) => {
 };
 
 // ===== ROTAS PÚBLICAS =====
-app.get('/', (req, res) => res.sendFile(join(viewsPath, 'index.html')));
-app.get('/login', (req, res) => res.sendFile(join(viewsPath, 'login.html')));
-app.get('/cadastro', (req, res) => res.sendFile(join(viewsPath, 'cadastro.html')));
-app.get('/recuperarSenha', (req, res) => res.render(join(viewsPath, 'recuperarSenha')))
+app.get('/', (req, res) => res.render('index'));
+app.get('/login', (req, res) => res.render('login'));
+app.get('/cadastro', (req, res) => res.render('cadastro'));
 // ... (suas outras rotas públicas)
 
 // ===== ROTAS PROTEGIDAS =====
 // O middleware 'protectRoute' é aplicado a cada rota que precisa de login
-app.get('/inicio',               protectRoute, (req, res) => res.sendFile(join(viewsPath, 'inicio.html')));
-app.get('/perfil',               protectRoute, (req, res) => res.sendFile(join(viewsPath, 'perfil.html')));
-app.get('/configuracoes',        protectRoute, (req, res) => res.render(join(viewsPath, 'configuracoes')));
-app.get('/historico',            protectRoute, (req, res) => res.render(join(viewsPath, 'historico')));
-app.get('/suporte-tecnico',      protectRoute, (req, res) => res.sendFile(join(viewsPath, 'suporte-tecnico.html')))
-app.get('/avaliacao',            protectRoute, (req, res) => res.sendFile(join(viewsPath, 'avaliacao.html')))
-app.get('/agendar-consulta',     protectRoute, (req, res) => res.sendFile(join(viewsPath, 'agendarConsulta.html')))
-app.get('/hospital',             protectRoute, (req, res) => res.sendFile(join(viewsPath, 'hospital.html')))
-app.get('/hospitais-cadastrados', protectRoute, (req, res) => res.sendFile(join(viewsPath, 'hospitaisCadastrados.html')))
-app.get('/hospitais-lotacao',    protectRoute, (req, res) => res.sendFile(join(viewsPath, 'hospitaisLotacao.html')))
-app.get('/hospitais-procurados', protectRoute, (req, res) => res.sendFile(join(viewsPath, 'hospitaisProcurados.html')))
-app.get('/hospitais-proximos',   protectRoute, (req, res) => res.sendFile(join(viewsPath, 'hospitaisProximos.html')))
-app.get('/teste-protegido',      protectRoute, (req, res) => res.sendFile(join(viewsPath, 'teste-protegido.html')))
-
+app.get('/inicio', protectRoute, (req, res) => res.render('inicio'));
+app.get('/perfil', protectRoute, (req, res) => res.render('perfil'));
+app.get('/configuracoes', protectRoute, (req, res) => res.render('configuracoes'));
+app.get('/historico', protectRoute, (req, res) => res.render('historico'));
+app.get('/suporte-tecnico', protectRoute, (req, res) => res.render('suporte-tecnico'));
+app.get('/avaliacao', protectRoute, (req, res) => res.render('avaliacao'));
+app.get('/agendar-consulta', protectRoute, (req, res) => res.render('agendarConsulta'));
+app.get('/hospital', protectRoute, (req, res) => res.render('hospital'));
+app.get('/hospitais-cadastrados', protectRoute, (req, res) => res.render('hospitaisCadastrados'));
+app.get('/hospitais-lotacao', protectRoute, (req, res) => res.render('hospitaisLotacao'));
+app.get('/hospitais-procurados', protectRoute, (req, res) => res.render('hospitaisProcurados'));
+app.get('/hospitais-proximos', protectRoute, (req, res) => res.render('hospitaisProximos'));
+app.get('/teste-protegido', protectRoute, (req, res) => res.render('teste-protegido'));
 // ADICIONE 'protectRoute' A TODAS AS OUTRAS ROTAS QUE PRECISAM DE PROTEÇÃO
 
 // ===== API ENDPOINTS DE AUTENTICAÇÃO =====
@@ -98,7 +101,6 @@ app.post('/api/register', async (req, res) => {
     res.status(201).json({ message: 'Cadastro realizado! Verifique seu e-mail.' });
 });
 
-// Endpoint de Login
 app.post('/api/login', async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) {
@@ -150,7 +152,6 @@ app.get('/api/user', protectRoute, async (req, res) => {
     });
 });
 
-// O endpoint /api/config foi removido por segurança.
 
 // ===== INICIALIZAÇÃO DO SERVIDOR =====
 const PORT = process.env.PORT || alternativePORT;
