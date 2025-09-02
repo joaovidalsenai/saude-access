@@ -7,11 +7,21 @@ const userRouter = express();
 
 // Endpoint de Cadastro
 userRouter.post('/api/register', async (req, res) => {
-    const { email, password } = req.body;
-    if (!email || !password || password.length < 8) {
-        return res.status(400).json({ error: 'Dados de cadastro inválidos.' });
-    }
-    const { error } = await supabase.auth.signUp({ email, password });
+        const { email, password , name , phone , birth } = req.body;
+        if (!email || !password || password.length < 8) {
+            return res.status(400).json({ error: 'Dados de cadastro inválidos.' });
+        }
+        const { error } = await supabase.auth.signUp({  
+            email, 
+            password,
+            options: {
+                data: {
+                full_name: name,
+                phone_number: phone,
+                birthdate: birth
+                }
+            }
+        });
     if (error) {
         const errorMessage = error.message.includes('User already registered')
             ? 'Este e-mail já está cadastrado.'
@@ -52,23 +62,29 @@ userRouter.post('/api/logout', (req, res) => {
 });
 
 userRouter.get('/api/user', protectRoute, async (req, res) => {
-    // Se o middleware 'protectRoute' passou, sabemos que o usuário é válido.
-    // O token de acesso está nos cookies.
+    // Se o middleware 'protectRoute' passou, o usuário é válido.
     const accessToken = req.cookies['sb-access-token'];
+
+    // Se não houver token, retorne um erro (embora o protectRoute já deva fazer isso).
+    if (!accessToken) {
+        return res.status(401).json({ error: 'Token de acesso não fornecido.' });
+    }
 
     // Usamos o token para obter os detalhes do usuário do Supabase.
     const { data: { user }, error } = await supabase.auth.getUser(accessToken);
 
-    if (error) {
-        // Se houver um erro (improvável se o protectRoute passou), retorna um erro.
-        return res.status(401).json({ error: 'Falha ao autenticar usuário.' });
+    if (error || !user) {
+        // Se houver um erro ou o usuário não for encontrado, retorna um erro.
+        return res.status(401).json({ error: 'Falha ao autenticar usuário. Token inválido ou expirado.' });
     }
 
-    // Retorna apenas as informações seguras do usuário (nunca a sessão inteira ou tokens!)
+    // Retorna as informações seguras do usuário, incluindo os metadados.
     res.status(200).json({
         id: user.id,
         email: user.email,
-        // Adicione outros campos que você possa precisar, ex: user.user_metadata.full_name
+        name: user.user_metadata?.full_name ?? null,
+        phone: user.user_metadata?.phone_number ?? null,
+        birth: user.user_metadata?.birthdate ?? null
     });
 });
 

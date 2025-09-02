@@ -80,16 +80,6 @@ async function obterDadosUsuario() {
     }
 }
 
-// 2. Função para preencher elementos HTML com os dados do usuário
-function preencherInfoUsuario(user) {
-    if (!user) return;
-
-    // Preenche elementos que exibem o nome/email do usuário
-    const elementosEmail = document.querySelectorAll('.perfil-email');
-    elementosEmail.forEach(el => el.textContent = user.email);
-
-}
-
 // --- ATUALIZAÇÃO: Gatilho de Carregamento da Página ---
 
 // Adiciona um listener que roda em TODAS as páginas.
@@ -109,7 +99,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (document.body.classList.contains('protected')) {
         const user = await obterDadosUsuario();
         if (user) {
-            preencherInfoUsuario(user);
             // Torna o conteúdo principal visível após carregar os dados
             document.body.style.visibility = 'visible';
         }
@@ -123,7 +112,6 @@ window.AuthUtils = {
     validarSenha,
     fazerLogout,
     obterDadosUsuario, // Exporta a nova função
-    preencherInfoUsuario // Exporta a nova função
 };
 
 // Adiciona um listener para botões de logout em qualquer página

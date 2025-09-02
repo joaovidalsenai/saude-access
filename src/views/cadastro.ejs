@@ -10,13 +10,52 @@
     <title>Saúde Access</title>
 </head>
 <body>
-    <header>       
+    <header>
         <h1>Cadastro</h1>
     </header>
     <main>
         <div class="cadastro-container">
             <div class="cadastro-section">
                 <form novalidate>
+                    <div class="cadastro-item">
+                        <div class="cadastro-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
+                                <path d="M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,0,0,6.9,12H224a8,8,0,0,0,6.92-12Z"></path>
+                            </svg>
+                        </div>
+                        <div class="input-group">
+                            <label for="cadastro-nome" class="label-cadastro">Nome Completo</label>
+                            <input type="text" name="cadastro-nome" id="cadastro-nome" placeholder="Insira seu nome completo" class="input-cadastro" required>
+                            <div class="error-message" id="nome-error"></div>
+                        </div>
+                    </div>
+
+                    <div class="cadastro-item">
+                        <div class="cadastro-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
+                                <path d="M208,32H184V24a8,8,0,0,0-16,0v8H88V24a8,8,0,0,0-16,0v8H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM208,48V72H48V48ZM48,208V88H208V208Z"></path>
+                            </svg>
+                        </div>
+                        <div class="input-group">
+                            <label for="cadastro-nascimento" class="label-cadastro">Data de Nascimento</label>
+                            <input type="date" name="cadastro-nascimento" id="cadastro-nascimento" class="input-cadastro" required>
+                            <div class="error-message" id="nascimento-error"></div>
+                        </div>
+                    </div>
+
+                    <div class="cadastro-item">
+                        <div class="cadastro-icon">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
+                                <path d="M222.34,158.87A48.15,48.15,0,0,1,176,208a48,48,0,0,1-45.25-32.34c-13.7-25.11-31.32-42.73-56.43-56.43A48,48,0,0,1,48,72a48.15,48.15,0,0,1,49.13-46.34,8,8,0,0,1,7.57,5.2l16,59.34a8,8,0,0,1-1.42,7.88L106.6,112a8,8,0,0,0-.23,8.24c6.19,10.74,15,22.2,27.1,34.3s23.56,20.91,34.3,27.1a8,8,0,0,0,8.24-.23l14.33-12.67a8,8,0,0,1,7.88-1.42l59.34,16A8,8,0,0,1,222.34,158.87Z"></path>
+                            </svg>
+                        </div>
+                        <div class="input-group">
+                            <label for="cadastro-telefone" class="label-cadastro">Telefone</label>
+                            <input type="tel" name="cadastro-telefone" id="cadastro-telefone" placeholder="(XX) XXXXX-XXXX" class="input-cadastro" required>
+                            <div class="error-message" id="telefone-error"></div>
+                        </div>
+                    </div>
+
                     <div class="cadastro-item">
                         <div class="cadastro-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
@@ -71,9 +110,9 @@
     </main>
     <script type="importmap">
     {
-    "imports": {
-        "@supabase/supabase-js": "https://cdn.skypack.dev/@supabase/supabase-js"
-    }
+        "imports": {
+            "@supabase/supabase-js": "https://cdn.skypack.dev/@supabase/supabase-js"
+        }
     }
     </script>
     <script src="/js/cadastro.js"></script>

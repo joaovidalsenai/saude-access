@@ -4,6 +4,9 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Elementos do DOM
     const form = document.querySelector('form');
+    const nomeInput = document.getElementById('cadastro-nome');
+    const nascimentoInput = document.getElementById('cadastro-nascimento');
+    const telefoneInput = document.getElementById('cadastro-telefone');
     const emailInput = document.getElementById('cadastro-email');
     const senhaInput = document.getElementById('cadastro-senha');
     const confirmSenhaInput = document.getElementById('cadastro-confirm-senha');
@@ -58,39 +61,44 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Validar estado do formulário
     function validarFormulario() {
+        const nome = nomeInput.value.trim();
+        const nascimento = nascimentoInput.value.trim();
+        const telefone = telefoneInput.value.trim();
         const email = emailInput.value.trim();
         const senha = senhaInput.value;
         const confirmSenha = confirmSenhaInput.value;
         
+        const nomeValido = nome !== '';
+        const nascimentoValido = nascimento !== '';
+        const telefoneValido = telefone !== '';
         const emailValido = AuthUtils.validarEmail(email);
         const senhaValida = atualizarCriteriosSenha();
         const senhasIguais = senha === confirmSenha && confirmSenha !== '';
         
         // Limpar mensagens de erro específicas
+        const nomeError = document.getElementById('nome-error');
+        const nascimentoError = document.getElementById('nascimento-error');
+        const telefoneError = document.getElementById('telefone-error');
         const emailError = document.getElementById('email-error');
         const confirmError = document.getElementById('confirm-senha-error');
         
+        if (nomeError) nomeError.style.display = 'none';
+        if (nascimentoError) nascimentoError.style.display = 'none';
+        if (telefoneError) telefoneError.style.display = 'none';
         if (emailError) emailError.style.display = 'none';
         if (confirmError) confirmError.style.display = 'none';
         
-        // Mostrar erros específicos
-        if (email && !emailValido && emailError) {
-            emailError.textContent = 'Por favor, insira um e-mail válido.';
-            emailError.style.display = 'block';
-        }
-        
-        if (confirmSenha && !senhasIguais && confirmError) {
-            confirmError.textContent = 'As senhas não coincidem.';
-            confirmError.style.display = 'block';
-        }
-        
         // Habilitar/desabilitar botão
-        btnCadastrar.disabled = !(emailValido && senhaValida && senhasIguais);
+        const formValido = nomeValido && nascimentoValido && telefoneValido && emailValido && senhaValida && senhasIguais;
+        btnCadastrar.disabled = !formValido;
         
-        return emailValido && senhaValida && senhasIguais;
+        return formValido;
     }
     
     // Event listeners para validação em tempo real
+    nomeInput.addEventListener('input', validarFormulario);
+    nascimentoInput.addEventListener('input', validarFormulario);
+    telefoneInput.addEventListener('input', validarFormulario);
     emailInput.addEventListener('input', validarFormulario);
     senhaInput.addEventListener('input', validarFormulario);
     confirmSenhaInput.addEventListener('input', validarFormulario);
@@ -102,14 +110,17 @@ document.addEventListener('DOMContentLoaded', () => {
     form.addEventListener('submit', async (e) => {
         e.preventDefault();
         
-        const email = emailInput.value.trim();
-        const senha = senhaInput.value;
-        
         // Validação final
         if (!validarFormulario()) {
             AuthUtils.mostrarMensagem('Por favor, corrija os erros do formulário', 'erro');
             return;
         }
+        
+        const nome = nomeInput.value.trim();
+        const nascimento = nascimentoInput.value.trim();
+        const telefone = telefoneInput.value.trim();
+        const email = emailInput.value.trim();
+        const senha = senhaInput.value;
         
         // Estado do botão
         const textoOriginal = btnCadastrar.textContent;
@@ -119,13 +130,19 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             console.log('📝 Tentando fazer cadastro via backend...');
 
-            // MUDANÇA: Chamar sua API
+            // MUDANÇA: Chamar sua API com os novos dados
             const response = await fetch('/api/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email: email, password: senha }),
+                body: JSON.stringify({ 
+                    email: email, 
+                    password: senha, 
+                    name: nome, 
+                    phone: telefone,
+                    birth: nascimento 
+                }),
             });
 
             const result = await response.json();
@@ -136,7 +153,7 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 console.log('✅ Cadastro realizado com sucesso!');
                 AuthUtils.mostrarMensagem('🎉 Verifique sua caixa de e-mail para concluir o cadastro!', 'sucesso');
-                // Limpar o formulário...
+                form.reset(); // Limpar o formulário
             }
         } catch (error) {
             console.error('❌ Erro crítico:', error);
