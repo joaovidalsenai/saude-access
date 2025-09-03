@@ -19,7 +19,7 @@ async function fazerLogin(event) {
     try {
         console.log('🔐 Tentando fazer login via backend...');
         
-        const response = await fetch('/api/login', {
+        const response = await fetch('/api/user/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -51,20 +51,8 @@ async function fazerLogin(event) {
     }
 }
 
-// Verificar se usuário já está logado
-async function verificarSeJaLogado() {
-    const jaLogado = await AuthUtils.verificarLogin();
-    if (jaLogado) {
-        console.log('✅ Usuário já está logado, redirecionando...');
-        window.location.href = '/inicio';
-    }
-}
-
 // Event listeners
 document.addEventListener('DOMContentLoaded', () => {
-    // Verificar se já está logado
-    verificarSeJaLogado();
-    
     // Formulário de login
     const formLogin = document.getElementById('formLogin');
     if (formLogin) {

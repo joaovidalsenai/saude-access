@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const nomeInput = document.getElementById('cadastro-nome');
     const nascimentoInput = document.getElementById('cadastro-nascimento');
     const telefoneInput = document.getElementById('cadastro-telefone');
+    const cpfInput = document.getElementById('cadastro-cpf'); // Novo campo
     const emailInput = document.getElementById('cadastro-email');
     const senhaInput = document.getElementById('cadastro-senha');
     const confirmSenhaInput = document.getElementById('cadastro-confirm-senha');
@@ -64,6 +65,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const nome = nomeInput.value.trim();
         const nascimento = nascimentoInput.value.trim();
         const telefone = telefoneInput.value.trim();
+        const cpf = cpfInput.value.trim(); // Novo campo
         const email = emailInput.value.trim();
         const senha = senhaInput.value;
         const confirmSenha = confirmSenhaInput.value;
@@ -71,6 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const nomeValido = nome !== '';
         const nascimentoValido = nascimento !== '';
         const telefoneValido = telefone !== '';
+        const cpfValido = cpf !== ''; // Validação simples
         const emailValido = AuthUtils.validarEmail(email);
         const senhaValida = atualizarCriteriosSenha();
         const senhasIguais = senha === confirmSenha && confirmSenha !== '';
@@ -79,17 +82,19 @@ document.addEventListener('DOMContentLoaded', () => {
         const nomeError = document.getElementById('nome-error');
         const nascimentoError = document.getElementById('nascimento-error');
         const telefoneError = document.getElementById('telefone-error');
+        const cpfError = document.getElementById('cpf-error'); // Novo campo
         const emailError = document.getElementById('email-error');
         const confirmError = document.getElementById('confirm-senha-error');
         
         if (nomeError) nomeError.style.display = 'none';
         if (nascimentoError) nascimentoError.style.display = 'none';
         if (telefoneError) telefoneError.style.display = 'none';
+        if (cpfError) cpfError.style.display = 'none'; // Novo campo
         if (emailError) emailError.style.display = 'none';
         if (confirmError) confirmError.style.display = 'none';
         
         // Habilitar/desabilitar botão
-        const formValido = nomeValido && nascimentoValido && telefoneValido && emailValido && senhaValida && senhasIguais;
+        const formValido = nomeValido && nascimentoValido && telefoneValido && cpfValido && emailValido && senhaValida && senhasIguais;
         btnCadastrar.disabled = !formValido;
         
         return formValido;
@@ -99,6 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
     nomeInput.addEventListener('input', validarFormulario);
     nascimentoInput.addEventListener('input', validarFormulario);
     telefoneInput.addEventListener('input', validarFormulario);
+    cpfInput.addEventListener('input', validarFormulario); // Novo campo
     emailInput.addEventListener('input', validarFormulario);
     senhaInput.addEventListener('input', validarFormulario);
     confirmSenhaInput.addEventListener('input', validarFormulario);
@@ -119,6 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const nome = nomeInput.value.trim();
         const nascimento = nascimentoInput.value.trim();
         const telefone = telefoneInput.value.trim();
+        const cpf = cpfInput.value.trim(); // Novo campo
         const email = emailInput.value.trim();
         const senha = senhaInput.value;
         
@@ -128,10 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btnCadastrar.textContent = 'Cadastrando...';
         
         try {
-            console.log('📝 Tentando fazer cadastro via backend...');
-
-            // MUDANÇA: Chamar sua API com os novos dados
-            const response = await fetch('/api/register', {
+            const response = await fetch('/api/user/signup', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -141,7 +145,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     password: senha, 
                     name: nome, 
                     phone: telefone,
-                    birth: nascimento 
+                    birth: nascimento,
+                    cpf: cpf // Novo campo
                 }),
             });
 

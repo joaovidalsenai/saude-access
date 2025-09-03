@@ -2,7 +2,7 @@ import express from 'express';
 import { fileURLToPath } from 'url';
 import path, { join } from 'path';
 
-import protectRoute from '../middleware/protectRoute.js'
+import protectRoute from '../middlewares/protectRoute.js'
 
 import cookieParser from 'cookie-parser';
 
@@ -50,7 +50,7 @@ pageRouter.get('/perfil', protectRoute, async (req, res) => {
         }
 
         // 2. Construct the full URL to your internal API endpoint.
-        const apiURL = `${req.protocol}://${req.get('host')}/api/user`;
+        const apiURL = `${req.protocol}://${req.get('host')}/api/user/data`;
 
         // 3. Call your own API using the native fetch API.
         const response = await fetch(apiURL, {
@@ -77,9 +77,6 @@ pageRouter.get('/perfil', protectRoute, async (req, res) => {
 
         // 6. Render the 'perfil.ejs' template with the data from the API.
         res.render('perfil', { user: userData });
-
-        console.log(userData)
-
     } catch (error) {
         // This will catch network errors from fetch() or the error thrown above.
         console.error('Failed to load profile page:', error.message);

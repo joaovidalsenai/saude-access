@@ -1,13 +1,13 @@
 // ===== API ENDPOINTS DE AUTENTICAÇÃO =====
 import express from 'express';
-import protectRoute from '../middleware/protectRoute.js'
-import supabase from "../middleware/supabaseClient.js";
+import protectRoute from '../middlewares/protectRoute.js'
+import supabase from "../middlewares/supabaseClient.js";
 
 const userRouter = express();
 
 // Endpoint de Cadastro
-userRouter.post('/api/register', async (req, res) => {
-        const { email, password , name , phone , birth } = req.body;
+userRouter.post('/api/user/signup', async (req, res) => {
+        const { email, password , name , phone , birth , cpf } = req.body;
         if (!email || !password || password.length < 8) {
             return res.status(400).json({ error: 'Dados de cadastro inválidos.' });
         }
@@ -18,7 +18,8 @@ userRouter.post('/api/register', async (req, res) => {
                 data: {
                 full_name: name,
                 phone_number: phone,
-                birthdate: birth
+                birthdate: birth,
+                cpf: cpf
                 }
             }
         });
@@ -31,7 +32,7 @@ userRouter.post('/api/register', async (req, res) => {
     res.status(201).json({ message: 'Cadastro realizado! Verifique seu e-mail.' });
 });
 
-userRouter.post('/api/login', async (req, res) => {
+userRouter.post('/api/user/login', async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password) {
         return res.status(400).json({ error: 'Email e senha são obrigatórios.' });
@@ -55,13 +56,34 @@ userRouter.post('/api/login', async (req, res) => {
 });
 
 // Endpoint de Logout
-userRouter.post('/api/logout', (req, res) => {
+userRouter.post('/api/user/logout', (req, res) => {
     res.clearCookie('sb-access-token');
     res.clearCookie('sb-refresh-token');
     res.status(200).json({ message: 'Logout realizado com sucesso.' });
 });
 
-userRouter.get('/api/user', protectRoute, async (req, res) => {
+userRouter.get('/api/user/auth', protectRoute, async (req, res) => {
+    // Se o middleware 'protectRoute' passou, o usuário é válido.
+    const accessToken = req.cookies['sb-access-token'];
+
+    // Se não houver token, retorne um erro (embora o protectRoute já deva fazer isso).
+    if (!accessToken) {
+        return res.status(401).json({ error: 'Token de acesso não fornecido.' });
+    }
+
+    // Usamos o token para obter os detalhes do usuário do Supabase.
+    const { data: { user }, error } = await supabase.auth.getUser(accessToken);
+
+    if (error || !user) {
+        // Se houver um erro ou o usuário não for encontrado, retorna um erro.
+        return res.status(401).json({ error: 'Falha ao autenticar usuário. Token inválido ou expirado.' });
+    }
+
+    // Retorna as informações seguras do usuário, incluindo os metadados.
+    res.status(200).json({user: true})
+});
+
+userRouter.get('/api/user/data', protectRoute, async (req, res) => {
     // Se o middleware 'protectRoute' passou, o usuário é válido.
     const accessToken = req.cookies['sb-access-token'];
 

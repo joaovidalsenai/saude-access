@@ -48,7 +48,7 @@ function validarSenha(senha) {
 // NOVA: Função de Logout que chama o backend
 async function fazerLogout() {
     try {
-        await fetch('/api/logout', { method: 'POST' });
+        await fetch('/api/user/logout', { method: 'POST' });
         // Redireciona para a página de login após o logout ser bem-sucedido
         window.location.href = '/login';
     } catch (error) {
@@ -58,9 +58,9 @@ async function fazerLogout() {
 }
 
 // 1. Função para buscar os dados do usuário no backend
-async function obterDadosUsuario() {
+async function autenticarUsuario() {
     try {
-        const response = await fetch('/api/user');
+        const response = await fetch('/api/user/auth');
 
         if (!response.ok) {
             // Se a resposta não for OK (ex: 401), o cookie é inválido ou expirou.
@@ -83,7 +83,6 @@ async function obterDadosUsuario() {
 // --- ATUALIZAÇÃO: Gatilho de Carregamento da Página ---
 
 // Adiciona um listener que roda em TODAS as páginas.
-// Se a página for protegida, ele busca e preenche os dados do usuário.
 document.addEventListener('DOMContentLoaded', async () => {
     // Adiciona listener aos botões de logout
     const logoutButtons = document.querySelectorAll('.btn-logout');
@@ -97,7 +96,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // VERIFICA SE A PÁGINA É PROTEGIDA
     // (Você pode adicionar uma classe 'protected' ao <body> das suas páginas restritas)
     if (document.body.classList.contains('protected')) {
-        const user = await obterDadosUsuario();
+        const user = await autenticarUsuario();
         if (user) {
             // Torna o conteúdo principal visível após carregar os dados
             document.body.style.visibility = 'visible';
@@ -111,7 +110,7 @@ window.AuthUtils = {
     validarEmail,
     validarSenha,
     fazerLogout,
-    obterDadosUsuario, // Exporta a nova função
+    autenticarUsuario, // Exporta a nova função
 };
 
 // Adiciona um listener para botões de logout em qualquer página
