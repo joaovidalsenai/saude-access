@@ -15,6 +15,113 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (!senhaInput || !form) return;
     
+    // Funções de formatação
+    function formatarCPF(valor) {
+        // Remove tudo que não for número
+        valor = valor.replace(/\D/g, '');
+        
+        // Limita a 11 dígitos
+        valor = valor.substring(0, 11);
+        
+        // Aplica a máscara
+        if (valor.length >= 9) {
+            return valor.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+        } else if (valor.length >= 6) {
+            return valor.replace(/(\d{3})(\d{3})(\d{3})/, '$1.$2.$3');
+        } else if (valor.length >= 3) {
+            return valor.replace(/(\d{3})(\d{3})/, '$1.$2');
+        }
+        return valor;
+    }
+    
+    function formatarTelefone(valor) {
+        // Remove tudo que não for número
+        valor = valor.replace(/\D/g, '');
+        
+        // Limita a 11 dígitos
+        valor = valor.substring(0, 11);
+        
+        // Aplica a máscara
+        if (valor.length === 11) {
+            return valor.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+        } else if (valor.length === 10) {
+            return valor.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+        } else if (valor.length >= 6) {
+            return valor.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+        } else if (valor.length >= 2) {
+            return valor.replace(/(\d{2})(\d{0,5})/, '($1) $2');
+        }
+        return valor;
+    }
+    
+    function obterNumerosPuros(valor) {
+        return valor.replace(/\D/g, '');
+    }
+    
+    // Event listeners para formatação com controle de posição do cursor
+    cpfInput.addEventListener('input', (e) => {
+        const valorAnterior = e.target.value;
+        const posicaoCursor = e.target.selectionStart;
+        const valorFormatado = formatarCPF(e.target.value);
+        
+        // Calcular nova posição do cursor
+        let novaPosicao = posicaoCursor;
+        if (valorFormatado.length > valorAnterior.length) {
+            // Se adicionou caracteres de formatação, ajustar cursor
+            const caracteresAdicionados = valorFormatado.length - valorAnterior.length;
+            novaPosicao += caracteresAdicionados;
+        }
+        
+        e.target.value = valorFormatado;
+        
+        // Reposicionar cursor se necessário
+        setTimeout(() => {
+            e.target.setSelectionRange(novaPosicao, novaPosicao);
+        }, 0);
+        
+        validarFormulario();
+    });
+    
+    telefoneInput.addEventListener('input', (e) => {
+        const valorAnterior = e.target.value;
+        const posicaoCursor = e.target.selectionStart;
+        const valorFormatado = formatarTelefone(e.target.value);
+        
+        // Calcular nova posição do cursor
+        let novaPosicao = posicaoCursor;
+        if (valorFormatado.length > valorAnterior.length) {
+            // Se adicionou caracteres de formatação, ajustar cursor
+            const caracteresAdicionados = valorFormatado.length - valorAnterior.length;
+            novaPosicao += caracteresAdicionados;
+        }
+        
+        e.target.value = valorFormatado;
+        
+        // Reposicionar cursor se necessário
+        setTimeout(() => {
+            e.target.setSelectionRange(novaPosicao, novaPosicao);
+        }, 0);
+        
+        validarFormulario();
+    });
+    
+    // Prevenir entrada de caracteres não numéricos
+    cpfInput.addEventListener('keypress', (e) => {
+        // Permite apenas números, backspace, delete, tab, escape, enter
+        if (!/[0-9]/.test(e.key) && 
+            !['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+            e.preventDefault();
+        }
+    });
+    
+    telefoneInput.addEventListener('keypress', (e) => {
+        // Permite apenas números, backspace, delete, tab, escape, enter
+        if (!/[0-9]/.test(e.key) && 
+            !['Backspace', 'Delete', 'Tab', 'Escape', 'Enter', 'ArrowLeft', 'ArrowRight'].includes(e.key)) {
+            e.preventDefault();
+        }
+    });
+    
     // Container para critérios de senha
     const criteriaContainer = document.createElement('div');
     criteriaContainer.id = 'password-criteria';
@@ -64,16 +171,16 @@ document.addEventListener('DOMContentLoaded', () => {
     function validarFormulario() {
         const nome = nomeInput.value.trim();
         const nascimento = nascimentoInput.value.trim();
-        const telefone = telefoneInput.value.trim();
-        const cpf = cpfInput.value.trim(); // Novo campo
+        const telefone = obterNumerosPuros(telefoneInput.value);
+        const cpf = obterNumerosPuros(cpfInput.value);
         const email = emailInput.value.trim();
         const senha = senhaInput.value;
         const confirmSenha = confirmSenhaInput.value;
         
         const nomeValido = nome !== '';
         const nascimentoValido = nascimento !== '';
-        const telefoneValido = telefone !== '';
-        const cpfValido = cpf !== ''; // Validação simples
+        const telefoneValido = telefone.length >= 10; // Mínimo 10 dígitos
+        const cpfValido = cpf.length === 11; // Exatamente 11 dígitos
         const emailValido = AuthUtils.validarEmail(email);
         const senhaValida = atualizarCriteriosSenha();
         const senhasIguais = senha === confirmSenha && confirmSenha !== '';
@@ -82,16 +189,31 @@ document.addEventListener('DOMContentLoaded', () => {
         const nomeError = document.getElementById('nome-error');
         const nascimentoError = document.getElementById('nascimento-error');
         const telefoneError = document.getElementById('telefone-error');
-        const cpfError = document.getElementById('cpf-error'); // Novo campo
+        const cpfError = document.getElementById('cpf-error');
         const emailError = document.getElementById('email-error');
         const confirmError = document.getElementById('confirm-senha-error');
         
         if (nomeError) nomeError.style.display = 'none';
         if (nascimentoError) nascimentoError.style.display = 'none';
         if (telefoneError) telefoneError.style.display = 'none';
-        if (cpfError) cpfError.style.display = 'none'; // Novo campo
+        if (cpfError) cpfError.style.display = 'none';
         if (emailError) emailError.style.display = 'none';
         if (confirmError) confirmError.style.display = 'none';
+        
+        // Mostrar erros específicos se necessário
+        if (telefoneInput.value && !telefoneValido) {
+            if (telefoneError) {
+                telefoneError.textContent = 'Telefone deve ter pelo menos 10 dígitos';
+                telefoneError.style.display = 'block';
+            }
+        }
+        
+        if (cpfInput.value && !cpfValido) {
+            if (cpfError) {
+                cpfError.textContent = 'CPF deve ter exatamente 11 dígitos';
+                cpfError.style.display = 'block';
+            }
+        }
         
         // Habilitar/desabilitar botão
         const formValido = nomeValido && nascimentoValido && telefoneValido && cpfValido && emailValido && senhaValida && senhasIguais;
@@ -103,8 +225,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Event listeners para validação em tempo real
     nomeInput.addEventListener('input', validarFormulario);
     nascimentoInput.addEventListener('input', validarFormulario);
-    telefoneInput.addEventListener('input', validarFormulario);
-    cpfInput.addEventListener('input', validarFormulario); // Novo campo
     emailInput.addEventListener('input', validarFormulario);
     senhaInput.addEventListener('input', validarFormulario);
     confirmSenhaInput.addEventListener('input', validarFormulario);
@@ -124,8 +244,8 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const nome = nomeInput.value.trim();
         const nascimento = nascimentoInput.value.trim();
-        const telefone = telefoneInput.value.trim();
-        const cpf = cpfInput.value.trim(); // Novo campo
+        const telefone = obterNumerosPuros(telefoneInput.value); // Apenas números
+        const cpf = obterNumerosPuros(cpfInput.value); // Apenas números
         const email = emailInput.value.trim();
         const senha = senhaInput.value;
         
@@ -144,9 +264,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     email: email, 
                     password: senha, 
                     name: nome, 
-                    phone: telefone,
+                    phone: telefone, // Enviando apenas números
                     birth: nascimento,
-                    cpf: cpf // Novo campo
+                    cpf: cpf // Enviando apenas números
                 }),
             });
 
