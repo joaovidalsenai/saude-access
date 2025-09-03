@@ -242,11 +242,11 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
         
-        const nome = nomeInput.value.trim();
+        const nome = nomeInput.value.trim().toLowerCase();
         const nascimento = nascimentoInput.value.trim();
         const telefone = obterNumerosPuros(telefoneInput.value); // Apenas números
         const cpf = obterNumerosPuros(cpfInput.value); // Apenas números
-        const email = emailInput.value.trim();
+        const email = emailInput.value.trim().toLowerCase();
         const senha = senhaInput.value;
         
         // Estado do botão
@@ -276,7 +276,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 console.error('❌ Erro no cadastro:', result.error);
                 AuthUtils.mostrarMensagem(result.error, 'erro');
             } else {
-                console.log('✅ Cadastro realizado com sucesso!');
                 AuthUtils.mostrarMensagem('🎉 Verifique sua caixa de e-mail para concluir o cadastro!', 'sucesso');
                 form.reset(); // Limpar o formulário
             }
