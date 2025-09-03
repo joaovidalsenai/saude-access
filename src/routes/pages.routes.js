@@ -3,6 +3,7 @@ import { fileURLToPath } from 'url';
 import path, { join } from 'path';
 
 import protectRoute from '../middlewares/protectRoute.js'
+import formatar from '../utils/formatar.js';
 
 import cookieParser from 'cookie-parser';
 
@@ -74,9 +75,9 @@ pageRouter.get('/perfil', protectRoute, async (req, res) => {
 
         // 5. If the response is OK, parse the JSON body.
         const userData = await response.json();
-
+        const user =  { name: formatar.nome(userData.name) , email: userData.email , birth: formatar.dataISO(userData.birth) , cpf: formatar.cpf(userData.cpf) , phone: formatar.telefone(userData.phone) }
         // 6. Render the 'perfil.ejs' template with the data from the API.
-        res.render('perfil', { user: userData });
+        res.render('perfil', { user });
     } catch (error) {
         // This will catch network errors from fetch() or the error thrown above.
         console.error('Failed to load profile page:', error.message);

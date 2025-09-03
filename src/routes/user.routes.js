@@ -1,7 +1,7 @@
 // ===== API ENDPOINTS DE AUTENTICAÇÃO =====
 import express from 'express';
 import protectRoute from '../middlewares/protectRoute.js'
-import supabase from "../middlewares/supabaseClient.js";
+import supabase from "../db/supabase.js";
 
 const userRouter = express();
 
@@ -106,7 +106,8 @@ userRouter.get('/api/user/data', protectRoute, async (req, res) => {
         email: user.email,
         name: user.user_metadata?.full_name ?? null,
         phone: user.user_metadata?.phone_number ?? null,
-        birth: user.user_metadata?.birthdate ?? null
+        birth: user.user_metadata?.birthdate ?? null,
+        cpf: user.user_metadata?.cpf ?? null
     });
 });
 

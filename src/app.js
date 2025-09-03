@@ -16,7 +16,7 @@ const alternativePORT = 3001;
 
 // --- Middlewares ---
 app.use(express.static(join(__dirname, '../public')));
-
+app.use(express.urlencoded({ extended: true }));
 app.use(pageRouter)
 app.use(userRouter)
 

@@ -1,4 +1,4 @@
-import supabase from "./supabaseClient.js";
+import supabase from "../db/supabase.js";
 
 const protectRoute = async (req, res, next) => {
   try {
