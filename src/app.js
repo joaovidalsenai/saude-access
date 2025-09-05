@@ -158,3 +158,5 @@ const PORT = process.env.PORT || alternativePORT;
 app.listen(PORT, () => {
     console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
+
+console.log(`Se você está vendo isso, sinal de que já não o principal, pois evoluí`)
