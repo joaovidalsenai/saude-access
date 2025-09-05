@@ -5,19 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/styleGenerico.css">
     <link rel="stylesheet" href="/css/login.css">
-    <title>Saúde Access</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/auth-utils.js"></script>
-    <script src="js/login.js"></script>
+    <title><%= title || "Saúde Access" %></title>
 </head>
 <body>
     <header>       
-        <h1>Login</h1>
+        <h1><%= heading || "Login" %></h1>
     </header>
     <main>
         <div class="login-container">
             <div class="login-section">
-                <form id="formLogin">
+                <form id="formLogin" method="POST" action="/api/login">
                     <div class="login-item">
                         <div class="login-icon">
                             <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
@@ -25,8 +22,8 @@
                             </svg>
                         </div>
                         <div class="input-group">
-                            <label for="cliente_email" class="label-login">CPF ou E-mail</label>
-                            <input type="email" name="cliente_email" id="login-email" placeholder="Digite seu E-mail" class="input-login" required>
+                            <label for="login-email" class="label-login">CPF ou E-mail</label>
+                            <input type="email" id="login-email" name="email" placeholder="Digite seu E-mail" class="input-login" required>
                         </div>
                     </div>
                     
@@ -37,8 +34,8 @@
                             </svg>
                         </div>
                         <div class="input-group">
-                            <label for="cliente-senha" class="label-login">Senha</label>
-                            <input type="password" name="cliente-senha" id="login-senha" placeholder="Digite sua senha" class="input-login" required>
+                            <label for="login-senha" class="label-login">Senha</label>
+                            <input type="password" id="login-senha" name="password" placeholder="Digite sua senha" class="input-login" required>
                         </div>
                     </div>
                     
@@ -54,7 +51,11 @@
                         Entrar
                     </button>
                 </form>
-                
+
+                <% if (typeof error !== "undefined") { %>
+                    <p id="msg" style="color:red; margin-top:10px;"><%= error %></p>
+                <% } %>
+
                 <div class="login-cadastro">
                     <p>Não tem uma conta?</p>
                     <a href="/cadastro" class="btn-cadastro">Cadastre-se</a>
@@ -62,6 +63,30 @@
             </div>
         </div>
     </main>
-    <script src="js/global.js"></script>
+
+    <script>
+        document.getElementById("formLogin").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const email = document.getElementById("login-email").value;
+            const password = document.getElementById("login-senha").value;
+
+            try {
+                const res = await fetch("/api/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    window.location.href = "/inicio";
+                } else {
+                    document.getElementById("msg").innerText = data.error || "Falha no login.";
+                }
+            } catch (err) {
+                document.getElementById("msg").innerText = "Erro ao conectar ao servidor.";
+            }
+        });
+    </script>
 </body>
 </html>
