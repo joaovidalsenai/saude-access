@@ -93,9 +93,10 @@ app.post('/api/register', async (req, res) => {
     }
     const { error } = await supabase.auth.signUp({ email, password });
     if (error) {
+        console.error("🔴 Supabase signUp error:", error);
         const errorMessage = error.message.includes('User already registered')
             ? 'Este e-mail já está cadastrado.'
-            : 'Ocorreu um erro ao tentar o cadastro.';
+            : error.message;
         return res.status(400).json({ error: errorMessage });
     }
     res.status(201).json({ message: 'Cadastro realizado! Verifique seu e-mail.' });
@@ -108,7 +109,7 @@ app.post('/api/login', async (req, res) => {
     }
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
-        return res.status(401).json({ error: 'Email ou senha incorretos.' });
+        return res.status(401).json({ error: error.message });
     }
     res.cookie('sb-access-token', data.session.access_token, {
         httpOnly: true,
