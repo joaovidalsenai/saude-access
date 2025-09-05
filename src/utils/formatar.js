@@ -25,7 +25,7 @@ const formatar = {
     return valor; // Se não tiver 10 ou 11 dígitos, retorna como veio
   },
 
-  dataISO(valor) {
+  data(valor) {
     if (!valor) return valor;
     const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(valor);
     if (!match) return valor; // retorna original se não estiver no formato esperado
