@@ -36,34 +36,62 @@ const viewsPath = join(__dirname, 'views');
 
 // ===== MIDDLEWARE DE PROTEÇÃO DE ROTAS (NOVO E ESSENCIAL) =====
 const protectRoute = async (req, res, next) => {
-  try {
     const accessToken = req.cookies['sb-access-token'];
+    const refreshToken = req.cookies['sb-refresh-token'];
 
-    // Se não há token, o usuário não está logado. Redireciona para o login.
-    if (!accessToken) {
-      return res.redirect('/login');
+    if (!accessToken && !refreshToken) {
+        return res.redirect('/login');
     }
 
-    // Verifica com o Supabase se o token é válido
-    const { error } = await supabase.auth.getUser(accessToken);
-
-    if (error) {
-      // Se o token for inválido (expirado, etc.), limpa os cookies e redireciona
-      res.clearCookie('sb-access-token');
-      res.clearCookie('sb-refresh-token');
-      return res.redirect('/login');
+    // Tenta validar o token de acesso principal
+    if (accessToken) {
+        const { error } = await supabase.auth.getUser(accessToken);
+        if (!error) {
+            // Token de acesso válido, continuar.
+            return next();
+        }
     }
 
-    // Se o token for válido, a requisição pode prosseguir para a rota protegida
-    next();
-  } catch (error) {
-    return res.redirect('/login');
-  }
+    // Se o token de acesso falhou (expirado) ou estava ausente, tenta usar o refresh token
+    if (refreshToken) {
+        console.log("Token de acesso expirado. Tentando atualizar a sessão...");
+        const { data, error: refreshError } = await supabase.auth.refreshSession({
+            refresh_token: refreshToken
+        });
+
+        if (refreshError) {
+            // Refresh token inválido ou expirado. Limpar e redirecionar para login.
+            res.clearCookie('sb-access-token');
+            res.clearCookie('sb-refresh-token');
+            return res.redirect('/login');
+        }
+
+        // Sessão atualizada com sucesso! Definir novos cookies.
+        const session = data.session;
+        res.cookie('sb-access-token', session.access_token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax', // Usar 'lax' pode ser melhor para desenvolvimento
+            maxAge: session.expires_in * 1000,
+        });
+        res.cookie('sb-refresh-token', session.refresh_token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+        });
+
+        console.log("Sessão atualizada com sucesso.");
+        return next(); // Continuar para a rota protegida com a nova sessão
+
+    } else {
+        // Se chegou aqui, não há tokens válidos.
+        return res.redirect('/login');
+    }
 };
 
 // ===== ROTAS PÚBLICAS =====
 app.get('/', (req, res) => res.render('index'));
-app.get('/login', (req, res) => res.render('login', {title: 'Saúde Access'}));
+app.get('/login', (req, res) => res.render('login', {title: 'Saúde Access', heading: 'Login'}));
 app.get('/cadastro', (req, res) => res.render('cadastro'));
 // ... (suas outras rotas públicas)
 
@@ -101,6 +129,75 @@ app.post('/api/register', async (req, res) => {
         return res.status(400).json({ error: errorMessage });
     }
     res.status(201).json({ message: 'Cadastro realizado! Verifique seu e-mail.' });
+});
+
+app.post('/api/verifyPassword', protectRoute, async (req, res) => {
+    const { currentPassword } = req.body;
+
+    if (!currentPassword) {
+        return res.status(400).json({ error: 'A senha atual é obrigatória.' });
+    }
+
+    try {
+        // 1. Obter o e-mail do usuário logado a partir do token de acesso.
+        const accessToken = req.cookies['sb-access-token'];
+        const { data: { user }, error: userError } = await supabase.auth.getUser(accessToken);
+
+        if (userError) {
+            // Isso pode acontecer se o token expirou entre o carregamento da página e o clique no botão.
+            return res.status(401).json({ error: 'Sua sessão expirou. Por favor, recarregue a página.' });
+        }
+
+        // 2. Tentar fazer login com o e-mail do usuário logado e a senha fornecida.
+        // Esta é a forma padrão do Supabase de verificar se a senha está correta.
+        const { error: signInError } = await supabase.auth.signInWithPassword({
+            email: user.email,
+            password: currentPassword
+        });
+
+        if (signInError) {
+            // Se signInError existir, a senha está incorreta.
+            console.warn(`Falha na reautenticação para ${user.email}: Senha incorreta.`);
+            return res.status(401).json({ success: false, error: 'Senha atual incorreta.' });
+        }
+
+        // Se não houver erro, a senha está correta.
+        return res.status(200).json({ success: true, message: 'Senha verificada com sucesso.' });
+
+    } catch (err) {
+        console.error("Erro inesperado durante a verificação de senha:", err);
+        return res.status(500).json({ error: 'Erro interno do servidor.' });
+    }
+});
+
+app.post('/api/changePassword', protectRoute, async (req, res) => {
+    try {
+        const { password } = req.body;
+
+        if (!password || password.length < 8) {
+            return res.status(400).json({ error: 'A nova senha deve ter pelo menos 8 caracteres.' });
+        }
+
+        // Recupera o token de acesso do cookie
+        const accessToken = req.cookies['sb-access-token'];
+
+        // Atualiza a senha do usuário logado
+        const { data, error } = await supabase.auth.updateUser(
+            { password },
+            { accessToken } // <-- garante que está atualizando o usuário autenticado
+        );
+
+        if (error) {
+            console.error("Erro ao atualizar senha:", error);
+            return res.status(400).json({ error: error.message });
+        }
+
+        return res.status(200).json({ message: 'Senha alterada com sucesso!' });
+
+    } catch (err) {
+        console.error("Erro inesperado:", err);
+        return res.status(500).json({ error: 'Erro interno ao trocar senha.' });
+    }
 });
 
 app.post('/api/login', async (req, res) => {
