@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', () => {
         btnCadastrar.textContent = 'Salvando...';
         
         try {
-            const response = await fetch('/api/user/complete-profile', { // <-- UPDATED ENDPOINT
+            const response = await fetch('/auth/complete-profile', { // <-- UPDATED ENDPOINT
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dadosCadastro),

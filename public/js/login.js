@@ -19,7 +19,7 @@ async function fazerLogin(event) {
     try {
         console.log('🔐 Tentando fazer login via backend...');
         
-        const response = await fetch('/api/user/login', {
+        const response = await fetch('/auth/login', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
