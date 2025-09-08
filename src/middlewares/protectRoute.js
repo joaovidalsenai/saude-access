@@ -10,13 +10,17 @@ const protectRoute = async (req, res, next) => {
     }
 
     // Verifica com o Supabase se o token é válido
-    const { error } = await supabase.auth.getUser(accessToken);
+    const { data: { user }, error } = await supabase.auth.getUser(accessToken);
 
     if (error) {
       // Se o token for inválido (expirado, etc.), limpa os cookies e redireciona
       res.clearCookie('sb-access-token');
       res.clearCookie('sb-refresh-token');
       return res.redirect('/login');
+    }
+
+    if (user.user_metadata?.full_user_access) {
+      return res.redirect('/inicio');
     }
 
     // Se o token for válido, a requisição pode prosseguir para a rota protegida

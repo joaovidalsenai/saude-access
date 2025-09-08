@@ -7,7 +7,7 @@ const userRouter = express();
 
 // Endpoint de Cadastro
 userRouter.post('/api/user/signup', async (req, res) => {
-        const { email, password , name , phone , birth , cpf } = req.body;
+        const { email, password } = req.body;
         if (!email || !password || password.length < 8) {
             return res.status(400).json({ error: 'Dados de cadastro inválidos.' });
         }
@@ -16,10 +16,6 @@ userRouter.post('/api/user/signup', async (req, res) => {
             password,
             options: {
                 data: {
-                full_name: name,
-                phone_number: phone,
-                birthdate: birth,
-                cpf: cpf,
                 full_user_access: false
                 }
             }
