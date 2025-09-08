@@ -10,6 +10,7 @@ import path, { join } from 'path';
 import { createClient } from '@supabase/supabase-js';
 import cookieParser from 'cookie-parser';
 import ejs from 'ejs';
+import { title } from 'process';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -62,7 +63,7 @@ const protectRoute = async (req, res, next) => {
 
 // ===== ROTAS PÚBLICAS =====
 app.get('/', (req, res) => res.render('index'));
-app.get('/login', (req, res) => res.render('login'));
+app.get('/login', (req, res) => res.render('login', {title: 'Saúde Access'}));
 app.get('/cadastro', (req, res) => res.render('cadastro'));
 // ... (suas outras rotas públicas)
 
