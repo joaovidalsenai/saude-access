@@ -1,6 +1,6 @@
 // ===== API ENDPOINTS DE AUTENTICAÇÃO =====
 import express from 'express';
-import protectRoute from '../middlewares/protectRoute.js'
+import protect from '../middlewares/protectRoute.js';
 import supabase from "../db/supabase.js";
 
 const userRouter = express();
@@ -30,7 +30,7 @@ userRouter.post('/api/user/signup', async (req, res) => {
 });
 
 userRouter.post('/api/user/login', async (req, res) => {
-    const { email, password } = req.body;
+    const { email , password } = req.body;
     if (!email || !password) {
         return res.status(400).json({ error: 'Email e senha são obrigatórios.' });
     }
@@ -59,7 +59,7 @@ userRouter.post('/api/user/logout', (req, res) => {
     res.status(200).json({ message: 'Logout realizado com sucesso.' });
 });
 
-userRouter.get('/api/user/auth', protectRoute, async (req, res) => {
+userRouter.get('/api/user/auth', protect.partially, async (req, res) => {
     // Se o middleware 'protectRoute' passou, o usuário é válido.
     const accessToken = req.cookies['sb-access-token'];
 
@@ -80,28 +80,7 @@ userRouter.get('/api/user/auth', protectRoute, async (req, res) => {
     res.status(200).json({ user: true})
 });
 
-userRouter.get('/api/user/full_access', protectRoute, async (req, res) => {
-    // Se o middleware 'protectRoute' passou, o usuário é válido.
-    const accessToken = req.cookies['sb-access-token'];
-
-    // Se não houver token, retorne um erro (embora o protectRoute já deva fazer isso).
-    if (!accessToken) {
-        return res.status(401).json({ error: 'Token de acesso não fornecido.' });
-    }
-
-    // Usamos o token para obter os detalhes do usuário do Supabase.
-    const { data: { user }, error } = await supabase.auth.getUser(accessToken);
-
-    if (error || !user) {
-        // Se houver um erro ou o usuário não for encontrado, retorna um erro.
-        return res.status(401).json({ error: 'Falha ao autenticar usuário. Token inválido ou expirado.' });
-    }
-
-    // Retorna as informações seguras do usuário, incluindo os metadados.
-    res.status(200).json({ full_user_access: user.user_metadata?.full_user_access ?? false });
-});
-
-userRouter.get('/api/user/data', protectRoute, async (req, res) => {
+userRouter.get('/api/user/data', protect.partially, async (req, res) => {
     // Se o middleware 'protectRoute' passou, o usuário é válido.
     const accessToken = req.cookies['sb-access-token'];
 
@@ -121,12 +100,57 @@ userRouter.get('/api/user/data', protectRoute, async (req, res) => {
     // Retorna as informações seguras do usuário, incluindo os metadados.
     res.status(200).json({
         id: user.id,
-        email: user.email,
-        name: user.user_metadata?.full_name ?? null,
-        phone: user.user_metadata?.phone_number ?? null,
-        birth: user.user_metadata?.birthdate ?? null,
-        cpf: user.user_metadata?.cpf ?? null
+        email: user.email
     });
+});
+
+userRouter.post('/api/user/complete-profile', protect.partially, async (req, res) => {
+    // 1. Get the authenticated user from the request (provided by the 'protect' middleware)
+    const accessToken = req.cookies['sb-access-token'];
+    const { data: { user }, error: authError } = await supabase.auth.getUser(accessToken);
+
+    if (authError || !user) {
+        return res.status(401).json({ error: 'Usuário não autenticado.' });
+    }
+    const userId = user.id;
+
+    // 2. Get the data from the request body
+    const { name, birth, phone, cpf, address } = req.body;
+
+    // 3. Basic validation
+    if (!name || !birth || !phone || !cpf || !address) {
+        return res.status(400).json({ error: 'Todos os campos do formulário são obrigatórios.' });
+    }
+
+    // 4. Insert the data into the 'profiles' table in Supabase
+    const { data, error } = await supabase
+        .from('profiles')
+        .insert([
+            {
+                id: userId, // Link to the auth.users table
+                full_name: name,
+                birth_date: birth,
+                phone: phone,
+                cpf: cpf,
+                address: address // Store the address object as JSON
+            }
+        ]);
+
+    if (error) {
+        console.error('Erro ao salvar perfil no Supabase:', error.message);
+        // Handle cases where the profile might already exist
+        if (error.code === '23505') { 
+            return res.status(409).json({ error: 'As informações de perfil para este usuário já existem.' });
+        }
+        return res.status(500).json({ error: 'Não foi possível salvar as informações do perfil.' });
+    }
+    
+    // 5. Optionally, update the user's metadata to grant full access
+    await supabase.auth.updateUser({
+        data: { full_user_access: true }
+    });
+
+    res.status(201).json({ message: 'Cadastro finalizado com sucesso!' });
 });
 
 export default userRouter;

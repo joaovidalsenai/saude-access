@@ -1,6 +1,3 @@
-// public/js/cadastro.js
-// Versão refatorada usando auth-utils e Supabase direto
-
 document.addEventListener('DOMContentLoaded', () => {
     // Elementos do DOM
     const form = document.querySelector('form');
@@ -142,31 +139,6 @@ document.addEventListener('DOMContentLoaded', () => {
     senhaInput.parentNode.insertBefore(criteriaContainer, senhaInput.nextSibling);
     criteriaContainer.appendChild(criteriaList);
     
-    // Atualizar critérios visuais
-    function atualizarCriteriosSenha() {
-        const senha = senhaInput.value;
-        const validacao = AuthUtils.validarSenha(senha);
-        
-        // Limpar lista
-        criteriaList.innerHTML = '';
-        
-        // Recriar critérios
-        validacao.criterios.forEach(criterio => {
-            const li = document.createElement('li');
-            li.textContent = criterio.texto;
-            li.style.cssText = `
-                margin: 4px 0;
-                color: ${criterio.atende ? '#2ecc71' : '#e74c3c'};
-            `;
-            criteriaList.appendChild(li);
-        });
-        
-        // Mostrar/ocultar container
-        criteriaContainer.style.display = senha.length > 0 ? 'block' : 'none';
-        
-        return validacao.valida;
-    }
-    
     // Validar estado do formulário
     function validarFormulario() {
         const nome = nomeInput.value.trim();
@@ -246,8 +218,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const nascimento = nascimentoInput.value.trim();
         const telefone = obterNumerosPuros(telefoneInput.value); // Apenas números
         const cpf = obterNumerosPuros(cpfInput.value); // Apenas números
-        const email = emailInput.value.trim().toLowerCase();
-        const senha = senhaInput.value;
         
         // Estado do botão
         const textoOriginal = btnCadastrar.textContent;
@@ -261,8 +231,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({ 
-                    email: email, 
-                    password: senha, 
                     name: nome, 
                     phone: telefone, // Enviando apenas números
                     birth: nascimento,

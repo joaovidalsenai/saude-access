@@ -1,8 +1,7 @@
 import express from 'express';
 import { fileURLToPath } from 'url';
 import path, { join } from 'path';
-
-import protectRoute from '../middlewares/protectRoute.js'
+import protect from '../middlewares/protectRoute.js';
 import formatar from '../utils/formatar.js';
 
 import cookieParser from 'cookie-parser';
@@ -39,9 +38,9 @@ pageRouter.get('/cadastro', (req, res) => res.render('cadastro'));
 // ... (suas outras rotas públicas)
 
 // ===== ROTAS PROTEGIDAS =====
-// O middleware 'protectRoute' é aplicado a cada rota que precisa de login
-pageRouter.get('/inicio', protectRoute, (req, res) => res.render('inicio'));
-pageRouter.get('/perfil', protectRoute, async (req, res) => {
+// O middleware 'protect.entirely' é aplicado a cada rota que precisa de login
+pageRouter.get('/inicio', protect.entirely, (req, res) => res.render('inicio'));
+pageRouter.get('/perfil', protect.entirely, async (req, res) => {
     try {
         // 1. Get the access token from the browser's cookie.
         const accessToken = req.cookies['sb-access-token'];
@@ -84,13 +83,13 @@ pageRouter.get('/perfil', protectRoute, async (req, res) => {
         res.status(500).send('An error occurred while loading the profile page.');
     }
 });
-pageRouter.get('/configuracoes', protectRoute, (req, res) => res.render('configuracoes'));
-pageRouter.get('/historico', protectRoute, (req, res) => res.render('hospitais', { titulo: "Histórico" , hospitais }));
-pageRouter.get('/suporte-tecnico', protectRoute, (req, res) => res.render('suporte-tecnico'));
-pageRouter.get('/avaliacao', protectRoute, (req, res) => res.render('avaliacao'));
-pageRouter.get('/agendar-consulta', protectRoute, (req, res) => res.render('agendarConsulta'));
-pageRouter.get('/hospital', protectRoute, (req, res) => res.render('hospital'));
-pageRouter.get('/hospitais', protectRoute, (req, res) => {
+pageRouter.get('/configuracoes', protect.entirely, (req, res) => res.render('configuracoes'));
+pageRouter.get('/historico', protect.entirely, (req, res) => res.render('hospitais', { titulo: "Histórico" , hospitais }));
+pageRouter.get('/suporte-tecnico', protect.entirely, (req, res) => res.render('suporte-tecnico'));
+pageRouter.get('/avaliacao', protect.entirely, (req, res) => res.render('avaliacao'));
+pageRouter.get('/agendar-consulta', protect.entirely, (req, res) => res.render('agendarConsulta'));
+pageRouter.get('/hospital', protect.entirely, (req, res) => res.render('hospital'));
+pageRouter.get('/hospitais', protect.entirely, (req, res) => {
   const ordenar = req.query.ordenar; // 'nota' ou undefined
   const titulo = ordenar === 'nota' ? 'Hospitais por Lotação' : 'Hospitais Cadastrados';
 
@@ -109,7 +108,9 @@ pageRouter.get('/hospitais', protectRoute, (req, res) => {
     hospitais: hospitaisOrdenados
   });
 });
-pageRouter.get('/hospitais-procurados', protectRoute, (req, res) => res.render('hospitaisLista', { titulo: "Hospitais Cadastrados" , hospitais }));
-pageRouter.get('/hospitais-proximos', protectRoute, (req, res) => res.render('hospitaisLista', { titulo: "Hospitais Cadastrados" , hospitais }));
+pageRouter.get('/hospitais-procurados', protect.entirely, (req, res) => res.render('hospitaisLista', { titulo: "Hospitais Cadastrados" , hospitais }));
+pageRouter.get('/hospitais-proximos', protect.entirely, (req, res) => res.render('hospitaisLista', { titulo: "Hospitais Cadastrados" , hospitais }));
+
+pageRouter.get('/cadastrar-info', protect.partially, (req, res) => res.render('cadastroInfo'));
 
 export default pageRouter;

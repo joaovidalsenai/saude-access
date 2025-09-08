@@ -1,33 +1,51 @@
 import supabase from "../db/supabase.js";
 
-const protectRoute = async (req, res, next) => {
+// A centralized error handler to avoid repetition
+const handleAuthError = (res) => {
+  res.clearCookie('sb-access-token');
+  res.clearCookie('sb-refresh-token');
+  return res.redirect('/login');
+};
+
+// Core authentication logic
+const authenticateUser = async (req, res, next) => {
   try {
     const accessToken = req.cookies['sb-access-token'];
 
-    // Se não há token, o usuário não está logado. Redireciona para o login.
     if (!accessToken) {
-      return res.redirect('/login');
+      return handleAuthError(res);
     }
 
-    // Verifica com o Supabase se o token é válido
     const { data: { user }, error } = await supabase.auth.getUser(accessToken);
 
-    if (error) {
-      // Se o token for inválido (expirado, etc.), limpa os cookies e redireciona
-      res.clearCookie('sb-access-token');
-      res.clearCookie('sb-refresh-token');
-      return res.redirect('/login');
+    if (error || !user) {
+      return handleAuthError(res);
     }
 
-    if (user.user_metadata?.full_user_access) {
-      return res.redirect('/inicio');
-    }
-
-    // Se o token for válido, a requisição pode prosseguir para a rota protegida
+    // Attach user object to the request for later use in other routes/middlewares
+    req.user = user;
     next();
   } catch (error) {
-    return res.redirect('/login');
+    // Catch any unexpected errors during authentication
+    return handleAuthError(res);
   }
 };
 
-export default protectRoute;
+// Specific authorization logic for "entire" protection
+const authorizeFullAccess = (req, res, next) => {
+  // This middleware assumes `authenticateUser` has already run and attached `req.user`
+  if (req.user?.user_metadata?.full_user_access !== true) {
+    return res.redirect('/cadastrar-info');
+  }
+  next();
+};
+
+const protect = {
+  // `partially` is just the core authentication
+  partially: authenticateUser,
+
+  // `entirely` is authentication AND the specific authorization check
+  entirely: [authenticateUser, authorizeFullAccess],
+};
+
+export default protect;
