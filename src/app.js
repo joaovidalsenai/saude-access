@@ -170,6 +170,43 @@ app.post('/api/verifyPassword', protectRoute, async (req, res) => {
     }
 });
 
+app.post('/api/changeEmail', protectRoute, async (req, res) => {
+    const { newEmail } = req.body;
+    const accessToken = req.cookies['sb-access-token'];
+
+    if (!newEmail) {
+        return res.status(400).json({ error: 'O novo e-mail é obrigatório.' });
+    }
+
+    // Validação simples de formato de e-mail (adapte se tiver uma função de utilitário)
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
+        return res.status(400).json({ error: 'Formato de e-mail inválido.' });
+    }
+
+    try {
+        // A função updateUser do Supabase lida com o envio de e-mails de confirmação
+        const { error } = await supabase.auth.updateUser(
+            { email: newEmail },
+            { accessToken: accessToken } // Garante que estamos atualizando o usuário autenticado
+        );
+
+        if (error) {
+            console.error("Erro ao atualizar e-mail no Supabase:", error);
+            // Mensagem de erro comum se o e-mail já estiver em uso por outro usuário
+            if (error.message.includes("Email address already in use")) {
+                 return res.status(409).json({ error: 'Este endereço de e-mail já está sendo usado por outra conta.' });
+            }
+            return res.status(400).json({ error: error.message });
+        }
+
+        return res.status(200).json({ message: 'Solicitação de alteração recebida. Verifique seu novo e-mail para confirmar a mudança.' });
+
+    } catch (err) {
+        console.error("Erro inesperado ao alterar e-mail:", err);
+        return res.status(500).json({ error: 'Erro interno do servidor.' });
+    }
+});
+
 app.post('/api/changePassword', protectRoute, async (req, res) => {
     try {
         const { password } = req.body;

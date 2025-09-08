@@ -92,13 +92,13 @@
   font-weight: 500;
 }
 
-#btn-cancelar {
-  background: var(--cinza-botao); /* Alterado: cor de cancelamento do tema */
-  color: var(--text-color); /* Alterado: cor de texto do tema */
+/* DEPOIS (substitua por estas classes) */
+.modal-btn-cancel {
+  background: var(--cinza-botao);
+  color: var(--text-color);
 }
-
-#btn-confirmar {
-  background: var(--azul-generico); /* Alterado: cor primária do tema */
+.modal-btn-confirm {
+  background: var(--azul-generico);
   color: #fff;
 }
 

@@ -11,13 +11,100 @@ document.addEventListener('DOMContentLoaded', function () {
     // ... código do tema ...
     temaToggle.addEventListener('change', mudarTema);
 
+    const modalEmail = document.getElementById('modal-email');
+    const btnCancelarEmail = document.getElementById('btn-cancelar-email');
+    const btnConfirmarEmail = document.getElementById('btn-confirmar-email');
+    const novoEmailInput = document.getElementById('novo-email-input');
+    const emailChangeError = document.getElementById('email-change-error');
+
+    // --- Lógica de Abertura (Botão "Alterar E-mail" na página de configurações) ---
+    const btnAlterarEmail = document.getElementById('item-alterar-email');
+    if (btnAlterarEmail) {
+        btnAlterarEmail.addEventListener('click', async () => {
+            // --- ETAPA 1: Reautenticação por Senha (Igual antes) ---
+            const currentPassword = prompt("Para alterar seu e-mail, por favor, confirme sua senha atual:");
+            if (!currentPassword) return;
+
+            let reauthSuccess = false;
+            try {
+                const reauthResponse = await fetch('/api/verifyPassword', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ currentPassword: currentPassword })
+                });
+                const reauthResult = await reauthResponse.json();
+                reauthSuccess = reauthResponse.ok && reauthResult.success;
+            } catch (error) {
+                reauthSuccess = false;
+            }
+
+            // --- ETAPA 2: Abrir o Modal de E-mail se a senha estiver correta ---
+            if (reauthSuccess) {
+                // Limpar campo de input e erros anteriores
+                novoEmailInput.value = '';
+                emailChangeError.textContent = '';
+                // Abrir o modal
+                modalEmail.classList.remove('hidden');
+            } else {
+                alert("Senha incorreta. A alteração foi cancelada.");
+            }
+        });
+    }
+
+    // --- Lógica dos Botões Dentro do Modal de E-mail ---
+
+    // Botão Cancelar do modal de e-mail
+    btnCancelarEmail?.addEventListener('click', () => {
+        // --- ADICIONE ESTE LOG ---
+        modalEmail.classList.add('hidden');
+    });
+
+    // Botão Confirmar do modal de e-mail
+    btnConfirmarEmail?.addEventListener('click', async () => {
+        // --- ADICIONE ESTE LOG ---
+
+        const novoEmail = novoEmailInput.value.trim();
+
+        // Validação de formato
+        if (!AuthUtils.validarEmail(novoEmail)) {
+            emailChangeError.textContent = "Formato de e-mail inválido.";
+            return;
+        }
+
+        // Desabilitar botão para evitar cliques duplos
+        btnConfirmarEmail.disabled = true;
+        btnConfirmarEmail.textContent = "Salvando...";
+
+        // Chamar a API para alterar o e-mail
+        try {
+            const response = await fetch('/api/changeEmail', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ newEmail: novoEmail })
+            });
+            const result = await response.json();
+
+            if (response.ok) { //
+                alert(result.message);
+                modalEmail.classList.add('hidden'); // Fechar modal em sucesso
+            } else {
+                emailChangeError.textContent = result.error; // Mostrar erro da API no modal
+            }
+        } catch (error) {
+            emailChangeError.textContent = "Erro de conexão. Tente novamente."; //
+        } finally {
+            // Reabilitar botão
+            btnConfirmarEmail.disabled = false;
+            btnConfirmarEmail.textContent = "Salvar Alteração";
+        }
+    });
+
     // --- CÓDIGO PARA ABRIR O MODAL ---
     const btnAbrirModalSenha = document.getElementById("item-alterar-senha");
     const modal = document.getElementById("modal-senha");
 
     if (btnAbrirModalSenha && modal) {
         btnAbrirModalSenha.addEventListener("click", async () => {
-            console.log("--- INÍCIO DA VERIFICAÇÃO DE SENHA ---");
             const currentPassword = prompt("Para sua segurança, por favor, digite sua senha atual:");
 
             if (!currentPassword) {
@@ -34,21 +121,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 const result = await response.json();
 
-                // --- DEPURAÇÃO NÍVEL FINAL ---
-                console.log("Status da Resposta:", response.status);
-                console.log("Response OK:", response.ok);
-                console.log("Payload Recebido:", result);
-
                 if (response.ok === true && result.success === true) {
                     // Caminho A: Sucesso
-                    console.log("DECISÃO: Sucesso. Abrindo o modal.");
                     modal.classList.remove("hidden");
                 } else {
                     // Caminho B: Falha
-                    console.log("DECISÃO: Falha. Exibindo alerta de erro.");
                     alert("Senha incorreta ou erro na verificação: " + (result.error || "Tente novamente."));
                 }
-                console.log("--- FIM DA VERIFICAÇÃO DE SENHA ---");
 
             } catch (error) {
                 console.error("ERRO CRÍTICO no bloco catch:", error);
@@ -95,16 +174,6 @@ document.addEventListener('DOMContentLoaded', function () {
                 elementoLi.classList.remove('valido');
             }
         }
-    }
-
-    if (btnAbrirModalSenha && modal) {
-        btnAbrirModalSenha.addEventListener("click", () => {
-            // NOVO: Vamos verificar se o clique está sendo registrado
-            modal.classList.remove("hidden");
-        });
-    } else {
-        // NOVO: Aviso de segurança caso um dos elementos falhe em carregar
-        console.error("ERRO: Botão ou Modal não encontrado na página.");
     }
 
     // --- LÓGICA EXISTENTE DO MODAL (Cancelar/Confirmar) ---
