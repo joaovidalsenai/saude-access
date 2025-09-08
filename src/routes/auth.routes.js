@@ -6,7 +6,7 @@ import supabase from "../db/supabase.js";
 const auth = express();
 
 // Endpoint de Cadastro
-auth.post('/auth/signup', async (req, res) => {
+auth.post('/auth/cadastrar', async (req, res) => {
         const { email, password } = req.body;
         if (!email || !password || password.length < 8) {
             return res.status(400).json({ error: 'Dados de cadastro inválidos.' });
@@ -29,7 +29,7 @@ auth.post('/auth/signup', async (req, res) => {
     res.status(201).json({ message: 'Cadastro realizado! Verifique seu e-mail.' });
 });
 
-auth.post('/auth/login', async (req, res) => {
+auth.post('/auth/entrar', async (req, res) => {
     const { email , password } = req.body;
     if (!email || !password) {
         return res.status(400).json({ error: 'Email e senha são obrigatórios.' });
@@ -53,7 +53,7 @@ auth.post('/auth/login', async (req, res) => {
 });
 
 // Endpoint de Logout
-auth.post('/auth/logout', (req, res) => {
+auth.post('/auth/sair', (req, res) => {
     res.clearCookie('sb-access-token');
     res.clearCookie('sb-refresh-token');
     res.status(200).json({ message: 'Logout realizado com sucesso.' });

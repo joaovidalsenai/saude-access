@@ -115,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
     btnCadastrar.textContent = 'Cadastrando...';
 
     try {
-      const response = await fetch('/auth/signup', {
+      const response = await fetch('/auth/cadastrar', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

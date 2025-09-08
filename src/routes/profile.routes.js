@@ -2,10 +2,10 @@ import express from 'express';
 import protect from '../middlewares/protectRoute.js';
 import supabase from "../db/supabase.js";
 
-const profile = express();
+const perfil = express();
 
 // Endpoint para buscar os dados completos do usuário
-profile.get('/api/user/data', protect.partially, async (req, res) => {
+perfil.get('perfil/dados', protect.partially, async (req, res) => {
     try {
         const tokenDeAcesso = req.cookies['sb-access-token'];
         if (!tokenDeAcesso) {
@@ -35,14 +35,14 @@ profile.get('/api/user/data', protect.partially, async (req, res) => {
         }
 
         // Os dados vêm aninhados. Vamos organizá-los para o cliente.
-        const perfilCompletoUsuario = {
+        const perfilCompletoperfil = {
             ...dadosDoPerfil,
             email: user.email,
             endereco: dadosDoPerfil.enderecos, // Atribui o objeto de endereço aninhado
         };
-        delete perfilCompletoUsuario.enderecos; // Limpa a propriedade aninhada original
+        delete perfilCompletoperfil.enderecos; // Limpa a propriedade aninhada original
 
-        res.status(200).json(perfilCompletoUsuario);
+        res.status(200).json(perfilCompletoperfil);
 
     } catch (e) {
         console.error('Erro inesperado no endpoint /api/user/data:', e.message);
@@ -52,14 +52,14 @@ profile.get('/api/user/data', protect.partially, async (req, res) => {
 
 
 // Endpoint para completar o cadastro do usuário
-profile.post('/api/user/complete-profile', protect.partially, async (req, res) => {
+perfil.post('/perfil/completar', protect.partially, async (req, res) => {
     const tokenDeAcesso = req.cookies['sb-access-token'];
     const { data: { user }, error: erroAuth } = await supabase.auth.getUser(tokenDeAcesso);
 
     if (erroAuth || !user) {
         return res.status(401).json({ error: 'Usuário não autenticado.' });
     }
-    const usuarioId = user.id;
+    const perfilId = user.id;
 
     // Os nomes aqui (nome, nascimento, etc.) devem corresponder ao que o front-end envia no corpo da requisição
     const { nome, nascimento, telefone, cpf, endereco } = req.body;
@@ -72,7 +72,7 @@ profile.post('/api/user/complete-profile', protect.partially, async (req, res) =
     const { error: erroPerfil } = await supabase
         .from('perfis') // Tabela em português
         .insert({
-            id: usuarioId, // Usa o ID da tabela auth.users
+            id: perfilId, // Usa o ID da tabela auth.users
             nome_completo: nome,
             data_nascimento: nascimento,
             telefone: telefone,
@@ -91,7 +91,7 @@ profile.post('/api/user/complete-profile', protect.partially, async (req, res) =
     const { error: erroEndereco } = await supabase
         .from('enderecos') // Tabela em português
         .insert({
-            perfil_id: usuarioId, // Link para o perfil que acabamos de criar
+            perfil_id: perfilId, // Link para o perfil que acabamos de criar
             rua: endereco.rua,
             numero: endereco.numero,
             complemento: endereco.complemento,
@@ -115,4 +115,4 @@ profile.post('/api/user/complete-profile', protect.partially, async (req, res) =
     res.status(201).json({ message: 'Cadastro finalizado com sucesso!' });
 });
 
-export default profile;
+export default perfil;

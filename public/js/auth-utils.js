@@ -114,7 +114,7 @@ function validarSenha(senha) {
 
 async function fazerLogout() {
     try {
-        await fetch('/auth/logout', { method: 'POST' });
+        await fetch('/auth/sair', { method: 'POST' });
         window.location.href = '/login';
     } catch (error) {
         console.error('Erro ao fazer logout:', error);
@@ -124,7 +124,7 @@ async function fazerLogout() {
 
 async function autenticarUsuario() {
     try {
-        const response = await fetch('/auth/auth');
+        const response = await fetch('/auth');
         if (!response.ok) {
             window.location.href = '/login';
             return null;
