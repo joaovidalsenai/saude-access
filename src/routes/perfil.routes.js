@@ -92,7 +92,7 @@ perfil.post('/perfil/completar', protect.partially, async (req, res) => {
         .from('enderecos') // Tabela em português
         .insert({
             perfil_id: perfilId, // Link para o perfil que acabamos de criar
-            rua: endereco.rua,
+            logradouro: endereco.logradouro,
             numero: endereco.numero,
             complemento: endereco.complemento,
             bairro: endereco.bairro,

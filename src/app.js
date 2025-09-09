@@ -8,7 +8,7 @@ import path, { join } from 'path';
 
 import pages from './routes/pages.routes.js';
 import auth from './routes/auth.routes.js';
-import perfil from './routes/profile.routes.js';
+import perfil from './routes/perfil.routes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

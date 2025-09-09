@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(`https://viacep.com.br/ws/${obterNumerosPuros(cep)}/json/`);
             const data = await response.json();
             if (!data.erro) {
-                ruaInput.value = data.logouro;
+                ruaInput.value = data.logradouro;
                 bairroInput.value = data.bairro;
                 cidadeInput.value = data.localidade;
                 estadoInput.value = data.uf;
@@ -105,18 +105,18 @@ document.addEventListener('DOMContentLoaded', () => {
         }
         
         const dadosCadastro = {
-            name: nomeInput.value.trim(),
-            birth: nascimentoInput.value.trim(),
-            phone: obterNumerosPuros(telefoneInput.value),
+            nome: nomeInput.value.trim(),
+            nascimento: nascimentoInput.value.trim(),
+            telefone: obterNumerosPuros(telefoneInput.value),
             cpf: obterNumerosPuros(cpfInput.value),
-            address: {
+            endereco: {
                 cep: obterNumerosPuros(cepInput.value),
-                street: ruaInput.value.trim(),
-                number: numeroInput.value.trim(),
-                complement: complementoInput.value.trim(),
-                neighborhood: bairroInput.value.trim(),
-                city: cidadeInput.value.trim(),
-                state: estadoInput.value.trim().toUpperCase()
+                logradouro: ruaInput.value.trim(),
+                numero: numeroInput.value.trim(),
+                complemento: complementoInput.value.trim(),
+                bairro: bairroInput.value.trim(),
+                cidade: cidadeInput.value.trim(),
+                estado: estadoInput.value.trim().toUpperCase()
             }
         };
 
@@ -124,8 +124,9 @@ document.addEventListener('DOMContentLoaded', () => {
         btnCadastrar.disabled = true;
         btnCadastrar.textContent = 'Salvando...';
         
+
         try {
-            const response = await fetch('/auth/complete-profile', { // <-- UPDATED ENDPOINT
+            const response = await fetch('/perfil/completar', { // <-- UPDATED ENDPOINT
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dadosCadastro),
@@ -138,7 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
             
             AuthUtils.mostrarMensagem('🎉 Dados salvos com sucesso!', 'sucesso');
             // Redirect to the dashboard after a short delay
-            setTimeout(() => { window.location.href = '/dashboard'; }, 1500);
+            setTimeout(() => { window.location.href = '/inicio'; }, 1500);
 
         } catch (error) {
             AuthUtils.mostrarMensagem(error.message, 'erro');
