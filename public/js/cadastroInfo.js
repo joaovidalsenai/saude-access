@@ -126,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
 
         try {
-            const response = await fetch('/perfil/completar', { // <-- UPDATED ENDPOINT
+            const response = await fetch('/usuario/completar', { // <-- UPDATED ENDPOINT
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dadosCadastro),

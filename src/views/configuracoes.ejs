@@ -14,6 +14,48 @@
     <header>
         <h1>Configurações</h1>
     </header>
+    <!-- Modal de Trocar Senha -->
+        <div id="modal-senha" class="modal hidden">
+            <div class="modal-content">
+                <h2>Alterar Senha</h2>
+                <input type="password" id="nova-senha" placeholder="Nova senha" autocomplete="new-password" /> 
+
+                <div id="validacao-container">
+                    <ul id="criterios-lista">
+                        <li id="criterio-length">Mínimo de 8 caracteres</li>
+                        <li id="criterio-uppercase">Pelo menos 1 letra maiúscula</li>
+                        <li id="criterio-lowercase">Pelo menos 1 letra minúscula</li>
+                        <li id="criterio-number">Pelo menos 1 número</li>
+                        <li id="criterio-special">Pelo menos 1 caractere especial</li>
+                    </ul>
+                </div>
+                <input type="password" id="confirmar-senha" placeholder="Confirmar senha" autocomplete="new-password" /> 
+                <div class="modal-actions">
+                    <button id="btn-cancelar" class="modal-btn-cancel">Cancelar</button> 
+                    <button id="btn-confirmar" class="modal-btn-confirm">Confirmar</button>
+                </div>
+            </div>
+        </div>
+        <button class="btn-salvar">Salvar alterações</button>
+
+        <div id="modal-email" class="modal hidden">
+            <div class="modal-content">
+                <h2>Alterar E-mail</h2>
+                <p>Digite o novo endereço de e-mail. Você receberá um link de confirmação nele.</p>
+                
+                <div class="input-group" style="margin-top: 1rem;">
+                    <label for="novo-email-input" class="label-cadastro">Novo E-mail</label>
+                    <input type="email" id="novo-email-input" placeholder="exemplo@dominio.com" class="input-cadastro">
+                    <div class="error-message" id="email-change-error"></div>
+                </div>
+                
+                <div class="modal-actions" style="margin-top: 1.5rem;">
+                    <button id="btn-cancelar-email" class="modal-btn-cancel">Cancelar</button>
+                    <button id="btn-confirmar-email" class="modal-btn-confirm">Salvar Alteração</button>
+                </div>
+            </div>
+        </div>
+
     <main>
         <div class="config-container">
             <div class="config-section">
@@ -78,27 +120,24 @@
             
             <div class="config-section">
                 <h2 class="config-titulo">Conta</h2>
-                
-                <div class="config-item">
-                    <div class="config-icon">
+
+                    <div class="config-item" id="item-alterar-senha"> <div class="config-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
-                            <path d="M208,80H176V56a48,48,0,0,0-96,0V80H48A16,16,0,0,0,32,96V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V96A16,16,0,0,0,208,80ZM96,56a32,32,0,0,1,64,0V80H96ZM208,208H48V96H208V208Z"></path>
-                        </svg>
+                            <path d="M208,80H176V56a48,48,0,0,0-96,0V80H48A16,16,0,0,0,32,96V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V96A16,16,0,0,0,208,80ZM96,56a32,32,0,0,1,64,0V80H96ZM208,208H48V96H208V208Z"></path> </svg>
                     </div>
                     <span class="config-label">Alterar senha</span>
-                    <button class="config-botao">Alterar</button>
+                    <span class="config-value">Alterar</span>
                 </div>
                 
-                <div class="config-item">
+                <div class="config-item" id="item-alterar-email"> 
                     <div class="config-icon">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
-                            <path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48ZM203.43,64,128,128.75,52.57,64ZM216,192H40V74.19l82.59,70.8a8,8,0,0,0,10.82,0L216,74.19V192Z"></path>
+                        <path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48ZM203.43,64,128,133.15,52.57,64ZM216,192H40V74.19l82.59,75.71a8,8,0,0,0,10.82,0L216,74.19V192Z"></path>
                         </svg>
                     </div>
                     <span class="config-label">Alterar e-mail</span>
-                    <button class="config-botao">Alterar</button>
+                    <span class="config-value">Alterar</span> </div>
                 </div>
-            </div>
             
             <div class="config-section">
                 <h2 class="config-titulo">Informações</h2>
@@ -133,11 +172,9 @@
                     <span class="config-value">1.0.2</span>
                 </div>
             </div>
-            
-            <button class="btn-salvar">Salvar alterações</button>
         </div>
     </main>
-    <%- include ('partials/navbar.ejs')%>
+    <%- include ('partials/navbar.ejs') %>
     <script src="js/global.js"></script>
     <script src="js/configuracoes.js"></script></body>
 </html>

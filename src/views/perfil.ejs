@@ -17,7 +17,7 @@
                 <div class="perfil-avatar">
                     <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" viewBox="0 0 256 256"><path d="M128,24a80,80,0,1,0,80,80A80.09,80.09,0,0,0,128,24Zm0,144a64,64,0,1,1,64-64A64.07,64.07,0,0,1,128,168Z"></path><path d="M231.94,216.78A111.4,111.4,0,0,0,128,144H112a111.4,111.4,0,0,0-103.94,72.78,8,8,0,1,0,15.88,4.44A95.4,95.4,0,0,1,112,160h16a95.4,95.4,0,0,1,88.06,61.22,8,8,0,1,0,15.88-4.44Z"></path></svg>
                 </div>
-                <h2 class="perfil-nome"><%= user.full_name %></h2>
+                <h2 class="perfil-nome"><%= user.nome_completo %></h2>
                 <p class="perfil-email"><%= user.email %></p>
             </div>
 
@@ -25,11 +25,11 @@
                 <h3 class="section-title">Informações Pessoais</h3>
                 <div class="perfil-item">
                     <strong>Telefone:</strong>
-                    <span id="perfil-telefone"><%= user.phone %></span>
+                    <span id="perfil-telefone"><%= user.telefone %></span>
                 </div>
                 <div class="perfil-item">
                     <strong>Data de Nascimento:</strong>
-                    <span id="perfil-nascimento"><%= user.birth_date %></span>
+                    <span id="perfil-nascimento"><%= user.data_nascimento %></span>
                 </div>
                 <div class="perfil-item">
                     <strong>CPF:</strong>
@@ -42,19 +42,19 @@
                 <h3 class="section-title">Endereço</h3>
                  <div class="perfil-item">
                     <strong>CEP:</strong>
-                    <span id="perfil-cep"><%= user.address.cep %></span>
+                    <span id="perfil-cep"><%= user.endereco.cep %></span>
                 </div>
                 <div class="perfil-item">
                     <strong>Logradouro:</strong>
-                    <span><%= user.address.street %>, <%= user.address.number %></span>
+                    <span><%= user.endereco.logradouro %>, <%= user.endereco.numero %></span>
                 </div>
                 <div class="perfil-item">
                     <strong>Bairro:</strong>
-                    <span><%= user.address.neighborhood %></span>
+                    <span><%= user.endereco.bairro %></span>
                 </div>
                 <div class="perfil-item">
                     <strong>Cidade/UF:</strong>
-                    <span><%= user.address.city %> - <%= user.address.state %></span>
+                    <span><%= user.endereco.cidade %> - <%= user.endereco.estado %></span>
                 </div>
                 <a href="/atualizar-endereco" class="btn-editar">Editar Endereço</a>
             </div>

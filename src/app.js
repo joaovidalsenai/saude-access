@@ -8,7 +8,7 @@ import path, { join } from 'path';
 
 import pages from './routes/pages.routes.js';
 import auth from './routes/auth.routes.js';
-import perfil from './routes/perfil.routes.js';
+import usuario from './routes/usuario.routes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -20,7 +20,7 @@ app.use(express.static(join(__dirname, '../public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(pages);
 app.use(auth);
-app.use(perfil);
+app.use(usuario);
 
 // ===== INICIALIZAÇÃO DO SERVIDOR =====
 const PORT = process.env.PORT || alternativePORT;

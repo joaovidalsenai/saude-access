@@ -1,58 +1,11 @@
 import express from 'express';
-import protect from '../middlewares/protectRoute.js';
+import protect from '../middlewares/protect.route.js';
 import supabase from "../db/supabase.js";
 
-const perfil = express();
-
-// Endpoint para buscar os dados completos do usuário
-perfil.get('perfil/dados', protect.partially, async (req, res) => {
-    try {
-        const tokenDeAcesso = req.cookies['sb-access-token'];
-        if (!tokenDeAcesso) {
-            return res.status(401).json({ error: 'Token de acesso não fornecido.' });
-        }
-
-        const { data: { user }, error: erroAuth } = await supabase.auth.getUser(tokenDeAcesso);
-        if (erroAuth || !user) {
-            return res.status(401).json({ error: 'Usuário não autenticado ou token inválido.' });
-        }
-
-        // Busca o perfil e o endereço juntos usando um JOIN
-        // A sintaxe 'enderecos(*)' instrui o Supabase a buscar todas as colunas
-        // da tabela relacionada 'enderecos'.
-        const { data: dadosDoPerfil, error: erroPerfil } = await supabase
-            .from('perfis') // Tabela em português
-            .select(`
-                *,
-                enderecos (*) 
-            `) // Tabela relacionada em português
-            .eq('id', user.id)
-            .single();
-
-        if (erroPerfil || !dadosDoPerfil) {
-            console.error('Erro ao buscar perfil e endereço:', erroPerfil?.message);
-            return res.status(404).json({ error: 'Perfil do usuário não encontrado.' });
-        }
-
-        // Os dados vêm aninhados. Vamos organizá-los para o cliente.
-        const perfilCompletoperfil = {
-            ...dadosDoPerfil,
-            email: user.email,
-            endereco: dadosDoPerfil.enderecos, // Atribui o objeto de endereço aninhado
-        };
-        delete perfilCompletoperfil.enderecos; // Limpa a propriedade aninhada original
-
-        res.status(200).json(perfilCompletoperfil);
-
-    } catch (e) {
-        console.error('Erro inesperado no endpoint /api/user/data:', e.message);
-        res.status(500).json({ error: 'Erro interno do servidor.' });
-    }
-});
-
+const usuario = express.Router();
 
 // Endpoint para completar o cadastro do usuário
-perfil.post('/perfil/completar', protect.partially, async (req, res) => {
+usuario.post('/usuario/completar', protect.partially, async (req, res) => {
     const tokenDeAcesso = req.cookies['sb-access-token'];
     const { data: { user }, error: erroAuth } = await supabase.auth.getUser(tokenDeAcesso);
 
@@ -115,4 +68,4 @@ perfil.post('/perfil/completar', protect.partially, async (req, res) => {
     res.status(201).json({ message: 'Cadastro finalizado com sucesso!' });
 });
 
-export default perfil;
+export default usuario;

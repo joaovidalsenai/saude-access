@@ -1,9 +1,9 @@
 import express from 'express';
 import { fileURLToPath } from 'url';
 import path, { join } from 'path';
-import protect from '../middlewares/protectRoute.js';
+import protect from '../middlewares/protect.route.js';
 import formatar from '../utils/formatar.js';
-
+import dadosUsuario, { AuthError, NotFoundError } from '../middlewares/dadosUsuario.js';
 import cookieParser from 'cookie-parser';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -43,43 +43,29 @@ pages.get('/inicio', protect.entirely, (req, res) => res.render('inicio'));
 
 pages.get('/perfil', protect.entirely, async (req, res) => {
     try {
-        // 1. Obter o usuário autenticado a partir do cookie
-        const accessToken = req.cookies['sb-access-token'];
-        const { data: { user } } = await supabase.auth.getUser(accessToken);
+        const tokenDeAcesso = req.cookies['sb-access-token'];
+        const userProfile = await dadosUsuario(tokenDeAcesso); // Chama o serviço
 
-        if (!user) {
-            // Se não houver usuário, redireciona para o login
-            return res.redirect('/login');
-        }
-
-        // 2. Buscar os dados do perfil na tabela 'profiles'
-        const { data: profile, error } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', user.id)
-            .single(); // .single() para obter um único objeto
-
-        if (error || !profile) {
-            // Se o perfil não for encontrado, pode ser um erro ou o usuário ainda não completou o cadastro
-            console.error('Perfil não encontrado:', error?.message);
-            // Redireciona para a página de cadastro para completar as informações
-            return res.redirect('/cadastroInfo');
-        }
-        
-        // Adiciona o email do usuário ao objeto do perfil
-        const userProfile = {
-            ...profile,
-            email: user.email 
-        };
-
-        // 3. Renderizar a página 'perfil.ejs' com os dados do usuário
+        // Se chegou aqui, os dados foram encontrados com sucesso
         res.render('perfil', { user: userProfile });
 
     } catch (e) {
+        // Agora tratamos os erros específicos lançados pelo serviço
+        if (e instanceof NotFoundError) {
+            // Se o perfil não existe, o usuário precisa completar o cadastro
+            return res.redirect('/cadastro-info');
+        }
+        if (e instanceof AuthError) {
+            // Se o token é inválido ou ausente, manda para o login
+            return res.redirect('/login');
+        }
+
+        // Para qualquer outro erro inesperado
         console.error('Erro ao carregar a página de perfil:', e.message);
-        res.redirect('/login');
+        res.redirect('/inicio');
     }
 });
+
 pages.get('/configuracoes', protect.entirely, (req, res) => res.render('configuracoes'));
 pages.get('/historico', protect.entirely, (req, res) => res.render('hospitais', { titulo: "Histórico" , hospitais }));
 pages.get('/suporte-tecnico', protect.entirely, (req, res) => res.render('suporte-tecnico'));
@@ -108,6 +94,6 @@ pages.get('/hospitais', protect.entirely, (req, res) => {
 pages.get('/hospitais-procurados', protect.entirely, (req, res) => res.render('hospitaisLista', { titulo: "Hospitais Cadastrados" , hospitais }));
 pages.get('/hospitais-proximos', protect.entirely, (req, res) => res.render('hospitaisLista', { titulo: "Hospitais Cadastrados" , hospitais }));
 
-pages.get('/cadastrar-info', protect.partially, (req, res) => res.render('cadastroInfo'));
+pages.get('/cadastro-info', protect.partially, (req, res) => res.render('cadastroInfo'));
 
 export default pages;
