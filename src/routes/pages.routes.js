@@ -44,7 +44,16 @@ pages.get('/inicio', protect.entirely, (req, res) => res.render('inicio'));
 pages.get('/perfil', protect.entirely, async (req, res) => {
     try {
         const tokenDeAcesso = req.cookies['sb-access-token'];
-        const userProfile = await dadosUsuario(tokenDeAcesso); // Chama o serviço
+        const rawUserProfile = await dadosUsuario(tokenDeAcesso); // Chama o serviço
+
+        const userProfile = {
+          nome: formatar.nome(rawUserProfile.nome_completo),
+          cpf: formatar.cpf(rawUserProfile.cpf),
+          telefone: formatar.telefone(rawUserProfile.telefone),
+          data_nascimento: formatar.data(rawUserProfile.data_nascimento),
+          email: rawUserProfile.email
+
+        }
 
         // Se chegou aqui, os dados foram encontrados com sucesso
         res.render('perfil', { user: userProfile });
