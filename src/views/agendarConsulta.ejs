@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/css/agendarConsulta.css">
-
-    <title><%= titulo %></title>
-    
+    <title>Saúde Access</title>
     <link rel="stylesheet" href="/css/protected.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="js/auth-utils.js"></script>
@@ -16,34 +14,54 @@
         <a onclick="history.back()" class="voltar-btn" aria-label="Voltar">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M228,128a12,12,0,0,1-12,12H69l51.52,51.51a12,12,0,0,1-17,17l-72-72a12,12,0,0,1,0-17l72-72a12,12,0,0,1,17,17L69,116H216A12,12,0,0,1,228,128Z"></path></svg>
         </a>
-        <h1><%= tituloPagina %></h1> [cite: 2]
+        <h1>Agendar Consulta</h1>
     </header>
     <main>
         <section>
             <h2>Especialidade</h2>
             <div class="especialidade-grid">
-                <% especialidades.forEach(especialidade => { %>
-                    <div class="especialidade-option" data-especialidade="<%= especialidade.id %>">
-                        <%- especialidade.svg %> <span><%= especialidade.nome %></span> [cite: 3]
-                    </div>
-                <% }) %>
+                <div class="especialidade-option" data-especialidade="cardiologia">
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M178,40c-20.65,0-38.73,8.88-50,23.89C116.73,48.88,98.65,40,78,40a62.07,62.07,0,0,0-62,62c0,70,103.79,126.66,108.21,129a8,8,0,0,0,7.58,0C136.21,228.66,240,172,240,102A62.07,62.07,0,0,0,178,40ZM128,214.8C109.74,204.16,32,155.69,32,102A46.06,46.06,0,0,1,78,56c19.45,0,35.78,10.36,42.6,27a8,8,0,0,0,14.8,0c6.82-16.67,23.15-27,42.6-27a46.06,46.06,0,0,1,46,46C224,155.61,146.24,204.15,128,214.8Z"></path></svg>                    <span>Cardiologia</span>
+                </div>
+                <div class="especialidade-option" data-especialidade="ortopedia">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M231.67,60.89a35.82,35.82,0,0,0-23.82-12.74,36,36,0,1,0-66.37,22.92.25.25,0,0,1,0,.08L71.17,141.51s0,0-.1,0a36,36,0,1,0-22.92,66.37,36,36,0,1,0,66.37-22.92.54.54,0,0,1,0-.08l70.35-70.36s0,0,.1,0a36,36,0,0,0,46.74-53.63ZM219.1,97.16a20,20,0,0,1-25.67,3.8,16,16,0,0,0-19.88,2.19l-70.4,70.4A16,16,0,0,0,101,193.43a20,20,0,1,1-36.75,7.5,8,8,0,0,0-7.91-9.24,8.5,8.5,0,0,0-1.23.1A20,20,0,1,1,62.57,155a16,16,0,0,0,19.88-2.19l70.4-70.4A16,16,0,0,0,155,62.57a20,20,0,1,1,36.75-7.5,8,8,0,0,0,9.14,9.14,20,20,0,0,1,18.17,33Z"></path></svg>
+                    <span>Ortopedia</span>
+                </div>
+                <div class="especialidade-option" data-especialidade="neurologia">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M248,124a56.11,56.11,0,0,0-32-50.61V72a48,48,0,0,0-88-26.49A48,48,0,0,0,40,72v1.39a56,56,0,0,0,0,101.2V176a48,48,0,0,0,88,26.49A48,48,0,0,0,216,176v-1.41A56.09,56.09,0,0,0,248,124ZM88,208a32,32,0,0,1-31.81-28.56A55.87,55.87,0,0,0,64,180h8a8,8,0,0,0,0-16H64A40,40,0,0,1,50.67,86.27,8,8,0,0,0,56,78.73V72a32,32,0,0,1,64,0v68.26A47.8,47.8,0,0,0,88,128a8,8,0,0,0,0,16,32,32,0,0,1,0,64Zm104-44h-8a8,8,0,0,0,0,16h8a55.87,55.87,0,0,0,7.81-.56A32,32,0,1,1,168,144a8,8,0,0,0,0-16,47.8,47.8,0,0,0-32,12.26V72a32,32,0,0,1,64,0v6.73a8,8,0,0,0,5.33,7.54A40,40,0,0,1,192,164Zm16-52a8,8,0,0,1-8,8h-4a36,36,0,0,1-36-36V80a8,8,0,0,1,16,0v4a20,20,0,0,0,20,20h4A8,8,0,0,1,208,112ZM60,120H56a8,8,0,0,1,0-16h4A20,20,0,0,0,80,84V80a8,8,0,0,1,16,0v4A36,36,0,0,1,60,120Z"></path></svg>
+                    <span>Neurologia</span>
+                </div>
+                <div class="especialidade-option" data-especialidade="pediatria">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256"><path d="M92,140a12,12,0,1,1,12-12A12,12,0,0,1,92,140Zm72-24a12,12,0,1,0,12,12A12,12,0,0,0,164,116Zm-12.27,45.23a45,45,0,0,1-47.46,0,8,8,0,0,0-8.54,13.54,61,61,0,0,0,64.54,0,8,8,0,0,0-8.54-13.54ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88.11,88.11,0,0,0-84.09-87.91C120.32,56.38,120,71.88,120,72a8,8,0,0,0,16,0,8,8,0,0,1,16,0,24,24,0,0,1-48,0c0-.73.13-14.3,8.46-30.63A88,88,0,1,0,216,128Z"></path></svg>                    <span>Pediatria</span>
+                </div>
             </div>
         </section>
 
         <section>
-            <h2>Data e Horário</h2> [cite: 6]
+            <h2>Data e Horário</h2>
             <div class="form-group">
                 <label for="data">Data da consulta</label>
                 <input type="date" id="data" required>
             </div>
             <div class="form-group">
-                <label>Horários disponíveis</label> [cite: 7]
+                <label>Horários disponíveis</label>
                 <div class="horarios-grid">
-                    <% horarios.forEach(horario => { %>
-                        <div class="horario-option <%= !horario.disponivel ? 'indisponivel' : '' %>" data-horario="<%= horario.hora %>">
-                            <%= horario.hora %>
-                        </div>
-                    <% }) %>
+                    <div class="horario-option" data-horario="08:00">08:00</div>
+                    <div class="horario-option" data-horario="08:30">08:30</div>
+                    <div class="horario-option" data-horario="09:00">09:00</div>
+                    <div class="horario-option indisponivel" data-horario="09:30">09:30</div>
+                    <div class="horario-option" data-horario="10:00">10:00</div>
+                    <div class="horario-option" data-horario="10:30">10:30</div>
+                    <div class="horario-option" data-horario="11:00">11:00</div>
+                    <div class="horario-option indisponivel" data-horario="11:30">11:30</div>
+                    <div class="horario-option" data-horario="14:00">14:00</div>
+                    <div class="horario-option" data-horario="14:30">14:30</div>
+                    <div class="horario-option" data-horario="15:00">15:00</div>
+                    <div class="horario-option" data-horario="15:30">15:30</div>
+                    <div class="horario-option" data-horario="16:00">16:00</div>
+                    <div class="horario-option indisponivel" data-horario="16:30">16:30</div>
+                    <div class="horario-option" data-horario="17:00">17:00</div>
+                    <div class="horario-option" data-horario="17:30">17:30</div>
                 </div>
             </div>
         </section>
@@ -57,7 +75,7 @@
             <div class="alerta-info">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm-8-80V80a8,8,0,0,1,16,0v56a8,8,0,0,1-16,0Zm20,36a12,12,0,1,1-12-12A12,12,0,0,1,140,172Z"></path></svg>
                 <div class="alerta-texto">
-                    <strong>Importante:</strong> Chegue com 15 minutos de antecedência e traga um documento com foto. Em caso de emergência, procure o pronto-socorro. [cite: 13]
+                    <strong>Importante:</strong> Chegue com 15 minutos de antecedência e traga um documento com foto. Em caso de emergência, procure o pronto-socorro.
                 </div>
             </div>
         </section>
@@ -66,12 +84,12 @@
             <h2>Resumo do Agendamento</h2>
             <div class="resumo-agendamento">
                 <div class="resumo-item">
-                    <span class="resumo-label">Hospital:</span> [cite: 14]
-                    <span class="resumo-valor"><%= hospital.nome %></span>
+                    <span class="resumo-label">Hospital:</span>
+                    <span class="resumo-valor">Hospital São Rafael</span>
                 </div>
                 <div class="resumo-item">
                     <span class="resumo-label">Especialidade:</span>
-                    <span class="resumo-valor" id="resumo-especialidade">Selecione uma especialidade</span> [cite: 15]
+                    <span class="resumo-valor" id="resumo-especialidade">Selecione uma especialidade</span>
                 </div>
                 <div class="resumo-item">
                     <span class="resumo-label">Data:</span>
@@ -83,44 +101,13 @@
                 </div>
             </div>
             
-            <button type="button" class="btn-agendar" id="btn-confirmar" disabled> [cite: 17]
+            <button type="button" class="btn-agendar" id="btn-confirmar" disabled>
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#ffffff" viewBox="0 0 256 256"><path d="M173.66,98.34a8,8,0,0,1,0,11.32l-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35A8,8,0,0,1,173.66,98.34ZM232,128A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"></path></svg>
                 Confirmar Agendamento
             </button>
         </section>
     </main>
-    <nav>
-        <ul class="nav-list">
-            <li class="nav-item"> [cite: 18]
-                <a href="/inicio">
-                <button type="button" class="nav-button" aria-label="Início">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#fffafa" viewBox="0 0 256 256"><path d="M219.31,108.68l-80-80a16,16,0,0,0-22.62,0l-80,80A15.87,15.87,0,0,0,32,120v96a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V160h32v56a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V120A15.87,15.87,0,0,0,219.31,108.68ZM208,208H160V152a8,8,0,0,0-8-8H104a8,8,0,0,0-8,8v56H48V120l80-80,80,80Z"></path></svg>
-                </button>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="/historico">
-                <button type="button" class="nav-button" aria-label="Histórico">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#fffafa" viewBox="0 0 256 256"><path d="M136,80v43.47l36.12,21.67a8,8,0,0,1-8.24,13.72l-40-24A8,8,0,0,1,120,128V80a8,8,0,0,1,16,0Zm-8-48A95.44,95.44,0,0,0,60.08,60.15C52.81,67.51,46.35,74.59,40,82V64a8,8,0,0,0-16,0v40a8,8,0,0,0,8,8H72a8,8,0,0,0,0-16H49c7.15-8.42,14.27-16.35,22.39-24.57a80,80,0,1,1,1.66,114.75,8,8,0,1,0-11,11.64A96,96,0,1,0,128,32Z"></path></svg>
-                </button> [cite: 20]
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="/perfil">
-                <button type="button" class="nav-button" aria-label="Perfil">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#fffafa" viewBox="0 0 256 256"><path d="M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z"></path></svg> [cite: 21]
-                </button>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a href="/configuracoes">
-                    <button type="button" class="nav-button" aria-label="Localização"> [cite: 22]
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="#ffffff" viewBox="0 0 256 256"><path d="M128,80a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Zm88-29.84q.06-2.16,0-4.32l14.92-18.64a8,8,0,0,0,1.48-7.06,107.21,107.21,0,0,0-10.88-26.25,8,8,0,0,0-6-3.93l-23.72-2.64q-1.48-1.56-3-3L186,40.54a8,8,0,0,0-3.94-6,107.71,107.71,0,0,0-26.25-10.87,8,8,0,0,0-7.06,1.49L130.16,40Q128,40,125.84,40L107.2,25.11a8,8,0,0,0-7.06-1.48A107.6,107.6,0,0,0,73.89,34.51a8,8,0,0,0-3.93,6L67.32,64.27q-1.56,1.49-3,3L40.54,70a8,8,0,0,0-6,3.94,107.71,107.71,0,0,0-10.87,26.25,8,8,0,0,0,1.49,7.06L40,125.84Q40,128,40,130.16L25.11,148.8a8,8,0,0,0-1.48,7.06,107.21,107.21,0,0,0,10.88,26.25,8,8,0,0,0,6,3.93l23.72,2.64q1.49,1.56,3,3L70,215.46a8,8,0,0,0,3.94,6,107.71,107.71,0,0,0,26.25,10.87,8,8,0,0,0,7.06-1.49L125.84,216q2.16.06,4.32,0l18.64,14.92a8,8,0,0,0,7.06,1.48,107.21,107.21,0,0,0,26.25-10.88,8,8,0,0,0,3.93-6l2.64-23.72q1.56-1.48,3-3L215.46,186a8,8,0,0,0,6-3.94,107.71,107.71,0,0,0,10.87-26.25,8,8,0,0,0-1.49-7.06Zm-16.1-6.5a73.93,73.93,0,0,1,0,8.68,8,8,0,0,0,1.74,5.48l14.19,17.73a91.57,91.57,0,0,1-6.23,15L187,173.11a8,8,0,0,0-5.1,2.64,74.11,74.11,0,0,1-6.14,6.14,8,8,0,0,0-2.64,5.1l-2.51,22.58a91.32,91.32,0,0,1-15,6.23l-17.74-14.19a8,8,0,0,0-5-1.75h-.48a73.93,73.93,0,0,1-8.68,0,8,8,0,0,0-5.48,1.74L100.45,215.8a91.57,91.57,0,0,1-15-6.23L82.89,187a8,8,0,0,0-2.64-5.1,74.11,74.11,0,0,1-6.14-6.14,8,8,0,0,0-5.1-2.64L46.43,170.6a91.32,91.32,0,0,1-6.23-15l14.19-17.74a8,8,0,0,0,1.74-5.48,73.93,73.93,0,0,1,0-8.68,8,8,0,0,0-1.74-5.48L40.2,100.45a91.57,91.57,0,0,1,6.23-15L69,82.89a8,8,0,0,0,5.1-2.64,74.11,74.11,0,0,1,6.14-6.14A8,8,0,0,0,82.89,69L85.4,46.43a91.32,91.32,0,0,1,15-6.23l17.74,14.19a8,8,0,0,0,5.48,1.74,73.93,73.93,0,0,1,8.68,0,8,8,0,0,0,5.48-1.74L155.55,40.2a91.57,91.57,0,0,1,15,6.23L173.11,69a8,8,0,0,0,2.64,5.1,74.11,74.11,0,0,1,6.14,6.14,8,8,0,0,0,5.1,2.64l22.58,2.51a91.32,91.32,0,0,1,6.23,15l-14.19,17.74A8,8,0,0,0,199.87,123.66Z"></path></svg>
-                    </button>
-                </a>
-            </li>
-        </ul>
-    </nav>
+    <%- include ('partials/navbar.ejs')%>
     <script src="js/global.js"></script>
     <script src="js/agendarConsulta.js"></script>
 </body>

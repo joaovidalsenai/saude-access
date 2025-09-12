@@ -1,8 +1,69 @@
-// public/js/auth-utils.js
+// V_2025.09.08
+/**
+ * AuthUtils - Funções Utilitárias de Autenticação e Formatação
+ * Este arquivo centraliza funções para autenticação, validação,
+ * exibição de mensagens e formatação de dados.
+ */
 
-// REMOVIDO: initSupabase, verificarLogin, verificarSessao, etc.
+// ==================================
+// FUNÇÕES DE FORMATAÇÃO
+// ==================================
 
-// Sistema unificado de mensagens (permanece o mesmo)
+/**
+ * Formata um valor para o padrão de CPF (000.000.000-00).
+ * @param {string} valor O valor a ser formatado.
+ * @returns {string} O valor formatado como CPF.
+ */
+function formatarCPF(valor) {
+    if (!valor) return '';
+    valor = String(valor).replace(/\D/g, '').substring(0, 11);
+    if (valor.length > 9) return valor.replace(/(\d{3})(\d{3})(\d{3})(\d{2})/, '$1.$2.$3-$4');
+    if (valor.length > 6) return valor.replace(/(\d{3})(\d{3})(\d{3})/, '$1.$2.$3');
+    if (valor.length > 3) return valor.replace(/(\d{3})(\d{3})/, '$1.$2');
+    return valor;
+}
+
+/**
+ * Formata um valor para o padrão de telefone (XX) XXXXX-XXXX.
+ * @param {string} valor O valor a ser formatado.
+ * @returns {string} O valor formatado como telefone.
+ */
+function formatarTelefone(valor) {
+    if (!valor) return '';
+    valor = String(valor).replace(/\D/g, '').substring(0, 11);
+    if (valor.length === 11) return valor.replace(/(\d{2})(\d{5})(\d{4})/, '($1) $2-$3');
+    if (valor.length === 10) return valor.replace(/(\d{2})(\d{4})(\d{4})/, '($1) $2-$3');
+    return valor;
+}
+
+/**
+ * Formata um valor para o padrão de CEP (00000-000).
+ * @param {string} valor O valor a ser formatado.
+ * @returns {string} O valor formatado como CEP.
+ */
+function formatarCEP(valor) {
+    if (!valor) return '';
+    valor = String(valor).replace(/\D/g, '').substring(0, 8);
+    if (valor.length > 5) return valor.replace(/(\d{5})(\d{3})/, '$1-$2');
+    return valor;
+}
+
+/**
+ * Remove todos os caracteres não numéricos de uma string.
+ * @param {string} valor A string de entrada.
+ * @returns {string} A string contendo apenas números.
+ */
+function obterNumerosPuros(valor) {
+    if (!valor) return '';
+    return String(valor).replace(/\D/g, '');
+}
+
+
+// ==================================
+// FUNÇÕES DE UI E VALIDAÇÃO
+// ==================================
+
+// ... (seu código existente para mostrarMensagem, validarEmail, validarSenha)
 function mostrarMensagem(mensagem, tipo = 'info', elemento = null) {
     const mensagemAnterior = document.querySelector('.auth-mensagem');
     if (mensagemAnterior) {
@@ -17,16 +78,17 @@ function mostrarMensagem(mensagem, tipo = 'info', elemento = null) {
     mensagemDiv.className = 'auth-mensagem';
     mensagemDiv.style.cssText = `padding: 12px; border-radius: 5px; margin: 15px 0; text-align: center; ${Object.entries(estilos[tipo] || estilos.info).map(([p, v]) => `${p}: ${v}`).join('; ')}`;
     mensagemDiv.textContent = mensagem;
-    const container = elemento || document.querySelector('.btn-entrar, #btn-cadastrar')?.parentNode;
+    const container = elemento || document.querySelector('.btn-entrar, #btn-cadastrar, .btn-finalizar')?.parentNode;
     if (container) {
-        container.insertBefore(mensagemDiv, container.querySelector('.btn-entrar, #btn-cadastrar'));
+        container.insertBefore(mensagemDiv, container.querySelector('.btn-entrar, #btn-cadastrar, .btn-finalizar'));
     }
-    if (tipo !== 'sucesso') {
+    if (tipo === 'sucesso') {
+         setTimeout(() => { if (mensagemDiv.parentNode) mensagemDiv.remove(); }, 3000);
+    } else {
         setTimeout(() => { if (mensagemDiv.parentNode) mensagemDiv.remove(); }, 5000);
     }
 }
 
-// Funções de validação (permanecem as mesmas)
 function validarEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
@@ -45,94 +107,58 @@ function validarSenha(senha) {
     };
 }
 
-// NOVA: Função de Logout que chama o backend
-async function fazerLogout() {
-    try {
-        await fetch('/api/logout', { method: 'POST' });
-        // Redireciona para a página de login após o logout ser bem-sucedido
-        window.location.href = '/login';
-    } catch (error) {
-        console.error('Erro ao fazer logout:', error);
-        mostrarMensagem('Não foi possível fazer logout. Tente novamente.', 'erro');
-    }
-}
 
-// 1. Função para buscar os dados do usuário no backend
-async function obterDadosUsuario() {
-    try {
-        const response = await fetch('/api/user');
+// ==================================
+// FUNÇÕES DE AUTENTICAÇÃO (API)
+// ==================================
 
+async function autenticarUsuario() {
+    try {
+        const response = await fetch('/auth');
         if (!response.ok) {
-            // Se a resposta não for OK (ex: 401), o cookie é inválido ou expirou.
-            // Redireciona para o login.
             window.location.href = '/login';
             return null;
         }
-
-        const user = await response.json();
-        return user;
-
+        return await response.json();
     } catch (error) {
-        console.error('Erro ao buscar dados do usuário:', error);
-        // Em caso de erro de rede, também redireciona para o login.
+        console.error('Erro ao autenticar usuário:', error);
         window.location.href = '/login';
         return null;
     }
 }
 
-// 2. Função para preencher elementos HTML com os dados do usuário
-function preencherInfoUsuario(user) {
-    if (!user) return;
 
-    // Preenche elementos que exibem o nome/email do usuário
-    const elementosEmail = document.querySelectorAll('.perfil-email');
-    elementosEmail.forEach(el => el.textContent = user.email);
-
-}
-
-// --- ATUALIZAÇÃO: Gatilho de Carregamento da Página ---
+// ==================================
+// INICIALIZAÇÃO E ESCOPO GLOBAL
+// ==================================
 
 // Adiciona um listener que roda em TODAS as páginas.
-// Se a página for protegida, ele busca e preenche os dados do usuário.
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
     // Adiciona listener aos botões de logout
-    const logoutButtons = document.querySelectorAll('.btn-logout');
-    logoutButtons.forEach(button => {
-        button.addEventListener('click', (e) => {
-            e.preventDefault();
-            AuthUtils.fazerLogout();
-        });
-    });
+
 
     // VERIFICA SE A PÁGINA É PROTEGIDA
-    // (Você pode adicionar uma classe 'protected' ao <body> das suas páginas restritas)
     if (document.body.classList.contains('protected')) {
-        const user = await obterDadosUsuario();
-        if (user) {
-            preencherInfoUsuario(user);
-            // Torna o conteúdo principal visível após carregar os dados
-            document.body.style.visibility = 'visible';
-        }
+        autenticarUsuario().then(user => {
+            if (user) {
+                // Torna o conteúdo principal visível
+                document.body.style.visibility = 'visible';
+            }
+        });
     }
 });
 
 // Exporta as funções úteis para o escopo global (window)
 window.AuthUtils = {
+    // UI e Validação
     mostrarMensagem,
     validarEmail,
     validarSenha,
-    fazerLogout,
-    obterDadosUsuario, // Exporta a nova função
-    preencherInfoUsuario // Exporta a nova função
+    // Autenticação
+    autenticarUsuario,
+    // Formatação
+    formatarCPF,
+    formatarTelefone,
+    formatarCEP,
+    obterNumerosPuros
 };
-
-// Adiciona um listener para botões de logout em qualquer página
-document.addEventListener('DOMContentLoaded', () => {
-    const logoutButtons = document.querySelectorAll('.btn-logout');
-    logoutButtons.forEach(button => {
-        button.addEventListener('click', (e) => {
-            e.preventDefault();
-            AuthUtils.fazerLogout();
-        });
-    });
-});

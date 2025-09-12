@@ -1,5 +1,39 @@
 @import url('global.css');
 
+/* Estilos para as abas, integrados com a identidade visual */
+.perfil-tabs {
+    display: flex;
+    width: 100%;
+    border-bottom: 2px solid var(--cinza-generico, #d9d9d9);
+    margin-bottom: 1.5rem;
+}
+
+.tab-button {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-fg);
+    opacity: 0.7;
+    transition: all 0.3s ease;
+    border-bottom: 3px solid transparent;
+    margin-bottom: -2px; /* Alinha com a borda do container */
+}
+
+.tab-button.active {
+    opacity: 1;
+    font-weight: 600;
+    color: var(--azul-generico, #1c69e3);
+    border-bottom-color: var(--azul-generico, #1c69e3);
+}
+
+/* Classe para ocultar o conteúdo da aba inativa */
+.perfil-content.hidden {
+    display: none;
+}
+
 .perfil-container {
     width: 100%;
     max-width: 500px;
@@ -61,6 +95,11 @@
     gap: 1.5rem;
 }
 
+/* Garantindo que todos os conteúdos das abas tenham a mesma largura */
+.perfil-content {
+    width: 100%;
+}
+
 .perfil-item {
     width: 100%;
     background-color: var(--color-bg);
@@ -70,6 +109,7 @@
     display: flex;
     align-items: center;
     transition: all 0.3s ease;
+    box-sizing: border-box; /* Garante que padding não afete a largura total */
 }
 
 .perfil-item:hover {
@@ -99,6 +139,7 @@
     flex: 1;
     display: flex;
     flex-direction: column;
+    width: 100%; /* Garante que ocupe toda largura disponível */
 }
 
 .label-perfil {
@@ -112,6 +153,7 @@
     color: var(--azul-generico);
     font-weight: 500;
     font-size: 1rem;
+    word-break: break-word; /* Quebra texto longo se necessário */
 }
 
 .btn-sair {

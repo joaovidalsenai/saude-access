@@ -3,65 +3,143 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= tituloPagina %></title>
+    <title>Saúde Access</title>
     <link rel="stylesheet" href="/css/suporteTecnico.css">
 </head>
 <body>
     <header>
-        <h1><%= tituloHeader %></h1>
+        <h1>Suporte Técnico</h1>
     </header>
 
     <main>
-        <!-- Status -->
+        <!-- Status do Sistema -->
         <section>
             <h2>Status do Sistema</h2>
             <div class="contact-item">
                 <div class="contact-icon">
-                    <%- iconeStatus %>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                        <path d="m9 12 2 2 4-4"/>
+                    </svg>
                 </div>
                 <div>
-                    <strong><%= statusTitulo %></strong><br>
-                    <span class="status-indicator <%= statusClass %>"></span>
-                    <%= statusMensagem %>
+                    <strong>Sistemas Operacionais</strong><br>
+                    <span class="status-indicator status-online"></span>Todos os serviços funcionando normalmente
                 </div>
             </div>
         </section>
 
-        <!-- FAQ dinâmico -->
+        <!-- FAQ -->
         <section>
             <h2>Perguntas Frequentes</h2>
-            <% faqs.forEach(faq => { %>
-                <div class="faq-item">
-                    <div class="faq-question" onclick="toggleFaq(this)">
-                        <h3><%= faq.pergunta %></h3>
-                        <%- iconeFaq %>
-                    </div>
-                    <div class="faq-answer">
-                        <p><%= faq.resposta %></p>
-                    </div>
+            
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h3>Como buscar hospitais próximos?</h3>
+                    <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9l6 6 6-6"/>
+                    </svg>
                 </div>
-            <% }) %>
+                <div class="faq-answer">
+                    <p>Use a barra de busca na página inicial para pesquisar por nome do hospital ou localização. O sistema mostrará os hospitais mais próximos automaticamente.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h3>Como funciona o sistema de avaliações?</h3>
+                    <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9l6 6 6-6"/>
+                    </svg>
+                </div>
+                <div class="faq-answer">
+                    <p>As avaliações são baseadas em dados oficiais e feedback dos usuários. Cada hospital recebe uma nota de 1 a 5 estrelas baseada em critérios como atendimento, infraestrutura e tempo de espera.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h3>Posso usar o app offline?</h3>
+                    <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9l6 6 6-6"/>
+                    </svg>
+                </div>
+                <div class="faq-answer">
+                    <p>Algumas funcionalidades básicas estão disponíveis offline, mas para buscar hospitais e ver informações atualizadas, é necessária conexão com a internet.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h3>Como alterar entre tema claro e escuro?</h3>
+                    <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9l6 6 6-6"/>
+                    </svg>
+                </div>
+                <div class="faq-answer">
+                    <p>Clique no ícone do sol/lua no canto superior da tela para alternar entre os temas claro e escuro.</p>
+                </div>
+            </div>
+
+            <div class="faq-item">
+                <div class="faq-question" onclick="toggleFaq(this)">
+                    <h3>Os dados dos hospitais são atualizados?</h3>
+                    <svg class="faq-arrow" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 9l6 6 6-6"/>
+                    </svg>
+                </div>
+                <div class="faq-answer">
+                    <p>Sim, nossa base de dados é atualizada regularmente com informações oficiais dos órgãos de saúde e feedback dos usuários.</p>
+                </div>
+            </div>
         </section>
 
         <!-- Contato -->
         <section>
             <h2>Entre em Contato</h2>
             <div class="contact-info">
-                <% contatos.forEach(c => { %>
-                    <div class="contact-item">
-                        <div class="contact-icon">
-                            <%- c.icone %>
-                        </div>
-                        <div>
-                            <strong><%= c.titulo %></strong><br>
-                            <%= c.valor %>
-                        </div>
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                            <polyline points="22,6 12,13 2,6"/>
+                        </svg>
                     </div>
-                <% }) %>
+                    <div>
+                        <strong>Email</strong><br>
+                        suporte@saudeaccess.br
+                    </div>
+                </div>
+
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <strong>Telefone</strong><br>
+                        0800 123 4567
+                    </div>
+                </div>
+
+                <div class="contact-item">
+                    <div class="contact-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 6v6l4 2"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <strong>Horário de Atendimento</strong><br>
+                        Segunda a Sexta: 8h às 18h<br>
+                        Sábado: 8h às 14h
+                    </div>
+                </div>
             </div>
         </section>
 
-        <!-- Formulário -->
+        <!-- Formulário de Contato -->
         <section>
             <h2>Envie sua Mensagem</h2>
             <form class="contact-form" onsubmit="enviarMensagem(event)">
@@ -79,9 +157,11 @@
                     <label for="assunto">Assunto</label>
                     <select id="assunto" name="assunto" required>
                         <option value="">Selecione um assunto</option>
-                        <% assuntos.forEach(a => { %>
-                            <option value="<%= a.value %>"><%= a.text %></option>
-                        <% }) %>
+                        <option value="bug">Reportar Bug</option>
+                        <option value="sugestao">Sugestão</option>
+                        <option value="duvida">Dúvida</option>
+                        <option value="problema">Problema Técnico</option>
+                        <option value="outro">Outro</option>
                     </select>
                 </div>
 
@@ -94,41 +174,56 @@
             </form>
         </section>
 
-        <!-- Recursos -->
+        <!-- Recursos Adicionais -->
         <section>
             <h2>Recursos Adicionais</h2>
             <div class="contact-info">
-                <% recursos.forEach(r => { %>
-                    <div class="contact-item" onclick="window.open('<%= r.link %>', '_blank')">
-                        <div class="contact-icon">
-                            <%- r.icone %>
-                        </div>
-                        <div>
-                            <strong><%= r.titulo %></strong><br>
-                            <%= r.descricao %>
-                        </div>
+                <div class="contact-item" onclick="window.open('#', '_blank')">
+                    <div class="contact-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14,2 14,8 20,8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                            <polyline points="10,9 9,9 8,9"/>
+                        </svg>
                     </div>
-                <% }) %>
+                    <div>
+                        <strong>Manual do Usuário</strong><br>
+                        Guia completo de uso da plataforma
+                    </div>
+                </div>
+
+                <div class="contact-item" onclick="window.open('#', '_blank')">
+                    <div class="contact-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+                            <path d="M12 17h.01"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <strong>Central de Ajuda</strong><br>
+                        Tutoriais e soluções rápidas
+                    </div>
+                </div>
+
+                <div class="contact-item" onclick="window.open('#', '_blank')">
+                    <div class="contact-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <strong>Chat Online</strong><br>
+                        <span class="status-indicator status-online"></span>Suporte ao vivo disponível
+                    </div>
+                </div>
             </div>
         </section>
     </main>
-
-    <!-- Navegação -->
-    <nav>
-        <ul class="nav-list">
-            <% navItens.forEach(n => { %>
-                <li class="nav-item">
-                    <a href="<%= n.href %>">
-                        <button type="button" class="nav-button" aria-label="<%= n.label %>">
-                            <%- n.icone %>
-                        </button>
-                    </a>
-                </li>
-            <% }) %>
-        </ul>
-    </nav>
-
-    <script src="/js/global.js"></script>
-    <script src="/js/scriptSupTecnico.js"></script>
+    <%- include ('partials/navbar.ejs')%>
+    <script src="js/global.js"></script>
+    <script src="js/scriptSupTecnico.js"></script>
 </body>
 </html>
