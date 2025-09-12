@@ -136,7 +136,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!response.ok) {
                 throw new Error(result.error || 'Ocorreu um erro ao salvar o perfil.');
             }
-            
+
             AuthUtils.mostrarMensagem('🎉 Dados salvos com sucesso!', 'sucesso');
             // Redirect to the dashboard after a short delay
             setTimeout(() => { window.location.href = '/inicio'; }, 1500);
