@@ -35,7 +35,7 @@ const authenticateUser = async (req, res, next) => {
 const authorizeFullAccess = (req, res, next) => {
   // This middleware assumes `authenticateUser` has already run and attached `req.user`
   if (req.user?.user_metadata?.full_user_access !== true) {
-    return res.redirect('/cadastrar-info');
+    return res.redirect('/cadastro/info');
   }
   next();
 };

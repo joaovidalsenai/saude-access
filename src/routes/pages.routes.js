@@ -51,8 +51,13 @@ pages.get('/perfil', protect.entirely, async (req, res) => {
           cpf: formatar.cpf(rawUserProfile.cpf),
           telefone: formatar.telefone(rawUserProfile.telefone),
           data_nascimento: formatar.data(rawUserProfile.data_nascimento),
-          email: rawUserProfile.email
-
+          email: rawUserProfile.email,
+          logradouro: rawUserProfile.endereco.logradouro,
+          numero: rawUserProfile.endereco.numero,
+          complemento: rawUserProfile.endereco.complemento || "NÃO INFORMADO",
+          cidade: rawUserProfile.endereco.cidade,
+          estado: rawUserProfile.endereco.estado,
+          cep: formatar.cep(rawUserProfile.endereco.cep)
         }
 
         // Se chegou aqui, os dados foram encontrados com sucesso
@@ -77,7 +82,7 @@ pages.get('/perfil', protect.entirely, async (req, res) => {
 
 pages.get('/configuracoes', protect.entirely, (req, res) => res.render('configuracoes'));
 pages.get('/historico', protect.entirely, (req, res) => res.render('hospitais', { titulo: "Histórico" , hospitais }));
-pages.get('/suporte-tecnico', protect.entirely, (req, res) => res.render('suporte-tecnico'));
+pages.get('/suporte', protect.entirely, (req, res) => res.render('suporte-tecnico'));
 pages.get('/avaliacao', protect.entirely, (req, res) => res.render('avaliacao'));
 pages.get('/agendar-consulta', protect.entirely, (req, res) => res.render('agendarConsulta'));
 pages.get('/hospital', protect.entirely, (req, res) => res.render('hospital'));
@@ -103,6 +108,6 @@ pages.get('/hospitais', protect.entirely, (req, res) => {
 pages.get('/hospitais-procurados', protect.entirely, (req, res) => res.render('hospitaisLista', { titulo: "Hospitais Cadastrados" , hospitais }));
 pages.get('/hospitais-proximos', protect.entirely, (req, res) => res.render('hospitaisLista', { titulo: "Hospitais Cadastrados" , hospitais }));
 
-pages.get('/cadastro-info', protect.partially, (req, res) => res.render('cadastroInfo'));
+pages.get('/cadastro/info', protect.partially, (req, res) => res.render('cadastroInfo'));
 
 export default pages;

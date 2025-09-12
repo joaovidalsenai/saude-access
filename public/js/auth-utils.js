@@ -112,16 +112,6 @@ function validarSenha(senha) {
 // FUNÇÕES DE AUTENTICAÇÃO (API)
 // ==================================
 
-async function fazerLogout() {
-    try {
-        await fetch('/auth/sair', { method: 'POST' });
-        window.location.href = '/login';
-    } catch (error) {
-        console.error('Erro ao fazer logout:', error);
-        mostrarMensagem('Não foi possível fazer logout. Tente novamente.', 'erro');
-    }
-}
-
 async function autenticarUsuario() {
     try {
         const response = await fetch('/auth');
@@ -145,12 +135,7 @@ async function autenticarUsuario() {
 // Adiciona um listener que roda em TODAS as páginas.
 document.addEventListener('DOMContentLoaded', () => {
     // Adiciona listener aos botões de logout
-    document.querySelectorAll('.btn-logout').forEach(button => {
-        button.addEventListener('click', (e) => {
-            e.preventDefault();
-            fazerLogout(); // Chama a função diretamente
-        });
-    });
+
 
     // VERIFICA SE A PÁGINA É PROTEGIDA
     if (document.body.classList.contains('protected')) {
@@ -170,7 +155,6 @@ window.AuthUtils = {
     validarEmail,
     validarSenha,
     // Autenticação
-    fazerLogout,
     autenticarUsuario,
     // Formatação
     formatarCPF,
