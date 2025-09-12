@@ -127,7 +127,6 @@ async function autenticarUsuario() {
     }
 }
 
-
 // ==================================
 // INICIALIZAÇÃO E ESCOPO GLOBAL
 // ==================================
@@ -135,7 +134,6 @@ async function autenticarUsuario() {
 // Adiciona um listener que roda em TODAS as páginas.
 document.addEventListener('DOMContentLoaded', () => {
     // Adiciona listener aos botões de logout
-
 
     // VERIFICA SE A PÁGINA É PROTEGIDA
     if (document.body.classList.contains('protected')) {

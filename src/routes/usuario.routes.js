@@ -64,7 +64,7 @@ usuario.post('/usuario/completar', protect.partially, async (req, res) => {
     await supabase.auth.updateUser({
         data: { full_user_access: true }
     });
-
+    
     res.status(201).json({ message: 'Cadastro finalizado com sucesso!' });
 });
 
