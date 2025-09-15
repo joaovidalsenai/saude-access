@@ -5,6 +5,7 @@ import protect from '../middlewares/protect.route.js';
 import formatar from '../utils/formatar.js';
 import dadosUsuario, { AuthError, NotFoundError } from '../middlewares/dadosUsuario.js';
 import cookieParser from 'cookie-parser';
+import supabase from '../db/supabase.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -67,7 +68,7 @@ pages.get('/perfil', protect.entirely, async (req, res) => {
         // Agora tratamos os erros específicos lançados pelo serviço
         if (e instanceof NotFoundError) {
             // Se o perfil não existe, o usuário precisa completar o cadastro
-            return res.redirect('/cadastro-info');
+            return res.redirect('/cadastro/info');
         }
         if (e instanceof AuthError) {
             // Se o token é inválido ou ausente, manda para o login
@@ -85,26 +86,49 @@ pages.get('/historico', protect.entirely, (req, res) => res.render('hospitais', 
 pages.get('/suporte', protect.entirely, (req, res) => res.render('suporte-tecnico'));
 pages.get('/avaliacao', protect.entirely, (req, res) => res.render('avaliacao'));
 pages.get('/agendar-consulta', protect.entirely, (req, res) => res.render('agendarConsulta'));
-pages.get('/hospital', protect.entirely, (req, res) => res.render('hospital'));
-pages.get('/hospitais', protect.entirely, (req, res) => {
-  const ordenar = req.query.ordenar; // 'nota' ou undefined
-  const titulo = ordenar === 'nota' ? 'Hospitais por Lotação' : 'Hospitais Cadastrados';
+pages.get('/hospital/:id', protect.entirely, (req, res) => res.render('hospital'));
 
-  // Cópia do array original
-  let hospitaisOrdenados = hospitais.slice();
+pages.get('/hospitais', protect.entirely, async (req, res) => {
+    const ordenar = req.query.ordenar; // 'nota' ou undefined
+    const titulo = ordenar === 'nota' ? 'Hospitais por Lotação' : 'Hospitais Cadastrados';
 
-  // Ordenar por nota ou por nome (alfabética por padrão)
-  if (ordenar === 'nota') {
-    hospitaisOrdenados.sort((a, b) => b.nota - a.nota); // Maior nota primeiro
-  } else {
-    hospitaisOrdenados.sort((a, b) => a.nome.localeCompare(b.nome)); // Ordem alfabética
-  }
+    try {
+        // 1. Chamar a função RPC criada no Supabase
+        const { data: hospitais, error } = await supabase.rpc('get_hospitais_com_media_lotacao');
 
-  res.render('hospitais', {
-    titulo,
-    hospitais: hospitaisOrdenados
-  });
+        // 2. Tratar possível erro na consulta
+        if (error) {
+            console.error('Erro ao buscar hospitais:', error.message);
+            // Renderiza uma página de erro ou envia uma resposta de erro
+            return res.status(500).send('Não foi possível carregar os hospitais.');
+        }
+
+        // 3. O 'data' já vem com 'id', 'nome' e 'nota', exatamente como o EJS espera.
+        // A lógica de ordenação pode ser aplicada diretamente sobre o resultado.
+        if (ordenar === 'nota') {
+            hospitais.sort((a, b) => b.nota - a.nota); // Maior nota primeiro
+        } else {
+            hospitais.sort((a, b) => a.nome.localeCompare(b.nome)); // Ordem alfabética
+        }
+
+        // Formata a nota para ter apenas uma casa decimal
+        const hospitaisFormatados = hospitais.map(h => ({
+            ...h,
+            nota: parseFloat(h.nota).toFixed(1)
+        }));
+
+        // 4. Renderizar a página com os dados do banco
+        res.render('hospitais', {
+            titulo,
+            hospitais: hospitaisFormatados // Usando a lista ordenada e formatada
+        });
+
+    } catch (err) {
+        console.error('Erro inesperado na rota /hospitais:', err.message);
+        res.status(500).send('Ocorreu um erro inesperado.');
+    }
 });
+
 pages.get('/hospitais-procurados', protect.entirely, (req, res) => res.render('hospitaisLista', { titulo: "Hospitais Cadastrados" , hospitais }));
 pages.get('/hospitais-proximos', protect.entirely, (req, res) => res.render('hospitaisLista', { titulo: "Hospitais Cadastrados" , hospitais }));
 

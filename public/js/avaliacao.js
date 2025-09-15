@@ -1,89 +1,71 @@
-document.querySelectorAll('.slider').forEach(slider => {
-    const valueDisplay = slider.parentElement.querySelector('.slider-value');
-    
-    slider.addEventListener('input', function() {
-        const displayValue = getDisplayValue(this);
-        valueDisplay.textContent = displayValue;
-        updateSliderBackground(this);
+document.addEventListener('DOMContentLoaded', () => {
+    const avaliacaoForm = document.getElementById('avaliacaoForm');
+    const modal = document.getElementById('confirmacaoModal');
+    const voltarBtn = document.getElementById('voltarBtn');
+
+    // Função para extrair parâmetros da URL
+    const getUrlParams = () => {
+        const params = new URLSearchParams(window.location.search);
+        return {
+            hospitalId: params.get('id') // Assumindo que o ID do hospital está na URL como ?id=...
+        };
+    };
+
+    const { hospitalId } = getUrlParams();
+
+    // Se não houver ID do hospital, impede o envio e avisa o usuário
+    if (!hospitalId) {
+        alert('Erro: ID do hospital não encontrado. Não é possível enviar a avaliação.');
+        // Desabilita o botão de envio
+        const submitButton = avaliacaoForm.querySelector('button[type="submit"]');
+        if (submitButton) {
+            submitButton.disabled = true;
+            submitButton.style.opacity = '0.5';
+            submitButton.style.cursor = 'not-allowed';
+        }
+        return; 
+    }
+
+    // Adiciona o listener para o formulário
+    avaliacaoForm.addEventListener('submit', async (e) => {
+        e.preventDefault(); // Impede o recarregamento da página
+
+        // Pega os valores dos inputs de estrela selecionados
+        const lotacaoValue = document.querySelector('input[name="rating_lotacao"]:checked').value;
+        const tempoValue = document.querySelector('input[name="rating_tempo"]:checked').value;
+        
+        // Monta o corpo da requisição para a API
+        const reviewData = {
+            hospital_id: parseInt(hospitalId, 10), // Garante que o ID seja um número
+            avaliacao_lotacao: parseInt(lotacaoValue, 10),
+            avaliacao_tempo_espera: parseInt(tempoValue, 10),
+        };
+
+        try {
+            const response = await fetch('/api/avaliar/hospital', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(reviewData)
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.error || 'Falha ao enviar avaliação.');
+            }
+
+            // Se a resposta for OK (ex: status 201), mostra o modal de sucesso
+            modal.style.display = 'flex';
+
+        } catch (error) {
+            console.error('Erro ao enviar avaliação:', error);
+            alert(`Erro: ${error.message}`);
+        }
     });
-    
-    // Initialize display
-    const displayValue = getDisplayValue(slider);
-    valueDisplay.textContent = displayValue;
-    updateSliderBackground(slider);
+
+    // Função para o botão do modal, que redireciona de volta à página do hospital
+    voltarBtn.addEventListener('click', () => {
+        window.location.href = `/hospital?id=${hospitalId}`;
+    });
 });
-
-function getDisplayValue(slider) {
-    const value = parseInt(slider.value);
-    const sliderId = slider.id;
-    
-    // Para o slider de tempo, mostrar em formato "Xh Ym" se for maior que 60
-    if (sliderId === 'tempoSlider') {
-        if (value >= 60) {
-            const hours = Math.floor(value / 60);
-            const minutes = value % 60;
-            return minutes > 0 ? `${hours}h ${minutes}m` : `${hours}h`;
-        } else {
-            return `${value}m`;
-        }
-    }
-    
-    // Para o slider de lotação, mostrar como porcentagem
-    if (sliderId === 'lotacaoSlider') {
-        return `${value}%`;
-    }
-    
-    // Para outros sliders, apenas o valor
-    return value.toString();
-}
-
-function updateSliderBackground(slider) {
-    const value = parseInt(slider.value);
-    const min = parseInt(slider.min);
-    const max = parseInt(slider.max);
-    const percentage = ((value - min) / (max - min)) * 100;
-    
-    // Determinar cor baseada no tipo de slider e valor
-    let color = getSliderColor(slider, value);
-    
-    const gradient = `linear-gradient(to right, ${color} 0%, ${color} ${percentage}%, var(--cinza-generico) ${percentage}%, var(--cinza-generico) 100%)`;
-    slider.style.background = gradient;
-}
-
-function getSliderColor(slider, value) {
-    const sliderId = slider.id;
-    
-    if (sliderId === 'lotacaoSlider') {
-        // Lotação: Verde (0-30%), Amarelo (31-70%), Vermelho (71-100%)
-        if (value <= 30) {
-            return '#22c55e'; // Verde
-        } else if (value <= 70) {
-            return '#eab308'; // Amarelo
-        } else {
-            return '#ef4444'; // Vermelho
-        }
-    }
-    
-    if (sliderId === 'tempoSlider') {
-        // Tempo: Verde (0-60min), Amarelo (61-120min), Vermelho (121+min)
-        if (value <= 60) {
-            return '#22c55e'; // Verde
-        } else if (value <= 120) {
-            return '#eab308'; // Amarelo
-        } else {
-            return '#ef4444'; // Vermelho
-        }
-    }
-    
-    // Para outros sliders, usar a lógica original baseada em escala 0-10
-    const max = parseInt(slider.max);
-    const normalizedValue = (value / max) * 10;
-    
-    if (normalizedValue <= 3) {
-        return '#22c55e'; // Verde
-    } else if (normalizedValue <= 6) {
-        return '#eab308'; // Amarelo
-    } else {
-        return '#ef4444'; // Vermelho
-    }
-}
