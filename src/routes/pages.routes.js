@@ -47,17 +47,17 @@ pages.get('/perfil', protect.entirely, async (req, res) => {
         const rawUserProfile = await dadosUsuario(tokenDeAcesso); // Chama o serviço
 
         const userProfile = {
-          nome: formatar.nome(rawUserProfile.nome_completo),
-          cpf: formatar.cpf(rawUserProfile.cpf),
-          telefone: formatar.telefone(rawUserProfile.telefone),
-          data_nascimento: formatar.data(rawUserProfile.data_nascimento),
+          nome: formatar.nome(rawUserProfile.cliente_nome),
+          cpf: formatar.cpf(rawUserProfile.cliente_cpf),
+          telefone: formatar.telefone(rawUserProfile.cliente_telefone),
+          data_nascimento: formatar.data(rawUserProfile.cliente_nascimento),
           email: rawUserProfile.email,
-          logradouro: rawUserProfile.endereco.logradouro,
-          numero: rawUserProfile.endereco.numero,
-          complemento: rawUserProfile.endereco.complemento || "NÃO INFORMADO",
-          cidade: rawUserProfile.endereco.cidade,
-          estado: rawUserProfile.endereco.estado,
-          cep: formatar.cep(rawUserProfile.endereco.cep)
+          logradouro: rawUserProfile.endereco.endereco_logradouro,
+          numero: rawUserProfile.endereco.endereco_numero,
+          complemento: rawUserProfile.endereco.endereco_complemento || "NÃO INFORMADO",
+          cidade: rawUserProfile.endereco.endereco_cidade,
+          estado: rawUserProfile.endereco.endereco_estado,
+          cep: formatar.cep(rawUserProfile.endereco.endereco_cep)
         }
 
         // Se chegou aqui, os dados foram encontrados com sucesso

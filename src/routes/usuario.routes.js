@@ -23,13 +23,13 @@ usuario.post('/usuario/completar', protect.partially, async (req, res) => {
 
     // Insere primeiro na tabela 'perfis'
     const { error: erroPerfil } = await supabase
-        .from('perfis') // Tabela em português
+        .from('cliente') // Tabela em português
         .insert({
-            id: perfilId, // Usa o ID da tabela auth.users
-            nome_completo: nome,
-            data_nascimento: nascimento,
-            telefone: telefone,
-            cpf: cpf
+            cliente_id: perfilId, // Usa o ID da tabela auth.users
+            cliente_nome: nome,
+            cliente_nascimento: nascimento,
+            cliente_telefone: telefone,
+            cliente_cpf: cpf
         });
 
     if (erroPerfil) {
@@ -42,16 +42,16 @@ usuario.post('/usuario/completar', protect.partially, async (req, res) => {
 
     // Se o perfil foi salvo com sucesso, insere na tabela 'enderecos'
     const { error: erroEndereco } = await supabase
-        .from('enderecos') // Tabela em português
+        .from('cliente_endereco') // Tabela em português
         .insert({
-            perfil_id: perfilId, // Link para o perfil que acabamos de criar
-            logradouro: endereco.logradouro,
-            numero: endereco.numero,
-            complemento: endereco.complemento,
-            bairro: endereco.bairro,
-            cidade: endereco.cidade,
-            estado: endereco.estado,
-            cep: endereco.cep
+            cliente_id: perfilId, // Link para o perfil que acabamos de criar
+            endereco_logradouro: endereco.logradouro,
+            endereco_numero: endereco.numero,
+            endereco_complemento: endereco.complemento,
+            endereco_bairro: endereco.bairro,
+            endereco_cidade: endereco.cidade,
+            endereco_estado: endereco.estado,
+            endereco_cep: endereco.cep
         });
 
     if (erroEndereco) {

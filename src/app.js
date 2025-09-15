@@ -13,7 +13,7 @@ import usuario from './routes/usuario.routes.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();
-const alternativePORT = 3002;
+const alternativePORT = 3001;
 
 // --- Middlewares ---
 app.use(express.static(join(__dirname, '../public')));
