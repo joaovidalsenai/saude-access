@@ -9,6 +9,7 @@ import path, { join } from 'path';
 import pages from './routes/pages.routes.js';
 import auth from './routes/auth.routes.js';
 import usuario from './routes/usuario.routes.js';
+import avaliacao from './routes/avaliar.routes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -21,6 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(pages);
 app.use(auth);
 app.use(usuario);
+app.use(avaliacao);
 
 // ===== INICIALIZAÇÃO DO SERVIDOR =====
 const PORT = process.env.PORT || alternativePORT;

@@ -84,9 +84,109 @@ pages.get('/perfil', protect.entirely, async (req, res) => {
 pages.get('/configuracoes', protect.entirely, (req, res) => res.render('configuracoes'));
 pages.get('/historico', protect.entirely, (req, res) => res.render('hospitais', { titulo: "Histórico" , hospitais }));
 pages.get('/suporte', protect.entirely, (req, res) => res.render('suporte-tecnico'));
-pages.get('/avaliacao', protect.entirely, (req, res) => res.render('avaliacao'));
 pages.get('/agendar-consulta', protect.entirely, (req, res) => res.render('agendarConsulta'));
-pages.get('/hospital/:id', protect.entirely, (req, res) => res.render('hospital'));
+
+pages.get('/hospital', protect.entirely, async (req, res) => {
+  try {
+    // 1. O ID é pego de 'req.query' em vez de 'req.params'
+    const hospitalId = req.query.id;
+
+    // É uma boa prática verificar se o ID foi fornecido
+    if (!hospitalId) {
+      return res.status(400).render('error', { 
+        message: 'O ID do hospital é obrigatório.' 
+      });
+    }
+    
+    // O restante da sua lógica permanece o mesmo...
+    const { data: hospitalData, error } = await supabase
+      .from('hospital')
+      .select(`
+        *,
+        hospital_endereco(*),
+        hospital_contato(*),
+        avaliacao_hospital(*)
+      `)
+      .eq('hospital_id', hospitalId)
+      .single();
+    
+    if (error) {
+      console.error('Supabase error:', error);
+      return res.status(404).render('error', { 
+        message: 'Hospital não encontrado' 
+      });
+    }
+    
+    const avaliacoes = hospitalData.avaliacao_hospital || [];
+    const ratingStats = avaliacoes.length > 0 ? {
+      total_avaliacoes: avaliacoes.length,
+      media_lotacao: (avaliacoes.reduce((sum, a) => sum + a.avaliacao_lotacao, 0) / avaliacoes.length).toFixed(2),
+      media_tempo_espera: (avaliacoes.reduce((sum, a) => sum + a.avaliacao_tempo_espera, 0) / avaliacoes.length).toFixed(2)
+    } : null;
+    
+    const recentRatings = avaliacoes
+      .sort((a, b) => new Date(b.avaliacao_data) - new Date(a.avaliacao_data))
+      .slice(0, 5);
+    
+    const templateData = {
+      hospital: {
+        hospital_id: hospitalData.hospital_id,
+        hospital_nome: hospitalData.hospital_nome,
+        hospital_cnpj: hospitalData.hospital_cnpj
+      },
+      address: hospitalData.hospital_endereco[0] || {},
+      contact: hospitalData.hospital_contato[0] || {},
+      ratings: {
+        stats: ratingStats,
+        recent: recentRatings
+      }
+    };
+    
+    res.render('hospital', templateData);
+    
+  } catch (error) {
+    console.error('Error fetching hospital data:', error);
+    res.status(500).render('error', { 
+      message: 'Erro interno do servidor' 
+    });
+  }
+});
+
+pages.get('/hospital/avaliacao', protect.entirely, async (req, res) => {
+  try {
+    // 1. O ID é pego de 'req.query' em vez de 'req.params'
+    const hospitalId = req.query.id;
+
+    // É uma boa prática verificar se o ID foi fornecido
+    if (!hospitalId) {
+      return res.status(400).render('error', { 
+        message: 'O ID do hospital é obrigatório.' 
+      });
+    }
+    
+    // O restante da sua lógica permanece o mesmo...
+    const { data: hospitalData, error } = await supabase
+      .from('hospital')
+      .select(`hospital_nome`)
+      .eq('hospital_id', hospitalId)
+      .single();
+    
+    if (error) {
+      console.error('Supabase error:', error);
+      return res.status(404).render('error', { 
+        message: 'Hospital não encontrado' 
+      });
+    }
+ 
+    res.render('avaliacao', { hospital_nome: hospitalData.hospital_nome });
+
+  } catch (error) {
+    console.error('Error fetching hospital data:', error);
+    res.status(500).render('error', { 
+      message: 'Erro interno do servidor' 
+    });
+  }
+});
 
 pages.get('/hospitais', protect.entirely, async (req, res) => {
     const ordenar = req.query.ordenar; // 'nota' ou undefined

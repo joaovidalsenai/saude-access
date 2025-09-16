@@ -41,12 +41,12 @@ document.addEventListener('DOMContentLoaded', () => {
             avaliacao_tempo_espera: parseInt(tempoValue, 10),
         };
 
+        console.log(reviewData)
+
         try {
-            const response = await fetch('/api/avaliar/hospital', {
+            const response = await fetch('/avaliar/hospital', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(reviewData)
             });
 

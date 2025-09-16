@@ -5,7 +5,7 @@ import supabase from "../db/supabase.js";
 const avaliacao = express.Router();
 
 // Endpoint para registrar a avaliação de um hospital
-avaliacao.post('/avaliar/hospital', protect.fully, async (req, res) => { // Usando um middleware de proteção mais forte, se aplicável
+avaliacao.post('/avaliar/hospital', protect.entirely, async (req, res) => { // Usando um middleware de proteção mais forte, se aplicável
     const tokenDeAcesso = req.cookies['sb-access-token'];
     const { data: { user }, error: erroAuth } = await supabase.auth.getUser(tokenDeAcesso);
 

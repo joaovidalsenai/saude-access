@@ -39,7 +39,7 @@
         <div class="container-hospitais">
             <div class="div-butoes">
                 <% hospitais.forEach(hospital => { %>
-                <a href="/hospital/<%= hospital.id %>" class="botao-hospital" aria-label="Hospital <%= hospital.nome %>">
+                <a href="/hospital?id=<%= hospital.id %>" class="botao-hospital" aria-label="Hospital <%= hospital.nome %>">
                     <span class="botao-hospital-nota"><%= hospital.nota %></span>
                     <span class="botao-hospital-nome"><%= hospital.nome %></span>
                 </a>
