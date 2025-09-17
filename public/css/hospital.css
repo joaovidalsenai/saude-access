@@ -110,3 +110,46 @@ h2 {
 @media screen and (max-width: 480px) {
     .stats-grid { grid-template-columns: 1fr; }
 }
+
+/* Adicione este código ao final do seu arquivo hospital.css */
+
+/* --- CORREÇÃO DO CABEÇALHO (H1) --- */
+/*
+  Define o header como um container relativo para o botão absoluto
+  e adiciona preenchimento nas laterais. Isso garante que o título,
+  mesmo que grande, não fique embaixo do botão de voltar.
+*/  
+
+/* --- CORREÇÃO DO OVERFLOW DE E-MAIL --- */
+/*
+  Força a quebra de textos longos e sem espaços (como e-mails)
+  dentro do container de contato, evitando que ele transborde.
+*/
+.contato-item > span {
+    word-break: break-all;
+}
+
+/* Em hospital.css, substitua a correção anterior do header por esta */
+
+/* --- NOVA CORREÇÃO DO CABEÇALHO (H1) --- */
+/*
+  Esta abordagem é mais robusta e não entra em conflito com o
+  arquivo styleGenerico.css. Em vez de alterar o 'padding' do header,
+  aplicamos uma 'margin' diretamente no h1.
+*/
+header h1 {
+    /*
+      As margens laterais criam um espaço "invisível" em ambos os lados
+      do título. Isso empurra o texto para longe do botão de voltar
+      enquanto mantém o alinhamento visualmente centralizado no espaço restante.
+    */
+    margin: 0 3rem;
+
+    /*
+      Para nomes de hospitais excessivamente longos, estas regras impedem
+      que o texto quebre e adicionam "..." ao final para não desalinhar.
+    */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
