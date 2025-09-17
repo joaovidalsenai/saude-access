@@ -15,19 +15,6 @@ pages.use(express.json());
 pages.use(cookieParser()); // Essencial para ler os cookies de autenticação
 pages.use(express.static(join(__dirname, '../public')));
 
-const hospitais = [
-  { nome: "Hospital São Rafael", nota: 9.2 },
-  { nome: "Hospital Português", nota: 8.8 },
-  { nome: "Hospital Geral do Estado (HGE)", nota: 8.5 },
-  { nome: "Hospital Aliança", nota: 9.0 },
-  { nome: "Hospital Santa Izabel", nota: 8.7 },
-  { nome: "Hospital da Bahia", nota: 9.1 },
-  { nome: "Hospital Roberto Santos", nota: 7.9 },
-  { nome: "Hospital Jorge Valente", nota: 8.3 },
-  { nome: "Hospital São Jorge", nota: 7.5 },
-  { nome: "Hospital Salvador", nota: 8.6 }
-];
-
 // Configure EJS as view engine
 pages.set('view engine', 'ejs');
 pages.set('views', join(__dirname, '..', 'views'));
@@ -82,7 +69,63 @@ pages.get('/perfil', protect.entirely, async (req, res) => {
 });
 
 pages.get('/configuracoes', protect.entirely, (req, res) => res.render('configuracoes'));
-pages.get('/historico', protect.entirely, (req, res) => res.render('hospitais', { titulo: "Histórico" , hospitais }));
+
+pages.get('/historico', protect.entirely, async (req, res) => {
+    try {
+        const userId = req.user.id; // Pega o ID do usuário logado
+
+        // 1. Busca no Supabase todas as avaliações feitas pelo usuário
+        // e traz junto o nome e o ID do hospital relacionado
+        const { data: avaliacoes, error } = await supabase
+            .from('avaliacao_hospital')
+            .select(`
+                avaliacao_data,
+                avaliacao_lotacao,
+                avaliacao_tempo_espera,
+                avaliacao_atendimento,
+                avaliacao_infraestrutura,
+                hospital ( hospital_id, hospital_nome )
+            `)
+            .eq('cliente_id', userId)
+            .order('avaliacao_data', { ascending: false }); // Ordena pela data, mais recentes primeiro
+
+        if (error) {
+            console.error('Erro ao buscar histórico de avaliações:', error.message);
+            return res.status(500).send('Não foi possível carregar seu histórico.');
+        }
+
+        // 2. Formata os dados para facilitar a exibição na página
+        const avaliacoesFormatadas = avaliacoes.map(review => {
+            const media = (
+                review.avaliacao_lotacao +
+                review.avaliacao_tempo_espera +
+                review.avaliacao_atendimento +
+                review.avaliacao_infraestrutura
+            ) / 4;
+
+            return {
+                ...review,
+                media: media.toFixed(1), // Calcula a média daquela avaliação específica
+                data_formatada: new Date(review.avaliacao_data).toLocaleDateString('pt-BR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                }) // Formata a data para o padrão brasileiro
+            };
+        });
+
+        // 3. Renderiza a nova página EJS com os dados formatados
+        res.render('historico', {
+            titulo: 'Meu Histórico de Avaliações',
+            avaliacoes: avaliacoesFormatadas
+        });
+
+    } catch (err) {
+        console.error('Erro inesperado na rota /historico:', err.message);
+        res.status(500).send('Ocorreu um erro inesperado.');
+    }
+});
+
 pages.get('/suporte', protect.entirely, (req, res) => res.render('suporte-tecnico'));
 pages.get('/agendar-consulta', protect.entirely, (req, res) => res.render('agendarConsulta'));
 
