@@ -191,38 +191,110 @@ pages.get('/hospital/avaliacao', protect.entirely, async (req, res) => {
 });
 
 pages.get('/hospitais', protect.entirely, async (req, res) => {
-    const ordenar = req.query.ordenar; // 'nota' ou undefined
-    const titulo = ordenar === 'nota' ? 'Hospitais por Lotação' : 'Hospitais Cadastrados';
+    // Opções de ordenação: 'alfabetica', 'media_geral', 'lotacao', 'tempo_espera', 'atendimento', 'infraestrutura'
+    const ordenarPor = req.query.ordenar || 'alfabetica'; 
 
     try {
-        // 1. Chamar a função RPC criada no Supabase
-        const { data: hospitais, error } = await supabase.rpc('get_hospitais_com_media_lotacao');
+        // 1. Busca todos os hospitais e suas respectivas avaliações
+        const { data: hospitais, error } = await supabase
+            .from('hospital')
+            .select(`
+                hospital_id,
+                hospital_nome,
+                avaliacao_hospital (
+                    avaliacao_lotacao,
+                    avaliacao_tempo_espera,
+                    avaliacao_atendimento,
+                    avaliacao_infraestrutura
+                )
+            `);
 
-        // 2. Tratar possível erro na consulta
         if (error) {
-            console.error('Erro ao buscar hospitais:', error.message);
-            // Renderiza uma página de erro ou envia uma resposta de erro
+            console.error('Erro ao buscar hospitais e avaliações:', error.message);
             return res.status(500).send('Não foi possível carregar os hospitais.');
         }
 
-        // 3. O 'data' já vem com 'id', 'nome' e 'nota', exatamente como o EJS espera.
-        // A lógica de ordenação pode ser aplicada diretamente sobre o resultado.
-        if (ordenar === 'nota') {
-            hospitais.sort((a, b) => b.nota - a.nota); // Maior nota primeiro
-        } else {
-            hospitais.sort((a, b) => a.nome.localeCompare(b.nome)); // Ordem alfabética
+        // 2. Calcula as médias para cada hospital
+        const hospitaisComMedias = hospitais.map(h => {
+            const avaliacoes = h.avaliacao_hospital;
+            let medias = {
+                media_lotacao: 0,
+                media_tempo_espera: 0,
+                media_atendimento: 0,
+                media_infraestrutura: 0,
+                media_geral: 0
+            };
+
+            if (avaliacoes && avaliacoes.length > 0) {
+                const total = avaliacoes.length;
+                medias.media_lotacao = avaliacoes.reduce((sum, a) => sum + a.avaliacao_lotacao, 0) / total;
+                medias.media_tempo_espera = avaliacoes.reduce((sum, a) => sum + a.avaliacao_tempo_espera, 0) / total;
+                medias.media_atendimento = avaliacoes.reduce((sum, a) => sum + a.avaliacao_atendimento, 0) / total;
+                medias.media_infraestrutura = avaliacoes.reduce((sum, a) => sum + a.avaliacao_infraestrutura, 0) / total;
+                medias.media_geral = (medias.media_lotacao + medias.media_tempo_espera + medias.media_atendimento + medias.media_infraestrutura) / 4;
+            }
+
+            return {
+                id: h.hospital_id,
+                nome: h.hospital_nome,
+                ...medias
+            };
+        });
+
+        // 3. Define o título da página e a chave de ordenação
+        let titulo = 'Hospitais Cadastrados';
+        let sortKey = 'nome'; // Default sort key
+
+        switch (ordenarPor) {
+            case 'media_geral':
+                titulo = 'Hospitais por Média Geral';
+                sortKey = 'media_geral';
+                break;
+            case 'lotacao':
+                titulo = 'Hospitais por Lotação';
+                sortKey = 'media_lotacao';
+                break;
+            case 'tempo_espera':
+                titulo = 'Hospitais por Tempo de Espera';
+                sortKey = 'media_tempo_espera';
+                break;
+            case 'atendimento':
+                titulo = 'Hospitais por Atendimento';
+                sortKey = 'media_atendimento';
+                break;
+            case 'infraestrutura':
+                titulo = 'Hospitais por Infraestrutura';
+                sortKey = 'media_infraestrutura';
+                break;
         }
 
-        // Formata a nota para ter apenas uma casa decimal
-        const hospitaisFormatados = hospitais.map(h => ({
-            ...h,
-            nota: parseFloat(h.nota).toFixed(1)
-        }));
+        // 4. Ordena a lista de hospitais
+        hospitaisComMedias.sort((a, b) => {
+            if (ordenarPor === 'alfabetica') {
+                return a.nome.localeCompare(b.nome); // Ordem alfabética
+            }
+            // Para todos os outros casos, ordena pela nota (do maior para o menor)
+            return b[sortKey] - a[sortKey];
+        });
 
-        // 4. Renderizar a página com os dados do banco
+        // 5. Formata os dados para o EJS (COM A CORREÇÃO)
+        const hospitaisFormatados = hospitaisComMedias.map(h => {
+            // **A CORREÇÃO ESTÁ AQUI**
+            // Se a ordenação for alfabética, a nota exibida é a média geral.
+            // Caso contrário, é a nota do critério de ordenação.
+            const notaParaExibir = (ordenarPor === 'alfabetica') ? h.media_geral : h[sortKey];
+            
+            return {
+                id: h.id,
+                nome: h.nome,
+                nota: parseFloat(notaParaExibir).toFixed(1)
+            };
+        });
+
+        // 6. Renderiza a página
         res.render('hospitais', {
             titulo,
-            hospitais: hospitaisFormatados // Usando a lista ordenada e formatada
+            hospitais: hospitaisFormatados
         });
 
     } catch (err) {
@@ -230,9 +302,6 @@ pages.get('/hospitais', protect.entirely, async (req, res) => {
         res.status(500).send('Ocorreu um erro inesperado.');
     }
 });
-
-pages.get('/hospitais-procurados', protect.entirely, (req, res) => res.render('hospitaisLista', { titulo: "Hospitais Cadastrados" , hospitais }));
-pages.get('/hospitais-proximos', protect.entirely, (req, res) => res.render('hospitaisLista', { titulo: "Hospitais Cadastrados" , hospitais }));
 
 pages.get('/cadastro/info', protect.partially, (req, res) => res.render('cadastroInfo'));
 

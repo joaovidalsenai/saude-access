@@ -14,7 +14,7 @@
 </head>
 <body class="protected">
     <header>
-        <a onclick="history.back()" class="voltar-btn" aria-label="Voltar">
+        <a href="/hospital?id=<%= hospital_id %>" class="voltar-btn" aria-label="Voltar">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M228,128a12,12,0,0,1-12,12H69l51.52,51.51a12,12,0,0,1-17,17l-72-72a12,12,0,0,1,0-17l72-72a12,12,0,0,1,17,17L69,116H216A12,12,0,0,1,228,128Z"></path></svg>
         </a>
         <h1><%= hospital_nome %></h1>
@@ -24,25 +24,21 @@
             <section class="lotacao-avaliacao">
                 <h2>Como você avaliaria a lotação do hospital?</h2>
                 <div class="star-rating">
-                
-    <input type="radio" id="lotacao-5" name="rating_lotacao" value="5" /><label for="lotacao-5" title="Muito Lotado"></label>
+                    <input type="radio" id="lotacao-5" name="rating_lotacao" value="5" /><label for="lotacao-5" title="Muito Lotado"></label>
                     <input type="radio" id="lotacao-4" name="rating_lotacao" value="4" /><label for="lotacao-4" title="Lotado"></label>
-                    <input type="radio" id="lotacao-3" name="rating_lotacao" value="3" checked /><label for="lotacao-3" title="Moderado"></label>
+                    <input type="radio" id="lotacao-3" name="rating_lotacao" value="3" /><label for="lotacao-3" title="Moderado"></label>
                     <input type="radio" id="lotacao-2" name="rating_lotacao" value="2" /><label for="lotacao-2" title="Pouco Movimento"></label>
-     
-               <input type="radio" id="lotacao-1" name="rating_lotacao" value="1" /><label for="lotacao-1" title="Vazio"></label>
+                    <input type="radio" id="lotacao-1" name="rating_lotacao" value="1" /><label for="lotacao-1" title="Vazio"></label>
                 </div>
             </section>
 
             <section class="tempo-avaliacao">
                 <h2>Como você avaliaria o tempo de espera?</h2>
-               
- <div class="star-rating">
+                <div class="star-rating">
                     <input type="radio" id="tempo-5" name="rating_tempo" value="5" /><label for="tempo-5" title="Muito Longo"></label>
                     <input type="radio" id="tempo-4" name="rating_tempo" value="4" /><label for="tempo-4" title="Longo"></label>
-                    <input type="radio" id="tempo-3" name="rating_tempo" value="3" checked /><label for="tempo-3" title="Razoável"></label>
-               
-     <input type="radio" id="tempo-2" name="rating_tempo" value="2" /><label for="tempo-2" title="Curto"></label>
+                    <input type="radio" id="tempo-3" name="rating_tempo" value="3" /><label for="tempo-3" title="Razoável"></label>
+                    <input type="radio" id="tempo-2" name="rating_tempo" value="2" /><label for="tempo-2" title="Curto"></label>
                     <input type="radio" id="tempo-1" name="rating_tempo" value="1" /><label for="tempo-1" title="Muito Curto"></label>
                 </div>
             </section>
@@ -52,7 +48,7 @@
                 <div class="star-rating">
                     <input type="radio" id="atendimento-5" name="rating_atendimento" value="5" /><label for="atendimento-5" title="Excelente"></label>
                     <input type="radio" id="atendimento-4" name="rating_atendimento" value="4" /><label for="atendimento-4" title="Bom"></label>
-                    <input type="radio" id="atendimento-3" name="rating_atendimento" value="3" checked /><label for="atendimento-3" title="Regular"></label>
+                    <input type="radio" id="atendimento-3" name="rating_atendimento" value="3" /><label for="atendimento-3" title="Regular"></label>
                     <input type="radio" id="atendimento-2" name="rating_atendimento" value="2" /><label for="atendimento-2" title="Ruim"></label>
                     <input type="radio" id="atendimento-1" name="rating_atendimento" value="1" /><label for="atendimento-1" title="Péssimo"></label>
                 </div>
@@ -63,38 +59,31 @@
                 <div class="star-rating">
                     <input type="radio" id="infra-5" name="rating_infraestrutura" value="5" /><label for="infra-5" title="Excelente"></label>
                     <input type="radio" id="infra-4" name="rating_infraestrutura" value="4" /><label for="infra-4" title="Boa"></label>
-                    <input type="radio" id="infra-3" name="rating_infraestrutura" value="3" checked /><label for="infra-3" title="Regular"></label>
+                    <input type="radio" id="infra-3" name="rating_infraestrutura" value="3" /><label for="infra-3" title="Regular"></label>
                     <input type="radio" id="infra-2" name="rating_infraestrutura" value="2" /><label for="infra-2" title="Ruim"></label>
                     <input type="radio" id="infra-1" name="rating_infraestrutura" value="1" /><label for="infra-1" title="Péssima"></label>
                 </div>
             </section>
 
-   
-             <section class="acoes-container">
+            <section class="acoes-container">
                 <button type="submit" class="acao-btn acao-principal">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#ffffff" viewBox="0 0 256 256"><path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"></path></svg>
                     Enviar Avaliação
                 </button>
- 
-         
-      <button type="button" class="acao-btn acao-secundaria" onclick="history.back()">
+                <button type="button" class="acao-btn acao-secundaria" onclick="history.back()">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path></svg>
                     Cancelar
                 </button>
             </section>
-    
-    </form>
-     
-   <div id="confirmacaoModal" class="modal">
+        </form>
+
+        <div id="confirmacaoModal" class="modal">
             <div class="modal-content">
                 <div class="modal-header">
                     <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="#22c55e" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm45.66,85.66-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35a8,8,0,0,1,11.32,11.32Z"></path></svg>
                     <h3>Avaliação Enviada!</h3>
-   
-   
-          </div>
-                <p>Obrigado por compartilhar sua experiência.
-Sua avaliação ajudará outros usuários a tomar melhores decisões sobre o atendimento hospitalar.</p>
+                </div>
+                <p>Obrigado por compartilhar sua experiência. Sua avaliação ajudará outros usuários a tomar melhores decisões sobre o atendimento hospitalar.</p>
                 <button type="button" class="acao-btn acao-principal" id="voltarBtn">
                     Voltar ao Hospital
                 </button>

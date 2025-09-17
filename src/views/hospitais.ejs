@@ -4,15 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="stylesheet" href="/css/styleGenerico.css" />
+    <link rel="stylesheet" href="/css/hospitais.css" />
     <title>Saúde Access</title>
     <link rel="stylesheet" href="/css/protected.css" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/auth-utils.js"></script>
-</head>
+    <script src="js/global.js"></script>
+    <script src="js/auth-utils.js" defer></script>
+</head> 
 <body class="protected">
     <header>
         <h1><%= titulo %></h1>
-    </header>
+        </header>
     <main>
         <form action="#" class="form-busca-hospital">
             <input
@@ -39,15 +41,16 @@
         <div class="container-hospitais">
             <div class="div-butoes">
                 <% hospitais.forEach(hospital => { %>
-                <a href="/hospital?id=<%= hospital.id %>" class="botao-hospital" aria-label="Hospital <%= hospital.nome %>">
-                    <span class="botao-hospital-nota"><%= hospital.nota %></span>
-                    <span class="botao-hospital-nome"><%= hospital.nome %></span>
-                </a>
-                <% }) %>
+                    <a href="/hospital?id=<%= hospital.id %>" class="botao-hospital">
+                        <span class="botao-hospital-nota rating-<%= Math.floor(hospital.nota) %>">
+                            <%= hospital.nota %>
+                        </span>
+                        <span class="botao-hospital-nome"><%= hospital.nome %></span>
+                    </a>
+                <% }); %>
             </div>
         </div>
     </main>
-    <%- include('partials/navbar.ejs') %>
-    <script src="js/global.js"></script>
+    <%- include ('partials/navbar.ejs')%>
 </body>
 </html>
