@@ -7,19 +7,19 @@ const auth = express.Router();
 
 // Endpoint de Cadastro
 auth.post('/auth/cadastrar', async (req, res) => {
-        const { email, password } = req.body;
-        if (!email || !password || password.length < 8) {
-            return res.status(400).json({ error: 'Dados de cadastro inválidos.' });
-        }
-        const { error } = await supabase.auth.signUp({  
-            email, 
-            password,
-            options: {
-                data: {
+    const { email, password } = req.body;
+    if (!email || !password || password.length < 8) {
+        return res.status(400).json({ error: 'Dados de cadastro inválidos.' });
+    }
+    const { error } = await supabase.auth.signUp({  
+        email, 
+        password,
+        options: {
+            data: {
                 full_user_access: false
-                }
             }
-        });
+        }
+    });
     if (error) {
         const errorMessage = error.message.includes('User already registered')
             ? 'Este e-mail já está cadastrado.'
