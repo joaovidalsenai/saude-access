@@ -18,32 +18,62 @@
         <h1><%= hospital.hospital_nome %></h1>
     </header>
     <main>
-        <% if (ratings.stats) { %>
+    <% if (ratings && ratings.stats) { %>
         <section class="avaliacao-media-container">
-            <h2>Avaliação de Lotação</h2>
-            <% const mediaLotacao = Math.round(ratings.stats.media_lotacao); %>
-            <div class="estrelas-display rating-<%= mediaLotacao %>">
-                <span class="estrela-svg"></span>
-                <span class="estrela-svg"></span>
-                <span class="estrela-svg"></span>
-                <span class="estrela-svg"></span>
-                <span class="estrela-svg"></span>
+            <h2>Lotação</h2>
+            <div class="estrelas-display rating-<%= Math.round(ratings.stats.media_lotacao) %>">
+                <span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span>
             </div>
         </section>
 
         <section class="avaliacao-media-container">
-            <h2>Avaliação do Tempo de Espera</h2>
-            <% const mediaTempo = Math.round(ratings.stats.media_tempo_espera); %>
-            <div class="estrelas-display rating-<%= mediaTempo %>">
-                <span class="estrela-svg"></span>
-                <span class="estrela-svg"></span>
-                <span class="estrela-svg"></span>
-                <span class="estrela-svg"></span>
-                <span class="estrela-svg"></span>
+            <h2>Tempo de Espera</h2>
+            <div class="estrelas-display rating-<%= Math.round(ratings.stats.media_tempo_espera) %>">
+                <span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span>
             </div>
         </section>
 
-        <% } else { %>
+        <section class="avaliacao-media-container">
+            <h2>Atendimento</h2>
+            <div class="estrelas-display rating-<%= Math.round(ratings.stats.media_atendimento) %>">
+                <span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span>
+            </div>
+        </section>
+
+        <section class="avaliacao-media-container">
+            <h2>Infraestrutura</h2>
+            <div class="estrelas-display rating-<%= Math.round(ratings.stats.media_infraestrutura) %>">
+                <span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span>
+            </div>
+        </section>
+
+        <section class="estatisticas-container">
+            <h2>Estatísticas Gerais</h2>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-numero"><%= ratings.stats.total_avaliacoes %></span>
+                    <span class="stat-label">Avaliações</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-numero"><%= Number(ratings.stats.media_lotacao).toFixed(1) %>/5</span>
+                    <span class="stat-label">Média Lotação</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-numero"><%= Number(ratings.stats.media_tempo_espera).toFixed(1) %>/5</span>
+                    <span class="stat-label">Média Tempo</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-numero"><%= Number(ratings.stats.media_atendimento).toFixed(1) %>/5</span>
+                    <span class="stat-label">Média Atendimento</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-numero"><%= Number(ratings.stats.media_infraestrutura).toFixed(1) %>/5</span>
+                    <span class="stat-label">Média Infra</span>
+                </div>
+            </div>
+        </section>
+        
+    <% } else { %>
         <section class="lotacao-container">
             <h2>Informações de lotação</h2>
             <div class="sem-dados">
@@ -51,7 +81,7 @@
                 <p>Seja o primeiro a avaliar!</p>
             </div>
         </section>
-        <% } %>
+    <% } %>
 
         <section class="endereco-container">
             <h2>Endereço</h2>
@@ -72,48 +102,28 @@
         <section class="contato-container">
             <h2>Contato</h2>
             <div class="contato-info">
-                <% if (contact.hospital_telefone) { %>
+                <% if (hospital_telefone) { %>
                 <div class="contato-item">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M164.39,145.34a8,8,0,0,1,7.59-.69l47.16,21.13a8,8,0,0,1,4.8,8.3A48.33,48.33,0,0,1,176,216,136,136,0,0,1,40,80,48.33,48.33,0,0,1,81.92,32.06a8,8,0,0,1,8.3,4.8l21.13,47.2a8,8,0,0,1-.66,7.53L89.32,117a7.93,7.93,0,0,0-.54,7.81c8.27,16.93,25.77,34.22,42.75,42.41a7.92,7.92,0,0,0,7.83-.59Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/></svg>
-                    <span>Telefone: <strong><%= contact.hospital_telefone %></strong></span>
+                    <span>Telefone: <strong><%= hospital_telefone %></strong></span>
                 </div>
                 <% } %>
-                <% if (contact.hospital_email) { %>
+                <% if (hospital_email) { %>
                 <div class="contato-item">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48ZM203.43,64,128,133.15,52.57,64ZM216,192H40V74.19l82.59,75.71a8,8,0,0,0,10.82,0L216,74.19V192Z"></path></svg>
-                    <span>Email: <strong><%= contact.hospital_email %></strong></span>
+                    <span>Email: <strong><%= hospital_email %></strong></span>
                 </div>
                 <% } %>
             </div>
         </section>
 
-        <% if (ratings.stats) { %>
-        <section class="estatisticas-container">
-            <h2>Estatísticas Gerais</h2>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <span class="stat-numero"><%= ratings.stats.total_avaliacoes %></span>
-                    <span class="stat-label">Avaliações</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-numero"><%= Number(ratings.stats.media_lotacao).toFixed(1) %>/5</span>
-                    <span class="stat-label">Média Lotação</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-numero"><%= Number(ratings.stats.media_tempo_espera).toFixed(1) %>/5</span>
-                    <span class="stat-label">Média Tempo</span>
-                </div>
-            </div>
-        </section>
-        <% } %>
-        
         <section class="acoes-container">
             <button type="button" class="acao-btn acao-principal" onclick="window.location.href='/hospital/avaliacao?id=<%= hospital.hospital_id %>'">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#ffffff" viewBox="0 0 256 256"><path d="M234,80.12A24,24,0,0,0,216,72H160V56a40,40,0,0,0-40-40,8,8,0,0,0-7.16,4.42L75.06,96H32a16,16,0,0,0-16,16v88a16,16,0,0,0,16,16H204a24,24,0,0,0,23.82-21l12-96A24,24,0,0,0,234,80.12ZM32,112H72v88H32ZM223.94,97l-12,96a8,8,0,0,1-7.94,7H88V105.89l36.71-73.43A24,24,0,0,1,144,56V80a8,8,0,0,0,8,8h64a8,8,0,0,1,7.94,9Z"></path></svg>
                 Avaliar hospital
             </button>
-            <button type="button" class="acao-btn acao-secundaria"  onclick="window.location.href='/agendar-consulta'">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M224,128a8,8,0,0,1-8,8H136v80a8,8,0,0,1-16,0V136H40a8,8,0,0,1,0-16h80V40a8,8,0,0,1,16,0v80h80A8,8,0,0,1,224,128Z"></path></svg>                
+            <button type="button" class="acao-btn acao-secundaria" onclick="window.location.href='/agendar-consulta'">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M224,128a8,8,0,0,1-8,8H136v80a8,8,0,0,1-16,0V136H40a8,8,0,0,1,0-16h80V40a8,8,0,0,1,16,0v80h80A8,8,0,0,1,224,128Z"></path></svg>
                 Agendar consulta
             </button>
         </section>

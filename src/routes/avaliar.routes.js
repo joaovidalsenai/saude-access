@@ -15,11 +15,11 @@ avaliacao.post('/avaliar/hospital', protect.entirely, async (req, res) => { // U
     const clienteId = user.id; // O ID do usuário autenticado será o CLIENTE_ID
 
     // Os dados da avaliação virão no corpo da requisição
-    const { hospital_id, avaliacao_lotacao, avaliacao_tempo_espera } = req.body;
+    const { hospital_id, avaliacao_lotacao, avaliacao_tempo_espera, avaliacao_atendimento, avaliacao_infraestrutura } = req.body;
 
     // Validação dos campos obrigatórios
-    if (hospital_id === undefined || avaliacao_lotacao === undefined || avaliacao_tempo_espera === undefined) {
-        return res.status(400).json({ error: 'Todos os campos da avaliação são obrigatórios: hospital_id, avaliacao_lotacao e avaliacao_tempo_espera.' });
+    if (hospital_id === undefined || avaliacao_lotacao === undefined || avaliacao_tempo_espera === undefined || avaliacao_atendimento === undefined || avaliacao_infraestrutura === undefined) {
+        return res.status(400).json({ error: 'Todos os campos da avaliação são obrigatórios: hospital_id, avaliacao_lotacao, avaliacao_tempo_espera, avaliacao_atendimento e avaliacao_infraestrutura.' });
     }
 
     // Cria um objeto com os dados para inserir na tabela AVALIACAO_HOSPITAL
@@ -28,10 +28,12 @@ avaliacao.post('/avaliar/hospital', protect.entirely, async (req, res) => { // U
         cliente_id: clienteId,
         avaliacao_lotacao: avaliacao_lotacao,
         avaliacao_tempo_espera: avaliacao_tempo_espera,
+        avaliacao_atendimento: avaliacao_atendimento,
+        avaliacao_infraestrutura: avaliacao_infraestrutura,
         avaliacao_data: new Date().toISOString() // Grava a data e hora atuais no formato UTC
     };
 
-    // Insere os dados na tabela 'AVALIACAO_HOSPITAL'
+    // Insere os dados na tabela 'avaliacao_hospital'
     const { error: erroInsert } = await supabase
         .from('avaliacao_hospital')
         .insert(novaAvaliacao);

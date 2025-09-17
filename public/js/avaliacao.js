@@ -33,12 +33,16 @@ document.addEventListener('DOMContentLoaded', () => {
         // Pega os valores dos inputs de estrela selecionados
         const lotacaoValue = document.querySelector('input[name="rating_lotacao"]:checked').value;
         const tempoValue = document.querySelector('input[name="rating_tempo"]:checked').value;
+        const atendimentoValue = document.querySelector('input[name="rating_atendimento"]:checked').value;
+        const infraestruturaValue = document.querySelector('input[name="rating_infraestrutura"]:checked').value;
         
         // Monta o corpo da requisição para a API
         const reviewData = {
             hospital_id: parseInt(hospitalId, 10), // Garante que o ID seja um número
             avaliacao_lotacao: parseInt(lotacaoValue, 10),
             avaliacao_tempo_espera: parseInt(tempoValue, 10),
+            avaliacao_atendimento: parseInt(atendimentoValue, 10),
+            avaliacao_infraestrutura: parseInt(infraestruturaValue, 10),
         };
 
         console.log(reviewData)
