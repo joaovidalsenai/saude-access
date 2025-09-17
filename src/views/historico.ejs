@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-br" data-theme="light">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Saúde Access - Histórico</title>
+    <link rel="stylesheet" href="/css/styleGenerico.css" />
+    <link rel="stylesheet" href="/css/historico.css" /> 
+    <link rel="stylesheet" href="/css/protected.css" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/js/global.js"></script>
+    <script src="/js/auth-utils.js" defer></script>
+    <script src="/js/historico.js" defer></script>
+</head>
+<body class="protected">
+    <header>
+        <h1><%= titulo %></h1>
+    </header>
+    <main>
+        <div class="container-hospitais">
+            <div class="div-butoes">
+                <% if (avaliacoes && avaliacoes.length > 0) { %>
+                    <% avaliacoes.forEach(avaliacao => { %>
+                        <button class="botao-hospital item-avaliacao" 
+                                data-hospital-nome="<%= avaliacao.hospital.hospital_nome %>"
+                                data-hospital-id="<%= avaliacao.hospital.hospital_id %>"
+                                data-lotacao="<%= avaliacao.avaliacao_lotacao %>"
+                                data-tempo="<%= avaliacao.avaliacao_tempo_espera %>"
+                                data-atendimento="<%= avaliacao.avaliacao_atendimento %>"
+                                data-infraestrutura="<%= avaliacao.avaliacao_infraestrutura %>"
+                                data-data="<%= avaliacao.data_formatada %>">
+
+                            <span class="botao-hospital-nota rating-<%= Math.floor(avaliacao.media) %>">
+                                <%= avaliacao.media %>
+                            </span>
+                            
+                            <div class="info-avaliacao">
+                                <span class="botao-hospital-nome"><%= avaliacao.hospital.hospital_nome %></span>
+                                <span class="data-avaliacao">Avaliado em: <%= avaliacao.data_formatada %></span>
+                            </div>
+                        </button>
+                    <% }); %>
+                <% } else { %>
+                    <p class="sem-historico">Você ainda não fez nenhuma avaliação.</p>
+                <% } %>
+            </div>
+        </div>
+    </main>
+
+    <div id="modalDetalhes" class="modal-overlay">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalHospitalNome">Nome do Hospital</h2>
+                <button id="modalCloseBtn" class="modal-close-btn" aria-label="Fechar">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"></path></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="detalhe-item">
+                    <span>Lotação:</span>
+                    <div id="estrelasLotacao" class="estrelas-display"></div>
+                </div>
+                <div class="detalhe-item">
+                    <span>Tempo de Espera:</span>
+                    <div id="estrelasTempo" class="estrelas-display"></div>
+                </div>
+                <div class="detalhe-item">
+                    <span>Atendimento:</span>
+                    <div id="estrelasAtendimento" class="estrelas-display"></div>
+                </div>
+                <div class="detalhe-item">
+                    <span>Infraestrutura:</span>
+                    <div id="estrelasInfraestrutura" class="estrelas-display"></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <a id="linkHospital" href="#" class="acao-btn acao-principal">Ir para a Página do Hospital</a>
+            </div>
+        </div>
+    </div>
+
+    <%- include ('partials/navbar.ejs')%>
+</body>
+</html>

@@ -30,9 +30,9 @@ export default async function dadosUsuario(tokenDeAcesso) {
 
     // 3. Busca dos dados no banco
     const { data: dadosDoPerfil, error: erroPerfil } = await supabase
-        .from('perfis')
-        .select('*, enderecos (*)')
-        .eq('id', user.id)
+        .from('cliente')
+        .select('*, cliente_endereco (*)')
+        .eq('cliente_id', user.id)
         .single();
 
     if (erroPerfil || !dadosDoPerfil) {
@@ -45,7 +45,7 @@ export default async function dadosUsuario(tokenDeAcesso) {
     const perfilCompleto = {
         ...dadosDoPerfil,
         email: user.email,
-        endereco: dadosDoPerfil.enderecos,
+        endereco: dadosDoPerfil.cliente_endereco,
     };
     delete perfilCompleto.enderecos;
 

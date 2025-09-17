@@ -34,201 +34,86 @@ h2 {
     font-size: 1.3rem;
     margin-bottom: 1.5rem;
     font-weight: 600;
-}
-
-/* Sliders de Avaliação */
-.slider-container {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-}
-
-.slider-label {
-    font-weight: 600;
-    color: var(--color-fg);
-    margin-bottom: 0.5rem;
-}
-
-.slider-wrapper {
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-}
-
-.slider {
-    flex: 1;
-    height: 8px;
-    background: var(--cinza-generico);
-    border-radius: 10px;
-    outline: none;
-    -webkit-appearance: none;
-    appearance: none;
-    cursor: pointer;
-}
-
-.slider::-webkit-slider-thumb {
-    -webkit-appearance: none;
-    appearance: none;
-    width: 24px;
-    height: 24px;
-    background: var(--azul-generico);
-    border-radius: 50%;
-    cursor: pointer;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    transition: transform 0.2s ease;
-}
-
-.slider::-webkit-slider-thumb:hover {
-    transform: scale(1.1);
-}
-
-.slider::-moz-range-thumb {
-    width: 24px;
-    height: 24px;
-    background: var(--azul-generico);
-    border-radius: 50%;
-    cursor: pointer;
-    border: none;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-    transition: transform 0.2s ease;
-}
-
-.slider::-moz-range-thumb:hover {
-    transform: scale(1.1);
-}
-
-.slider-value {
-    min-width: 60px;
     text-align: center;
-    font-weight: 700;
-    font-size: 1.2rem;
-    color: var(--azul-generico);
-    background: var(--cinza-generico);
-    padding: 0.5rem;
-    border-radius: 8px;
 }
 
-.slider-labels {
+.star-rating {
     display: flex;
-    justify-content: space-between;
-    font-size: 0.9rem;
-    color: var(--color-fg);
-    opacity: 0.8;
-    margin-top: 0.5rem;
+    flex-direction: row-reverse;
+    justify-content: center;
+    gap: 0.2rem;
 }
 
-/* Especialidades Grid */
-.especialidades-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-    gap: 1rem;
-    margin-bottom: 1rem;
-}
-
-.nenhuma-opcao {
-    margin-top: 1rem;
-    padding-top: 1rem;
-    border-top: 1px solid var(--cinza-generico);
-}
-
-.especialidade-item {
-    display: block;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-}
-
-.especialidade-item input[type="checkbox"] {
+.star-rating input[type="radio"] {
     display: none;
 }
 
-.especialidade-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 0.8rem;
-    padding: 1.2rem;
-    background: var(--cinza-generico);
-    border: 2px solid transparent;
-    border-radius: 12px;
-    text-align: center;
-    transition: all 0.3s ease;
-    min-height: 100px;
-    justify-content: center;
+.star-rating label {
+    width: 2.8rem;
+    height: 2.8rem;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%23cccccc' d='M239.18,97.26A16.38,16.38,0,0,0,224.92,86l-59-4.76L143.14,26.15a16.36,16.36,0,0,0-30.27,0L90.11,81.23,31.08,86a16.46,16.46,0,0,0-9.37,28.86l45,38.83L53,211.75a16.38,16.38,0,0,0,24.5,17.82L128,198.49l50.53,31.08A16.4,16.4,0,0,0,203,211.75l-13.76-58.07,45-38.83A16.43,16.43,0,0,0,239.18,97.26Z'%3E%3C/path%3E%3C/svg%3E");
+    background-size: cover;
+    background-repeat: no-repeat;
 }
 
-.especialidade-item:hover .especialidade-content {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+.star-rating label:hover {
+    transform: scale(1.1);
 }
 
-.especialidade-item input[type="checkbox"]:checked + .especialidade-content {
-    background: rgba(59, 130, 246, 0.1);
-    border-color: var(--azul-generico);
-    color: var(--azul-generico);
+/* --- NOVOS EFEITOS DE HOVER E CHECKED --- */
+
+/* Restaura o estado padrão (cinza) para estrelas após a estrela com hover */
+.star-rating:hover label:hover ~ label {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%23cccccc' d='M239.18,97.26A16.38,16.38,0,0,0,224.92,86l-59-4.76L143.14,26.15a16.36,16.36,0,0,0-30.27,0L90.11,81.23,31.08,86a16.46,16.46,0,0,0-9.37,28.86l45,38.83L53,211.75a16.38,16.38,0,0,0,24.5,17.82L128,198.49l50.53,31.08A16.4,16.4,0,0,0,203,211.75l-13.76-58.07,45-38.83A16.43,16.43,0,0,0,239.18,97.26Z'%3E%3C/path%3E%3C/svg%3E");
 }
 
-.especialidade-item input[type="checkbox"]:checked + .especialidade-content svg {
-    color: var(--azul-generico);
-}
+/* Colore as estrelas no hover de acordo com a nota */
+.star-rating label:hover { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%23ef4444' d='M239.18,97.26A16.38,16.38,0,0,0,224.92,86l-59-4.76L143.14,26.15a16.36,16.36,0,0,0-30.27,0L90.11,81.23,31.08,86a16.46,16.46,0,0,0-9.37,28.86l45,38.83L53,211.75a16.38,16.38,0,0,0,24.5,17.82L128,198.49l50.53,31.08A16.4,16.4,0,0,0,203,211.75l-13.76-58.07,45-38.83A16.43,16.43,0,0,0,239.18,97.26Z'%3E%3C/path%3E%3C/svg%3E");}
+.star-rating [for$="-2"]:hover, .star-rating [for$="-2"]:hover ~ label { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%23f97316' d='M239.18,97.26A16.38,16.38,0,0,0,224.92,86l-59-4.76L143.14,26.15a16.36,16.36,0,0,0-30.27,0L90.11,81.23,31.08,86a16.46,16.46,0,0,0-9.37,28.86l45,38.83L53,211.75a16.38,16.38,0,0,0,24.5,17.82L128,198.49l50.53,31.08A16.4,16.4,0,0,0,203,211.75l-13.76-58.07,45-38.83A16.43,16.43,0,0,0,239.18,97.26Z'%3E%3C/path%3E%3C/svg%3E");}
+.star-rating [for$="-3"]:hover, .star-rating [for$="-3"]:hover ~ label { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%23facc15' d='M239.18,97.26A16.38,16.38,0,0,0,224.92,86l-59-4.76L143.14,26.15a16.36,16.36,0,0,0-30.27,0L90.11,81.23,31.08,86a16.46,16.46,0,0,0-9.37,28.86l45,38.83L53,211.75a16.38,16.38,0,0,0,24.5,17.82L128,198.49l50.53,31.08A16.4,16.4,0,0,0,203,211.75l-13.76-58.07,45-38.83A16.43,16.43,0,0,0,239.18,97.26Z'%3E%3C/path%3E%3C/svg%3E");}
+.star-rating [for$="-4"]:hover, .star-rating [for$="-4"]:hover ~ label { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%2384cc16' d='M239.18,97.26A16.38,16.38,0,0,0,224.92,86l-59-4.76L143.14,26.15a16.36,16.36,0,0,0-30.27,0L90.11,81.23,31.08,86a16.46,16.46,0,0,0-9.37,28.86l45,38.83L53,211.75a16.38,16.38,0,0,0,24.5,17.82L128,198.49l50.53,31.08A16.4,16.4,0,0,0,203,211.75l-13.76-58.07,45-38.83A16.43,16.43,0,0,0,239.18,97.26Z'%3E%3C/path%3E%3C/svg%3E");}
+.star-rating [for$="-5"]:hover, .star-rating [for$="-5"]:hover ~ label { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%2322c55e' d='M239.18,97.26A16.38,16.38,0,0,0,224.92,86l-59-4.76L143.14,26.15a16.36,16.36,0,0,0-30.27,0L90.11,81.23,31.08,86a16.46,16.46,0,0,0-9.37,28.86l45,38.83L53,211.75a16.38,16.38,0,0,0,24.5,17.82L128,198.49l50.53,31.08A16.4,16.4,0,0,0,203,211.75l-13.76-58.07,45-38.83A16.43,16.43,0,0,0,239.18,97.26Z'%3E%3C/path%3E%3C/svg%3E");}
 
-.especialidade-content svg {
+/* Colore permanentemente as estrelas quando um radio é selecionado */
+.star-rating input[type="radio"][value="1"]:checked ~ label { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%23ef4444' d='M239.18,97.26A16.38,16.38,0,0,0,224.92,86l-59-4.76L143.14,26.15a16.36,16.36,0,0,0-30.27,0L90.11,81.23,31.08,86a16.46,16.46,0,0,0-9.37,28.86l45,38.83L53,211.75a16.38,16.38,0,0,0,24.5,17.82L128,198.49l50.53,31.08A16.4,16.4,0,0,0,203,211.75l-13.76-58.07,45-38.83A16.43,16.43,0,0,0,239.18,97.26Z'%3E%3C/path%3E%3C/svg%3E");}
+.star-rating input[type="radio"][value="2"]:checked ~ label { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%23f97316' d='M239.18,97.26A16.38,16.38,0,0,0,224.92,86l-59-4.76L143.14,26.15a16.36,16.36,0,0,0-30.27,0L90.11,81.23,31.08,86a16.46,16.46,0,0,0-9.37,28.86l45,38.83L53,211.75a16.38,16.38,0,0,0,24.5,17.82L128,198.49l50.53,31.08A16.4,16.4,0,0,0,203,211.75l-13.76-58.07,45-38.83A16.43,16.43,0,0,0,239.18,97.26Z'%3E%3C/path%3E%3C/svg%3E");}
+.star-rating input[type="radio"][value="3"]:checked ~ label { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%23facc15' d='M239.18,97.26A16.38,16.38,0,0,0,224.92,86l-59-4.76L143.14,26.15a16.36,16.36,0,0,0-30.27,0L90.11,81.23,31.08,86a16.46,16.46,0,0,0-9.37,28.86l45,38.83L53,211.75a16.38,16.38,0,0,0,24.5,17.82L128,198.49l50.53,31.08A16.4,16.4,0,0,0,203,211.75l-13.76-58.07,45-38.83A16.43,16.43,0,0,0,239.18,97.26Z'%3E%3C/path%3E%3C/svg%3E");}
+.star-rating input[type="radio"][value="4"]:checked ~ label { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%2384cc16' d='M239.18,97.26A16.38,16.38,0,0,0,224.92,86l-59-4.76L143.14,26.15a16.36,16.36,0,0,0-30.27,0L90.11,81.23,31.08,86a16.46,16.46,0,0,0-9.37,28.86l45,38.83L53,211.75a16.38,16.38,0,0,0,24.5,17.82L128,198.49l50.53,31.08A16.4,16.4,0,0,0,203,211.75l-13.76-58.07,45-38.83A16.43,16.43,0,0,0,239.18,97.26Z'%3E%3C/path%3E%3C/svg%3E");}
+.star-rating input[type="radio"][value="5"]:checked ~ label { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%2322c55e' d='M239.18,97.26A16.38,16.38,0,0,0,224.92,86l-59-4.76L143.14,26.15a16.36,16.36,0,0,0-30.27,0L90.11,81.23,31.08,86a16.46,16.46,0,0,0-9.37,28.86l45,38.83L53,211.75a16.38,16.38,0,0,0,24.5,17.82L128,198.49l50.53,31.08A16.4,16.4,0,0,0,203,211.75l-13.76-58.07,45-38.83A16.43,16.43,0,0,0,239.18,97.26Z'%3E%3C/path%3E%3C/svg%3E");}
+
+/* --- ESTILOS PARA O SELECT DE ESPECIALIDADES (sem alteração) --- */
+.select-label {
+    display: block;
+    font-weight: 600;
     color: var(--color-fg);
-    opacity: 0.7;
-    transition: color 0.3s ease;
+    margin-bottom: 1rem;
 }
 
-.especialidade-content span {
-    font-weight: 500;
-    font-size: 0.9rem;
-    line-height: 1.2;
-}
-
-.especialidade-item.nenhuma .especialidade-content {
-    flex-direction: row;
-    text-align: left;
-    min-height: auto;
-    padding: 1rem;
-}
-
-.especialidade-item.nenhuma .especialidade-content span {
-    font-size: 1rem;
-}
-
-/* Comentários */
-.comentarios-avaliacao textarea {
+.especialidade-select {
     width: 100%;
     padding: 1rem;
+    font-size: 1rem;
     border: 2px solid var(--cinza-generico);
     border-radius: 10px;
-    font-family: inherit;
-    font-size: 1rem;
-    line-height: 1.5;
-    resize: vertical;
-    background: var(--color-bg);
+    background-color: var(--color-bg);
     color: var(--color-fg);
-    transition: border-color 0.3s ease;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' fill='%233b82f6' viewBox='0 0 256 256'%3E%3Cpath d='M215.39,92.61A8,8,0,0,0,208,88H48a8,8,0,0,0-5.66,13.66l80,80a8,8,0,0,0,11.32,0l80-80A8,8,0,0,0,215.39,92.61Z'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1.2em;
 }
 
-.comentarios-avaliacao textarea:focus {
+.especialidade-select:focus {
     outline: none;
     border-color: var(--azul-generico);
 }
 
-.comentarios-avaliacao textarea::placeholder {
-    color: var(--color-fg);
-    opacity: 0.6;
-}
-
-.char-count {
-    text-align: right;
-    font-size: 0.9rem;
-    color: var(--color-fg);
-    opacity: 0.7;
-    margin-top: 0.5rem;
-}
-
-/* Botões de ação */
+/* Botões de ação (sem alteração) */
 .acoes-container {
     display: flex;
     gap: 1rem;
@@ -271,9 +156,11 @@ h2 {
     color: var(--color-fg);
 }
 
-/* Modal */
+/* Modal (sem alteração) */
 .modal {
     display: none;
+    align-items: center;
+    justify-content: center;
     position: fixed;
     z-index: 1000;
     left: 0;
@@ -331,48 +218,14 @@ h2 {
     margin: 0;
 }
 
-/* Estados dos sliders baseados no valor */
-.slider[value="0"] ~ .slider-value {
-    color: #22c55e;
-}
-
-.slider[value*="1"], .slider[value*="2"], .slider[value*="3"] {
-    background: linear-gradient(to right, #22c55e 0%, #22c55e 30%, var(--cinza-generico) 30%);
-}
-
-.slider[value*="4"], .slider[value*="5"], .slider[value*="6"] {
-    background: linear-gradient(to right, #22c55e 0%, #eab308 50%, var(--cinza-generico) 60%);
-}
-
-.slider[value*="7"], .slider[value*="8"], .slider[value*="9"] {
-    background: linear-gradient(to right, #eab308 0%, #ef4444 70%, var(--cinza-generico) 80%);
-}
-
 /* Modo escuro */
-[data-theme="dark"] .slider {
-    background: #3a3a3a;
-}
-
-[data-theme="dark"] .slider-value {
-    background: #3a3a3a;
-}
-
-[data-theme="dark"] .especialidade-content {
-    background: #3a3a3a;
-}
-
-[data-theme="dark"] .especialidade-item input[type="checkbox"]:checked + .especialidade-content {
-    background: rgba(59, 130, 246, 0.2);
-}
-
-[data-theme="dark"] .comentarios-avaliacao textarea {
-    background: #2a2a2a;
+[data-theme="dark"] .especialidade-select {
+    background-color: #2a2a2a;
     border-color: #3a3a3a;
 }
-
-[data-theme="dark"] .modal-content {
-    background-color: var(--color-bg);
-    border: 1px solid #3a3a3a;
+[data-theme="dark"] .star-rating label,
+[data-theme="dark"] .star-rating:hover label:hover ~ label {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cpath fill='%234a4a4a' d='M239.18,97.26A16.38,16.38,0,0,0,224.92,86l-59-4.76L143.14,26.15a16.36,16.36,0,0,0-30.27,0L90.11,81.23,31.08,86a16.46,16.46,0,0,0-9.37,28.86l45,38.83L53,211.75a16.38,16.38,0,0,0,24.5,17.82L128,198.49l50.53,31.08A16.4,16.4,0,0,0,203,211.75l-13.76-58.07,45-38.83A16.43,16.43,0,0,0,239.18,97.26Z'%3E%3C/path%3E%3C/svg%3E");
 }
 
 /* Responsividade */
@@ -381,36 +234,8 @@ h2 {
         flex-direction: column;
     }
     
-    .especialidades-grid {
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-        gap: 0.8rem;
-    }
-    
-    .especialidade-content {
-        padding: 1rem;
-        min-height: 80px;
-    }
-    
-    .especialidade-content span {
-        font-size: 0.8rem;
-    }
-    
     .modal-content {
         margin: 20% auto;
         padding: 1.5rem;
-    }
-}
-
-@media screen and (max-height: 700px) {
-    section {
-        padding: 1rem;
-    }
-    
-    h2 {
-        margin-bottom: 1rem;
-    }
-    
-    .modal-content {
-        margin: 5% auto;
     }
 }

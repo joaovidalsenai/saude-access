@@ -5,6 +5,7 @@ import protect from '../middlewares/protect.route.js';
 import formatar from '../utils/formatar.js';
 import dadosUsuario, { AuthError, NotFoundError } from '../middlewares/dadosUsuario.js';
 import cookieParser from 'cookie-parser';
+import supabase from '../db/supabase.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,19 +14,6 @@ const pages = express();
 pages.use(express.json());
 pages.use(cookieParser()); // Essencial para ler os cookies de autenticação
 pages.use(express.static(join(__dirname, '../public')));
-
-const hospitais = [
-  { nome: "Hospital São Rafael", nota: 9.2 },
-  { nome: "Hospital Português", nota: 8.8 },
-  { nome: "Hospital Geral do Estado (HGE)", nota: 8.5 },
-  { nome: "Hospital Aliança", nota: 9.0 },
-  { nome: "Hospital Santa Izabel", nota: 8.7 },
-  { nome: "Hospital da Bahia", nota: 9.1 },
-  { nome: "Hospital Roberto Santos", nota: 7.9 },
-  { nome: "Hospital Jorge Valente", nota: 8.3 },
-  { nome: "Hospital São Jorge", nota: 7.5 },
-  { nome: "Hospital Salvador", nota: 8.6 }
-];
 
 // Configure EJS as view engine
 pages.set('view engine', 'ejs');
@@ -47,17 +35,17 @@ pages.get('/perfil', protect.entirely, async (req, res) => {
         const rawUserProfile = await dadosUsuario(tokenDeAcesso); // Chama o serviço
 
         const userProfile = {
-          nome: formatar.nome(rawUserProfile.nome_completo),
-          cpf: formatar.cpf(rawUserProfile.cpf),
-          telefone: formatar.telefone(rawUserProfile.telefone),
-          data_nascimento: formatar.data(rawUserProfile.data_nascimento),
+          nome: formatar.nome(rawUserProfile.cliente_nome),
+          cpf: formatar.cpf(rawUserProfile.cliente_cpf),
+          telefone: formatar.telefone(rawUserProfile.cliente_telefone),
+          data_nascimento: formatar.data(rawUserProfile.cliente_nascimento),
           email: rawUserProfile.email,
-          logradouro: rawUserProfile.endereco.logradouro,
-          numero: rawUserProfile.endereco.numero,
-          complemento: rawUserProfile.endereco.complemento || "NÃO INFORMADO",
-          cidade: rawUserProfile.endereco.cidade,
-          estado: rawUserProfile.endereco.estado,
-          cep: formatar.cep(rawUserProfile.endereco.cep)
+          logradouro: rawUserProfile.endereco.endereco_logradouro,
+          numero: rawUserProfile.endereco.endereco_numero,
+          complemento: rawUserProfile.endereco.endereco_complemento || false,
+          cidade: rawUserProfile.endereco.endereco_cidade,
+          estado: rawUserProfile.endereco.endereco_estado,
+          cep: formatar.cep(rawUserProfile.endereco.endereco_cep)
         }
 
         // Se chegou aqui, os dados foram encontrados com sucesso
@@ -67,7 +55,7 @@ pages.get('/perfil', protect.entirely, async (req, res) => {
         // Agora tratamos os erros específicos lançados pelo serviço
         if (e instanceof NotFoundError) {
             // Se o perfil não existe, o usuário precisa completar o cadastro
-            return res.redirect('/cadastro-info');
+            return res.redirect('/cadastro/info');
         }
         if (e instanceof AuthError) {
             // Se o token é inválido ou ausente, manda para o login
@@ -81,32 +69,282 @@ pages.get('/perfil', protect.entirely, async (req, res) => {
 });
 
 pages.get('/configuracoes', protect.entirely, (req, res) => res.render('configuracoes'));
-pages.get('/historico', protect.entirely, (req, res) => res.render('hospitais', { titulo: "Histórico" , hospitais }));
-pages.get('/suporte', protect.entirely, (req, res) => res.render('suporte-tecnico'));
-pages.get('/avaliacao', protect.entirely, (req, res) => res.render('avaliacao'));
-pages.get('/agendar-consulta', protect.entirely, (req, res) => res.render('agendarConsulta'));
-pages.get('/hospital', protect.entirely, (req, res) => res.render('hospital'));
-pages.get('/hospitais', protect.entirely, (req, res) => {
-  const ordenar = req.query.ordenar; // 'nota' ou undefined
-  const titulo = ordenar === 'nota' ? 'Hospitais por Lotação' : 'Hospitais Cadastrados';
 
-  // Cópia do array original
-  let hospitaisOrdenados = hospitais.slice();
+pages.get('/historico', protect.entirely, async (req, res) => {
+    try {
+        const userId = req.user.id; // Pega o ID do usuário logado
 
-  // Ordenar por nota ou por nome (alfabética por padrão)
-  if (ordenar === 'nota') {
-    hospitaisOrdenados.sort((a, b) => b.nota - a.nota); // Maior nota primeiro
-  } else {
-    hospitaisOrdenados.sort((a, b) => a.nome.localeCompare(b.nome)); // Ordem alfabética
-  }
+        // 1. Busca no Supabase todas as avaliações feitas pelo usuário
+        // e traz junto o nome e o ID do hospital relacionado
+        const { data: avaliacoes, error } = await supabase
+            .from('avaliacao_hospital')
+            .select(`
+                avaliacao_data,
+                avaliacao_lotacao,
+                avaliacao_tempo_espera,
+                avaliacao_atendimento,
+                avaliacao_infraestrutura,
+                hospital ( hospital_id, hospital_nome )
+            `)
+            .eq('cliente_id', userId)
+            .order('avaliacao_data', { ascending: false }); // Ordena pela data, mais recentes primeiro
 
-  res.render('hospitais', {
-    titulo,
-    hospitais: hospitaisOrdenados
-  });
+        if (error) {
+            console.error('Erro ao buscar histórico de avaliações:', error.message);
+            return res.status(500).send('Não foi possível carregar seu histórico.');
+        }
+
+        // 2. Formata os dados para facilitar a exibição na página
+        const avaliacoesFormatadas = avaliacoes.map(review => {
+            const media = (
+                review.avaliacao_lotacao +
+                review.avaliacao_tempo_espera +
+                review.avaliacao_atendimento +
+                review.avaliacao_infraestrutura
+            ) / 4;
+
+            return {
+                ...review,
+                media: media.toFixed(1), // Calcula a média daquela avaliação específica
+                data_formatada: new Date(review.avaliacao_data).toLocaleDateString('pt-BR', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                }) // Formata a data para o padrão brasileiro
+            };
+        });
+
+        // 3. Renderiza a nova página EJS com os dados formatados
+        res.render('historico', {
+            titulo: 'Meu Histórico de Avaliações',
+            avaliacoes: avaliacoesFormatadas
+        });
+
+    } catch (err) {
+        console.error('Erro inesperado na rota /historico:', err.message);
+        res.status(500).send('Ocorreu um erro inesperado.');
+    }
 });
-pages.get('/hospitais-procurados', protect.entirely, (req, res) => res.render('hospitaisLista', { titulo: "Hospitais Cadastrados" , hospitais }));
-pages.get('/hospitais-proximos', protect.entirely, (req, res) => res.render('hospitaisLista', { titulo: "Hospitais Cadastrados" , hospitais }));
+
+pages.get('/suporte', protect.entirely, (req, res) => res.render('suporte-tecnico'));
+pages.get('/agendar-consulta', protect.entirely, (req, res) => res.render('agendarConsulta'));
+
+pages.get('/hospital', protect.entirely, async (req, res) => {
+    try {
+        const hospitalId = req.query.id;
+
+        if (!hospitalId) {
+            return res.status(400).render('error', {
+                message: 'O ID do hospital é obrigatório.'
+            });
+        }
+
+        const { data: hospitalData, error } = await supabase
+            .from('hospital')
+            .select(`
+                *,
+                hospital_endereco(*),
+                hospital_contato(*),
+                avaliacao_hospital(*)
+            `)
+            .eq('hospital_id', hospitalId)
+            .single();
+
+        if (error) {
+            console.error('Supabase error:', error);
+            return res.status(404).render('error', {
+                message: 'Hospital não encontrado'
+            });
+        }
+
+        const avaliacoes = hospitalData.avaliacao_hospital || [];
+        
+        // Objeto de estatísticas atualizado para incluir as novas médias
+        const ratingStats = avaliacoes.length > 0 ? {
+            total_avaliacoes: avaliacoes.length,
+            media_lotacao: (avaliacoes.reduce((sum, a) => sum + a.avaliacao_lotacao, 0) / avaliacoes.length),
+            media_tempo_espera: (avaliacoes.reduce((sum, a) => sum + a.avaliacao_tempo_espera, 0) / avaliacoes.length),
+            media_atendimento: (avaliacoes.reduce((sum, a) => sum + a.avaliacao_atendimento, 0) / avaliacoes.length),
+            media_infraestrutura: (avaliacoes.reduce((sum, a) => sum + a.avaliacao_infraestrutura, 0) / avaliacoes.length)
+        } : null;
+
+        const recentRatings = avaliacoes
+            .sort((a, b) => new Date(b.avaliacao_data) - new Date(a.avaliacao_data))
+            .slice(0, 5);
+
+        const templateData = {
+            hospital: {
+                hospital_id: hospitalData.hospital_id,
+                hospital_nome: hospitalData.hospital_nome,
+                hospital_cnpj: hospitalData.hospital_cnpj
+            },
+            address: hospitalData.hospital_endereco[0] || {},
+            hospital_email: hospitalData.hospital_contato[0].hospital_email || {},
+            hospital_telefone: formatar.telefone(hospitalData.hospital_contato[0].hospital_telefone) || {},
+            ratings: {
+                stats: ratingStats,
+                recent: recentRatings
+            }
+        };
+
+        res.render('hospital', templateData);
+
+    } catch (error) {
+        console.error('Error fetching hospital data:', error);
+        res.status(500).render('error', {
+            message: 'Erro interno do servidor'
+        });
+    }
+});
+
+pages.get('/hospital/avaliacao', protect.entirely, async (req, res) => {
+  try {
+    // 1. O ID é pego de 'req.query' em vez de 'req.params'
+    const hospitalId = req.query.id;
+
+    // É uma boa prática verificar se o ID foi fornecido
+    if (!hospitalId) {
+      return res.status(400).render('error', { 
+        message: 'O ID do hospital é obrigatório.' 
+      });
+    }
+    
+    // O restante da sua lógica permanece o mesmo...
+    const { data: hospitalData, error } = await supabase
+      .from('hospital')
+      .select(`hospital_nome`)
+      .eq('hospital_id', hospitalId)
+      .single();
+    
+    if (error) {
+      console.error('Supabase error:', error);
+      return res.status(404).render('error', { 
+        message: 'Hospital não encontrado' 
+      });
+    }
+ 
+    res.render('avaliacao', { hospital_nome: hospitalData.hospital_nome , hospital_id: hospitalId});
+
+  } catch (error) {
+    console.error('Error fetching hospital data:', error);
+    res.status(500).render('error', { 
+      message: 'Erro interno do servidor' 
+    });
+  }
+});
+
+pages.get('/hospitais', protect.entirely, async (req, res) => {
+    // Opções de ordenação: 'alfabetica', 'media_geral', 'lotacao', 'tempo_espera', 'atendimento', 'infraestrutura'
+    const ordenarPor = req.query.ordenar || 'alfabetica'; 
+
+    try {
+        // 1. Busca todos os hospitais e suas respectivas avaliações
+        const { data: hospitais, error } = await supabase
+            .from('hospital')
+            .select(`
+                hospital_id,
+                hospital_nome,
+                avaliacao_hospital (
+                    avaliacao_lotacao,
+                    avaliacao_tempo_espera,
+                    avaliacao_atendimento,
+                    avaliacao_infraestrutura
+                )
+            `);
+
+        if (error) {
+            console.error('Erro ao buscar hospitais e avaliações:', error.message);
+            return res.status(500).send('Não foi possível carregar os hospitais.');
+        }
+
+        // 2. Calcula as médias para cada hospital
+        const hospitaisComMedias = hospitais.map(h => {
+            const avaliacoes = h.avaliacao_hospital;
+            let medias = {
+                media_lotacao: 0,
+                media_tempo_espera: 0,
+                media_atendimento: 0,
+                media_infraestrutura: 0,
+                media_geral: 0
+            };
+
+            if (avaliacoes && avaliacoes.length > 0) {
+                const total = avaliacoes.length;
+                medias.media_lotacao = avaliacoes.reduce((sum, a) => sum + a.avaliacao_lotacao, 0) / total;
+                medias.media_tempo_espera = avaliacoes.reduce((sum, a) => sum + a.avaliacao_tempo_espera, 0) / total;
+                medias.media_atendimento = avaliacoes.reduce((sum, a) => sum + a.avaliacao_atendimento, 0) / total;
+                medias.media_infraestrutura = avaliacoes.reduce((sum, a) => sum + a.avaliacao_infraestrutura, 0) / total;
+                medias.media_geral = (medias.media_lotacao + medias.media_tempo_espera + medias.media_atendimento + medias.media_infraestrutura) / 4;
+            }
+
+            return {
+                id: h.hospital_id,
+                nome: h.hospital_nome,
+                ...medias
+            };
+        });
+
+        // 3. Define o título da página e a chave de ordenação
+        let titulo = 'Hospitais Cadastrados';
+        let sortKey = 'nome'; // Default sort key
+
+        switch (ordenarPor) {
+            case 'media_geral':
+                titulo = 'Hospitais por Média Geral';
+                sortKey = 'media_geral';
+                break;
+            case 'lotacao':
+                titulo = 'Hospitais por Lotação';
+                sortKey = 'media_lotacao';
+                break;
+            case 'tempo_espera':
+                titulo = 'Hospitais por Tempo de Espera';
+                sortKey = 'media_tempo_espera';
+                break;
+            case 'atendimento':
+                titulo = 'Hospitais por Atendimento';
+                sortKey = 'media_atendimento';
+                break;
+            case 'infraestrutura':
+                titulo = 'Hospitais por Infraestrutura';
+                sortKey = 'media_infraestrutura';
+                break;
+        }
+
+        // 4. Ordena a lista de hospitais
+        hospitaisComMedias.sort((a, b) => {
+            if (ordenarPor === 'alfabetica') {
+                return a.nome.localeCompare(b.nome); // Ordem alfabética
+            }
+            // Para todos os outros casos, ordena pela nota (do maior para o menor)
+            return b[sortKey] - a[sortKey];
+        });
+
+        // 5. Formata os dados para o EJS (COM A CORREÇÃO)
+        const hospitaisFormatados = hospitaisComMedias.map(h => {
+            // **A CORREÇÃO ESTÁ AQUI**
+            // Se a ordenação for alfabética, a nota exibida é a média geral.
+            // Caso contrário, é a nota do critério de ordenação.
+            const notaParaExibir = (ordenarPor === 'alfabetica') ? h.media_geral : h[sortKey];
+            
+            return {
+                id: h.id,
+                nome: h.nome,
+                nota: parseFloat(notaParaExibir).toFixed(1)
+            };
+        });
+
+        // 6. Renderiza a página
+        res.render('hospitais', {
+            titulo,
+            hospitais: hospitaisFormatados
+        });
+
+    } catch (err) {
+        console.error('Erro inesperado na rota /hospitais:', err.message);
+        res.status(500).send('Ocorreu um erro inesperado.');
+    }
+});
 
 pages.get('/cadastro/info', protect.partially, (req, res) => res.render('cadastroInfo'));
 
