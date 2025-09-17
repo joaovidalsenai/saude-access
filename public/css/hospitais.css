@@ -1,38 +1,37 @@
 /* public/css/hospitais.css */
 
-/* Define a cor do texto dentro da bolinha como branco para melhor legibilidade */
+/* Define a cor padrão do texto dentro da bolinha como branco para consistência */
 .botao-hospital-nota {
-    color: #ffffff;
+    color: #ffffff; 
 }
 
 /* Cor Padrão (Cinza) para hospitais sem nota ou com nota 0 */
 .botao-hospital-nota.rating-0 {
     background-color: #cccccc;
-    color: #333333; /* Texto escuro para fundo claro */
+    color: #333333; /* Mantém o texto escuro aqui para o fundo cinza claro */
 }
 
-/* Nota 1 (Vermelho) */
+/* Nota 1 (Vermelho - mesma cor da estrela) */
 .botao-hospital-nota.rating-1 {
     background-color: #ef4444;
 }
 
-/* Nota 2 (Laranja) */
+/* Nota 2 (Laranja - mesma cor da estrela) */
 .botao-hospital-nota.rating-2 {
     background-color: #f97316;
 }
 
-/* Nota 3 (Amarelo) - Texto escuro para melhor contraste */
+/* Nota 3 (Amarelo - mesma cor da estrela) */
 .botao-hospital-nota.rating-3 {
     background-color: #facc15;
-    color: #333333;
 }
 
-/* Nota 4 (Verde Claro) */
+/* Nota 4 (Verde Claro - mesma cor da estrela) */
 .botao-hospital-nota.rating-4 {
     background-color: #84cc16;
 }
 
-/* Nota 5 (Verde Escuro) */
+/* Nota 5 (Verde Escuro - mesma cor da estrela) */
 .botao-hospital-nota.rating-5 {
     background-color: #22c55e;
 }

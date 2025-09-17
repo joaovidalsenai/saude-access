@@ -55,7 +55,7 @@ pages.get('/perfil', protect.entirely, async (req, res) => {
           email: rawUserProfile.email,
           logradouro: rawUserProfile.endereco.endereco_logradouro,
           numero: rawUserProfile.endereco.endereco_numero,
-          complemento: rawUserProfile.endereco.endereco_complemento || {},
+          complemento: rawUserProfile.endereco.endereco_complemento || false,
           cidade: rawUserProfile.endereco.endereco_cidade,
           estado: rawUserProfile.endereco.endereco_estado,
           cep: formatar.cep(rawUserProfile.endereco.endereco_cep)
