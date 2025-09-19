@@ -207,39 +207,56 @@ pages.get('/hospital', protect.entirely, async (req, res) => {
 });
 
 pages.get('/hospital/avaliacao', protect.entirely, async (req, res) => {
-  try {
-    // 1. O ID é pego de 'req.query' em vez de 'req.params'
-    const hospitalId = req.query.id;
+    try {
+        const hospitalId = req.query.id;
 
-    // É uma boa prática verificar se o ID foi fornecido
-    if (!hospitalId) {
-      return res.status(400).render('error', { 
-        message: 'O ID do hospital é obrigatório.' 
-      });
-    }
-    
-    // O restante da sua lógica permanece o mesmo...
-    const { data: hospitalData, error } = await supabase
-      .from('hospital')
-      .select(`hospital_nome`)
-      .eq('hospital_id', hospitalId)
-      .single();
-    
-    if (error) {
-      console.error('Supabase error:', error);
-      return res.status(404).render('error', { 
-        message: 'Hospital não encontrado' 
-      });
-    }
- 
-    res.render('avaliacao', { hospital_nome: hospitalData.hospital_nome , hospital_id: hospitalId});
+        if (!hospitalId) {
+            return res.status(400).render('error', { 
+                message: 'O ID do hospital é obrigatório.' 
+            });
+        }
+        
+        // Consulta atualizada para buscar o nome do hospital E suas especialidades
+        // O Supabase faz o "join" automaticamente baseado nas suas chaves estrangeiras
+        const { data: hospitalData, error } = await supabase
+            .from('hospital')
+            .select(`
+                hospital_nome,
+                hospital_especialidade (
+                    especialidade (
+                        especialidade_id,
+                        especialidade_nome
+                    )
+                )
+            `)
+            .eq('hospital_id', hospitalId)
+            .single();
+        
+        if (error || !hospitalData) {
+            console.error('Supabase error:', error);
+            return res.status(404).render('error', { 
+                message: 'Hospital não encontrado' 
+            });
+        }
 
-  } catch (error) {
-    console.error('Error fetching hospital data:', error);
-    res.status(500).render('error', { 
-      message: 'Erro interno do servidor' 
-    });
-  }
+        // Mapeia os resultados para um formato mais simples para o EJS
+        const especialidades = hospitalData.hospital_especialidade.map(item => {
+            return item.especialidade;
+        });
+     
+        // Renderiza a página passando nome, id e a nova lista de especialidades
+        res.render('avaliacao', { 
+            hospital_nome: hospitalData.hospital_nome, 
+            hospital_id: hospitalId,
+            especialidades: especialidades // <-- Nova variável aqui
+        });
+
+    } catch (error) {
+        console.error('Error fetching hospital data:', error);
+        res.status(500).render('error', { 
+            message: 'Erro interno do servidor' 
+        });
+    }
 });
 
 pages.get('/hospitais', protect.entirely, async (req, res) => {

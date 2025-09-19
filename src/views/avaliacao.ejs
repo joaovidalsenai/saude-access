@@ -14,15 +14,12 @@
 </head>
 <body class="protected">
     <header>
-        <a href="/hospital?id=<%= hospital_id %>" class="voltar-btn" aria-label="Voltar">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M228,128a12,12,0,0,1-12,12H69l51.52,51.51a12,12,0,0,1-17,17l-72-72a12,12,0,0,1,0-17l72-72a12,12,0,0,1,17,17L69,116H216A12,12,0,0,1,228,128Z"></path></svg>
-        </a>
         <h1><%= hospital_nome %></h1>
     </header>
     <main>
-        <form id="avaliacaoForm" class="avaliacao-form">
+        <form id="avaliacaoForm" class="avaliacao-form" novalidate>
             <section class="lotacao-avaliacao">
-                <h2>Como você avaliaria a lotação do hospital?</h2>
+                <h2>Como você avaliaria a lotação do local?</h2>
                 <div class="star-rating">
                     <input type="radio" id="lotacao-5" name="rating_lotacao" value="5" /><label for="lotacao-5" title="Muito Lotado"></label>
                     <input type="radio" id="lotacao-4" name="rating_lotacao" value="4" /><label for="lotacao-4" title="Lotado"></label>
@@ -64,6 +61,40 @@
                     <input type="radio" id="infra-1" name="rating_infraestrutura" value="1" /><label for="infra-1" title="Péssima"></label>
                 </div>
             </section>
+            
+            <hr class="divisor">
+
+            <section class="especialidade-report">
+                <h2>Reportar Status de Especialidade</h2>
+                <div class="form-group">
+                    <label for="especialidade_id">Selecione a Especialidade</label>
+                    <select name="especialidade_id" id="especialidade_id">
+                        <option value="">Nenhuma / Não reportar</option>
+                        <% if (especialidades && especialidades.length > 0) { %>
+                            <% especialidades.forEach(function(esp) { %>
+                                <option value="<%= esp.especialidade_id %>"><%= esp.especialidade_nome %></option>
+                            <% }); %>
+                        <% } %>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>Qual o status atual?</label>
+                    <div class="radio-group">
+                        <input type="radio" id="status_disponivel" name="especialidade_status" value="DISPONIVEL">
+                        <label for="status_disponivel">Disponível</label>
+                        <input type="radio" id="status_limitada" name="especialidade_status" value="LIMITADA">
+                        <label for="status_limitada">Limitada</label>
+                        <input type="radio" id="status_em_falta" name="especialidade_status" value="EM_FALTA">
+                        <label for="status_em_falta">Em Falta</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="tempo_espera_estimado">Tempo de espera estimado (minutos)</label>
+                    <input type="number" id="tempo_espera_estimado" name="tempo_espera_estimado" min="0" placeholder="Ex: 60">
+                </div>
+            </section>
 
             <section class="acoes-container">
                 <button type="submit" class="acao-btn acao-principal">
@@ -83,11 +114,12 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="#22c55e" viewBox="0 0 256 256"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm45.66,85.66-56,56a8,8,0,0,1-11.32,0l-24-24a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35a8,8,0,0,1,11.32,11.32Z"></path></svg>
                     <h3>Avaliação Enviada!</h3>
                 </div>
-                <p>Obrigado por compartilhar sua experiência. Sua avaliação ajudará outros usuários a tomar melhores decisões sobre o atendimento hospitalar.</p>
+                <p>Obrigado por compartilhar sua experiência. Sua avaliação ajudará outros usuários a tomar melhores decisões.</p>
                 <button type="button" class="acao-btn acao-principal" id="voltarBtn">
                     Voltar ao Hospital
                 </button>
             </div>
         </div>
     </main>
+</body>
 </html>
