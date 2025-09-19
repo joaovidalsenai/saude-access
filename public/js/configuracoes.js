@@ -8,7 +8,26 @@ rangeSlider.addEventListener('input', function () {
 
 document.addEventListener('DOMContentLoaded', function () {
     const temaToggle = document.getElementById('tema-toggle');
-    // ... código do tema ...
+
+    // --- INÍCIO DO CÓDIGO ADICIONADO ---
+
+    // 1. Verifica qual tema está salvo no armazenamento local
+    const temaSalvo = localStorage.getItem('theme');
+
+    // 2. Se existir um tema salvo, aplica-o à página e ao botão
+    if (temaSalvo) {
+        document.documentElement.setAttribute('data-theme', temaSalvo);
+
+        // 3. Sincroniza a posição do botão toggle com o tema salvo
+        if (temaSalvo === 'dark') {
+            temaToggle.checked = true;
+        } else {
+            temaToggle.checked = false;
+        }
+    }
+    // --- FIM DO CÓDIGO ADICIONADO ---
+
+    // Adiciona o listener que já existia para o caso de o usuário mudar o tema
     temaToggle.addEventListener('change', mudarTema);
 
     const modalEmail = document.getElementById('modal-email');
