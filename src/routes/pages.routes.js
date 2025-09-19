@@ -159,18 +159,27 @@ pages.get('/hospital', protect.entirely, async (req, res) => {
 
         const avaliacoes = hospitalData.avaliacao_hospital || [];
         
-        // Objeto de estatísticas atualizado para incluir as novas médias
-        const ratingStats = avaliacoes.length > 0 ? {
-            total_avaliacoes: avaliacoes.length,
-            media_lotacao: (avaliacoes.reduce((sum, a) => sum + a.avaliacao_lotacao, 0) / avaliacoes.length),
-            media_tempo_espera: (avaliacoes.reduce((sum, a) => sum + a.avaliacao_tempo_espera, 0) / avaliacoes.length),
-            media_atendimento: (avaliacoes.reduce((sum, a) => sum + a.avaliacao_atendimento, 0) / avaliacoes.length),
-            media_infraestrutura: (avaliacoes.reduce((sum, a) => sum + a.avaliacao_infraestrutura, 0) / avaliacoes.length)
-        } : null;
+        let ratingStats = null;
+        if (avaliacoes.length > 0) {
+            const media_lotacao = (avaliacoes.reduce((sum, a) => sum + a.avaliacao_lotacao, 0) / avaliacoes.length);
+            const media_tempo_espera = (avaliacoes.reduce((sum, a) => sum + a.avaliacao_tempo_espera, 0) / avaliacoes.length);
+            const media_atendimento = (avaliacoes.reduce((sum, a) => sum + a.avaliacao_atendimento, 0) / avaliacoes.length);
+            const media_infraestrutura = (avaliacoes.reduce((sum, a) => sum + a.avaliacao_infraestrutura, 0) / avaliacoes.length);
+            
+            ratingStats = {
+                total_avaliacoes: avaliacoes.length,
+                media_lotacao,
+                media_tempo_espera,
+                media_atendimento,
+                media_infraestrutura,
+                // Nova propriedade com a média geral
+                media_geral: (media_lotacao + media_tempo_espera + media_atendimento + media_infraestrutura) / 4
+            };
+        }
 
         const recentRatings = avaliacoes
             .sort((a, b) => new Date(b.avaliacao_data) - new Date(a.avaliacao_data))
-            .slice(0, 5);
+
 
         const templateData = {
             hospital: {

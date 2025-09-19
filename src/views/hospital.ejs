@@ -20,56 +20,76 @@
     </header>
     <main>
     <% if (ratings && ratings.stats) { %>
-        <section class="avaliacao-media-container">
-            <h2>Lotação</h2>
-            <div class="estrelas-display rating-<%= Math.round(ratings.stats.media_lotacao) %>">
+        <section class="avaliacao-geral-container">
+            <h2>Média Geral</h2>
+            <div class="estrelas-display rating-<%= Math.round(ratings.stats.media_geral) %>">
                 <span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span>
+            </div>
+            <span class="media-geral-numero"><%= Number(ratings.stats.media_geral).toFixed(1) %> / 5</span>
+        </section>
+
+        <section class="collapsible-section">
+            <div class="collapsible-header">
+                <h2>Ver Médias Específicas</h2>
+                <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"></path></svg>
+            </div>
+            <div class="collapsible-content">
+                <div class="medias-especificas-grid">
+                    <div class="avaliacao-media-container">
+                        <h3>Lotação</h3>
+                        <div class="estrelas-display rating-<%= Math.round(ratings.stats.media_lotacao) %>">
+                            <span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span>
+                        </div>
+                    </div>
+                    <div class="avaliacao-media-container">
+                        <h3>Tempo de Espera</h3>
+                        <div class="estrelas-display rating-<%= Math.round(ratings.stats.media_tempo_espera) %>">
+                            <span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span>
+                        </div>
+                    </div>
+                    <div class="avaliacao-media-container">
+                        <h3>Atendimento</h3>
+                        <div class="estrelas-display rating-<%= Math.round(ratings.stats.media_atendimento) %>">
+                            <span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span>
+                        </div>
+                    </div>
+                    <div class="avaliacao-media-container">
+                        <h3>Infraestrutura</h3>
+                        <div class="estrelas-display rating-<%= Math.round(ratings.stats.media_infraestrutura) %>">
+                            <span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </section>
 
-        <section class="avaliacao-media-container">
-            <h2>Tempo de Espera</h2>
-            <div class="estrelas-display rating-<%= Math.round(ratings.stats.media_tempo_espera) %>">
-                <span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span>
+        <section class="collapsible-section">
+            <div class="collapsible-header">
+                <h2>Estatísticas Gerais</h2>
+                <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"></path></svg>
             </div>
-        </section>
-
-        <section class="avaliacao-media-container">
-            <h2>Atendimento</h2>
-            <div class="estrelas-display rating-<%= Math.round(ratings.stats.media_atendimento) %>">
-                <span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span>
-            </div>
-        </section>
-
-        <section class="avaliacao-media-container">
-            <h2>Infraestrutura</h2>
-            <div class="estrelas-display rating-<%= Math.round(ratings.stats.media_infraestrutura) %>">
-                <span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span>
-            </div>
-        </section>
-
-        <section class="estatisticas-container">
-            <h2>Estatísticas Gerais</h2>
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <span class="stat-numero"><%= ratings.stats.total_avaliacoes %></span>
-                    <span class="stat-label">Avaliações</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-numero"><%= Number(ratings.stats.media_lotacao).toFixed(1) %>/5</span>
-                    <span class="stat-label">Média Lotação</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-numero"><%= Number(ratings.stats.media_tempo_espera).toFixed(1) %>/5</span>
-                    <span class="stat-label">Média Tempo</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-numero"><%= Number(ratings.stats.media_atendimento).toFixed(1) %>/5</span>
-                    <span class="stat-label">Média Atendimento</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-numero"><%= Number(ratings.stats.media_infraestrutura).toFixed(1) %>/5</span>
-                    <span class="stat-label">Média Infra</span>
+            <div class="collapsible-content">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-numero"><%= ratings.stats.total_avaliacoes %></span>
+                        <span class="stat-label">Avaliações</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-numero"><%= Number(ratings.stats.media_lotacao).toFixed(1) %>/5</span>
+                        <span class="stat-label">Média Lotação</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-numero"><%= Number(ratings.stats.media_tempo_espera).toFixed(1) %>/5</span>
+                        <span class="stat-label">Média Tempo</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-numero"><%= Number(ratings.stats.media_atendimento).toFixed(1) %>/5</span>
+                        <span class="stat-label">Média Atendimento</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-numero"><%= Number(ratings.stats.media_infraestrutura).toFixed(1) %>/5</span>
+                        <span class="stat-label">Média Infra</span>
+                    </div>
                 </div>
             </div>
         </section>
@@ -84,37 +104,46 @@
         </section>
     <% } %>
 
-        <section class="endereco-container">
-            <h2>Endereço</h2>
-            <div class="endereco-info">
-                <div class="endereco-item">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M128,64a40,40,0,1,0,40,40A40,40,0,0,0,128,64Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,128Zm0-112a88.1,88.1,0,0,0-88,88c0,31.4,14.51,64.68,42,96.25a254.19,254.19,0,0,0,41.45,38.3,8,8,0,0,0,9.18,0A254.19,254.19,0,0,0,174,200.25c27.45-31.57,42-64.85,42-96.25A88.1,88.1,0,0,0,128,16Zm0,206c-16.53-13-72-60.75-72-118a72,72,0,0,1,144,0C200,161.23,144.53,209,128,222Z"></path></svg>
-                    <div class="endereco-texto">
-                        <span><%= address.endereco_logradouro %><%= address.endereco_numero ? ', ' + address.endereco_numero : '' %></span>
-                        <span><%= address.endereco_bairro %> - CEP: <%= address.endereco_cep %></span>
-                        <% if (address.endereco_complemento) { %>
-                        <span class="complemento"><%= address.endereco_complemento %></span>
-                        <% } %>
+        <section class="collapsible-section">
+            <div class="collapsible-header">
+                <h2>Endereço</h2>
+                <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"></path></svg>
+            </div>
+            <div class="collapsible-content">
+                <div class="endereco-info">
+                    <div class="endereco-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M128,64a40,40,0,1,0,40,40A40,40,0,0,0,128,64Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,128Zm0-112a88.1,88.1,0,0,0-88,88c0,31.4,14.51,64.68,42,96.25a254.19,254.19,0,0,0,41.45,38.3,8,8,0,0,0,9.18,0A254.19,254.19,0,0,0,174,200.25c27.45-31.57,42-64.85,42-96.25A88.1,88.1,0,0,0,128,16Zm0,206c-16.53-13-72-60.75-72-118a72,72,0,0,1,144,0C200,161.23,144.53,209,128,222Z"></path></svg>
+                        <div class="endereco-texto">
+                            <span><%= address.endereco_logradouro %><%= address.endereco_numero ? ', ' + address.endereco_numero : '' %></span>
+                            <span><%= address.endereco_bairro %> - CEP: <%= address.endereco_cep %></span>
+                            <% if (address.endereco_complemento) { %>
+                            <span class="complemento"><%= address.endereco_complemento %></span>
+                            <% } %>
+                        </div>
                     </div>
                 </div>
             </div>
         </section>
 
-        <section class="contato-container">
-            <h2>Contato</h2>
-            <div class="contato-info">
-                <% if (hospital_telefone) { %>
-                <div class="contato-item">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M164.39,145.34a8,8,0,0,1,7.59-.69l47.16,21.13a8,8,0,0,1,4.8,8.3A48.33,48.33,0,0,1,176,216,136,136,0,0,1,40,80,48.33,48.33,0,0,1,81.92,32.06a8,8,0,0,1,8.3,4.8l21.13,47.2a8,8,0,0,1-.66,7.53L89.32,117a7.93,7.93,0,0,0-.54,7.81c8.27,16.93,25.77,34.22,42.75,42.41a7.92,7.92,0,0,0,7.83-.59Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/></svg>
-                    <span>Telefone: <strong><%= hospital_telefone %></strong></span>
+        <section class="collapsible-section">
+            <div class="collapsible-header">
+                <h2>Contato</h2>
+                <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"></path></svg>
+            </div>
+            <div class="collapsible-content">
+                <div class="contato-info">
+                    <% if (hospital_telefone) { %>
+                    <div class="contato-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M164.39,145.34a8,8,0,0,1,7.59-.69l47.16,21.13a8,8,0,0,1,4.8,8.3A48.33,48.33,0,0,1,176,216,136,136,0,0,1,40,80,48.33,48.33,0,0,1,81.92,32.06a8,8,0,0,1,8.3,4.8l21.13,47.2a8,8,0,0,1-.66,7.53L89.32,117a7.93,7.93,0,0,0-.54,7.81c8.27,16.93,25.77,34.22,42.75,42.41a7.92,7.92,0,0,0,7.83-.59Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/></svg>                        <span>Telefone: <strong><%= hospital_telefone %></strong></span>
+                    </div>
+                    <% } %>
+                    <% if (hospital_email) { %>
+                    <div class="contato-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48ZM203.43,64,128,133.15,52.57,64ZM216,192H40V74.19l82.59,75.71a8,8,0,0,0,10.82,0L216,74.19V192Z"></path></svg>
+                        <span>Email: <strong><%= hospital_email %></strong></span>
+                    </div>
+                    <% } %>
                 </div>
-                <% } %>
-                <% if (hospital_email) { %>
-                <div class="contato-item">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48ZM203.43,64,128,133.15,52.57,64ZM216,192H40V74.19l82.59,75.71a8,8,0,0,0,10.82,0L216,74.19V192Z"></path></svg>
-                    <span>Email: <strong><%= hospital_email %></strong></span>
-                </div>
-                <% } %>
             </div>
         </section>
 
@@ -130,5 +159,18 @@
         </section>
     </main>
     <%- include ('partials/navbar.ejs')%>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const collapsibleHeaders = document.querySelectorAll('.collapsible-header');
+
+            collapsibleHeaders.forEach(header => {
+                header.addEventListener('click', () => {
+                    const section = header.closest('.collapsible-section');
+                    section.classList.toggle('open');
+                });
+            });
+        });
+    </script>
 </body>
 </html>
