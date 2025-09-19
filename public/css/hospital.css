@@ -153,3 +153,177 @@ header h1 {
     overflow: hidden;
     text-overflow: ellipsis;
 }
+
+/* ... Adicione este código ao final do seu arquivo hospital.css ... */
+
+/* --- ESTILOS PARA A MÉDIA GERAL --- */
+.avaliacao-geral-container {
+    text-align: center;
+    background-color: var(--cinza-claro); /* Um fundo sutil para destacar */
+}
+
+.media-geral-numero {
+    display: block;
+    margin-top: 1rem;
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--azul-header);
+}
+
+[data-theme="dark"] .avaliacao-geral-container {
+    background-color: #3a3a3a;
+}
+
+/* --- ESTILOS PARA SEÇÕES SANFONADAS (COLLAPSIBLE) --- */
+.collapsible-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    /* ANTES: margin: -1.5rem; padding: 1.5rem; */
+    margin: -0.5rem -1.5rem; /* Ajustado para o novo padding vertical e o antigo horizontal */
+    padding: 0.5rem 1.5rem;   /* Ajustado para corresponder à nova margem */
+}
+
+/* O conteúdo começa fechado */
+.collapsible-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-out, padding-top 0.4s ease-out;
+    padding-top: 0;
+}
+
+.arrow-icon {
+    transition: transform 0.4s ease;
+    color: var(--azul-header);
+}
+
+/* Estilos quando a seção está aberta */
+.collapsible-section.open .collapsible-content {
+    /* Um valor alto para garantir que todo o conteúdo caiba */
+    max-height: 600px; 
+    padding-top: 1.5rem; /* Adiciona um espaço quando abre */
+    transition: max-height 0.5s ease-in, padding-top 0.5s ease-in;
+}
+
+.collapsible-section.open .arrow-icon {
+    transform: rotate(180deg);
+}
+
+/* ... Adicione este código ao final do seu arquivo ... */
+
+/* --- GRID PARA MÉDIAS ESPECÍFICAS --- */
+.medias-especificas-grid {
+    display: grid;
+    /* Cria duas colunas de tamanho igual */
+    grid-template-columns: 1fr 1fr; 
+    gap: 1.5rem; /* Espaçamento entre os itens */
+}
+
+/* Ajustes nos itens dentro do grid.
+  Removemos a borda e o padding que antes vinham da <section> 
+  e agora aplicamos diretamente nos itens. 
+*/
+.medias-especificas-grid .avaliacao-media-container {
+    margin-bottom: 0; /* Remove a margem que não é mais necessária */
+    border: 1px solid var(--cinza-claro); /* Adiciona uma borda sutil */
+    padding: 1rem;
+    border-radius: 10px;
+    background-color: var(--color-bg-variant); /* Um fundo levemente diferente */
+}
+
+.medias-especificas-grid .avaliacao-media-container h3 {
+    font-size: 1rem; /* Diminui um pouco o título */
+    text-align: center;
+    margin-bottom: 0.8rem;
+    font-weight: 500;
+}
+
+.collapsible-section {
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+/* --- AJUSTE PARA TELAS PEQUENAS --- */
+@media screen and (max-width: 480px) {
+    .medias-especificas-grid {
+        /* Em telas menores, volta a ser uma coluna única */
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
+
+/* ... (todo o seu CSS existente permanece aqui) ... */
+
+/* ======================================================= */
+/* NOVOS ESTILOS PARA A SEÇÃO DE ALERTAS              */
+/* ======================================================= */
+
+.alertas-especialidades h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.alertas-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.alerta-card {
+    background-color: var(--color-bg-variant, #fff3cd); /* Fundo amarelo claro para alerta */
+    border: 2px solid #ffeeba; /* Borda amarela */
+    border-left: 5px solid #ffc107; /* Borda esquerda mais grossa para destaque */
+    border-radius: 10px;
+    padding: 1rem 1.5rem;
+    color: #856404; /* Cor do texto escura para contraste */
+}
+
+.alerta-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.alerta-header svg {
+    color: #ffc107; /* Cor do ícone */
+}
+
+.alerta-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.alerta-body p {
+    margin: 0.5rem 0 0 0;
+    line-height: 1.5;
+}
+
+.alerta-ultimo-report {
+    font-size: 0.85rem;
+    opacity: 0.8;
+    margin-top: 0.75rem;
+    text-align: right;
+}
+
+.sem-alertas-mensagem {
+    text-align: center;
+    color: var(--color-fg-muted);
+    padding: 1rem;
+    background-color: var(--color-bg-variant);
+    border-radius: 10px;
+    border: 2px dashed var(--cinza-claro);
+}
+
+/* Ajustes para o modo escuro */
+[data-theme="dark"] .alerta-card {
+    background-color: #332701;
+    border-color: #664d03;
+    border-left-color: #ffc107;
+    color: #ffda6a;
+}
+[data-theme="dark"] .alerta-header svg {
+    color: #ffda6a;
+}

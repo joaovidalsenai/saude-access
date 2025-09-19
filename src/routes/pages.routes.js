@@ -139,6 +139,7 @@ pages.get('/hospital', protect.entirely, async (req, res) => {
             });
         }
 
+        // 1. Mantenha sua consulta principal para os dados do hospital
         const { data: hospitalData, error } = await supabase
             .from('hospital')
             .select(`
@@ -156,22 +157,49 @@ pages.get('/hospital', protect.entirely, async (req, res) => {
                 message: 'Hospital não encontrado'
             });
         }
+        
+        // =======================================================
+        // NOVA ADIÇÃO: Buscar os alertas de especialidade
+        // =======================================================
+        const { data: alertas, error: erroAlertas } = await supabase
+            .from('vw_alertas_especialidade')
+            .select('*')
+            .eq('hospital_id', hospitalId);
+        
+        if (erroAlertas) {
+            console.error('Erro ao buscar alertas:', erroAlertas.message);
+            // Mesmo com erro nos alertas, a página ainda pode carregar.
+            // Apenas teremos um array vazio de alertas.
+        }
+        // =======================================================
+        // FIM DA NOVA ADIÇÃO
+        // =======================================================
 
+
+        // Todo o seu cálculo de médias e ordenação continua igual
         const avaliacoes = hospitalData.avaliacao_hospital || [];
         
-        // Objeto de estatísticas atualizado para incluir as novas médias
-        const ratingStats = avaliacoes.length > 0 ? {
-            total_avaliacoes: avaliacoes.length,
-            media_lotacao: (avaliacoes.reduce((sum, a) => sum + a.avaliacao_lotacao, 0) / avaliacoes.length),
-            media_tempo_espera: (avaliacoes.reduce((sum, a) => sum + a.avaliacao_tempo_espera, 0) / avaliacoes.length),
-            media_atendimento: (avaliacoes.reduce((sum, a) => sum + a.avaliacao_atendimento, 0) / avaliacoes.length),
-            media_infraestrutura: (avaliacoes.reduce((sum, a) => sum + a.avaliacao_infraestrutura, 0) / avaliacoes.length)
-        } : null;
+        let ratingStats = null;
+        if (avaliacoes.length > 0) {
+            const media_lotacao = (avaliacoes.reduce((sum, a) => sum + a.avaliacao_lotacao, 0) / avaliacoes.length);
+            const media_tempo_espera = (avaliacoes.reduce((sum, a) => sum + a.avaliacao_tempo_espera, 0) / avaliacoes.length);
+            const media_atendimento = (avaliacoes.reduce((sum, a) => sum + a.avaliacao_atendimento, 0) / avaliacoes.length);
+            const media_infraestrutura = (avaliacoes.reduce((sum, a) => sum + a.avaliacao_infraestrutura, 0) / avaliacoes.length);
+            
+            ratingStats = {
+                total_avaliacoes: avaliacoes.length,
+                media_lotacao,
+                media_tempo_espera,
+                media_atendimento,
+                media_infraestrutura,
+                media_geral: (media_lotacao + media_tempo_espera + media_atendimento + media_infraestrutura) / 4
+            };
+        }
 
         const recentRatings = avaliacoes
-            .sort((a, b) => new Date(b.avaliacao_data) - new Date(a.avaliacao_data))
-            .slice(0, 5);
+            .sort((a, b) => new Date(b.avaliacao_data) - new Date(a.avaliacao_data));
 
+        
         const templateData = {
             hospital: {
                 hospital_id: hospitalData.hospital_id,
@@ -184,7 +212,9 @@ pages.get('/hospital', protect.entirely, async (req, res) => {
             ratings: {
                 stats: ratingStats,
                 recent: recentRatings
-            }
+            },
+            // NOVA ADIÇÃO: Passe a lista de alertas para o template
+            alertas: alertas || [] 
         };
 
         res.render('hospital', templateData);
@@ -198,39 +228,56 @@ pages.get('/hospital', protect.entirely, async (req, res) => {
 });
 
 pages.get('/hospital/avaliacao', protect.entirely, async (req, res) => {
-  try {
-    // 1. O ID é pego de 'req.query' em vez de 'req.params'
-    const hospitalId = req.query.id;
+    try {
+        const hospitalId = req.query.id;
 
-    // É uma boa prática verificar se o ID foi fornecido
-    if (!hospitalId) {
-      return res.status(400).render('error', { 
-        message: 'O ID do hospital é obrigatório.' 
-      });
-    }
-    
-    // O restante da sua lógica permanece o mesmo...
-    const { data: hospitalData, error } = await supabase
-      .from('hospital')
-      .select(`hospital_nome`)
-      .eq('hospital_id', hospitalId)
-      .single();
-    
-    if (error) {
-      console.error('Supabase error:', error);
-      return res.status(404).render('error', { 
-        message: 'Hospital não encontrado' 
-      });
-    }
- 
-    res.render('avaliacao', { hospital_nome: hospitalData.hospital_nome , hospital_id: hospitalId});
+        if (!hospitalId) {
+            return res.status(400).render('error', { 
+                message: 'O ID do hospital é obrigatório.' 
+            });
+        }
+        
+        // Consulta atualizada para buscar o nome do hospital E suas especialidades
+        // O Supabase faz o "join" automaticamente baseado nas suas chaves estrangeiras
+        const { data: hospitalData, error } = await supabase
+            .from('hospital')
+            .select(`
+                hospital_nome,
+                hospital_especialidade (
+                    especialidade (
+                        especialidade_id,
+                        especialidade_nome
+                    )
+                )
+            `)
+            .eq('hospital_id', hospitalId)
+            .single();
+        
+        if (error || !hospitalData) {
+            console.error('Supabase error:', error);
+            return res.status(404).render('error', { 
+                message: 'Hospital não encontrado' 
+            });
+        }
 
-  } catch (error) {
-    console.error('Error fetching hospital data:', error);
-    res.status(500).render('error', { 
-      message: 'Erro interno do servidor' 
-    });
-  }
+        // Mapeia os resultados para um formato mais simples para o EJS
+        const especialidades = hospitalData.hospital_especialidade.map(item => {
+            return item.especialidade;
+        });
+     
+        // Renderiza a página passando nome, id e a nova lista de especialidades
+        res.render('avaliacao', { 
+            hospital_nome: hospitalData.hospital_nome, 
+            hospital_id: hospitalId,
+            especialidades: especialidades // <-- Nova variável aqui
+        });
+
+    } catch (error) {
+        console.error('Error fetching hospital data:', error);
+        res.status(500).render('error', { 
+            message: 'Erro interno do servidor' 
+        });
+    }
 });
 
 pages.get('/hospitais', protect.entirely, async (req, res) => {
