@@ -126,7 +126,7 @@ pages.get('/historico', protect.entirely, async (req, res) => {
     }
 });
 
-pages.get('/suporte', protect.entirely, (req, res) => res.render('suporte-tecnico'));
+pages.get('/suporte', protect.entirely, (req, res) => res.render('suporteTecnico'));
 pages.get('/agendar-consulta', protect.entirely, (req, res) => res.render('agendarConsulta'));
 
 pages.get('/hospital', protect.entirely, async (req, res) => {
