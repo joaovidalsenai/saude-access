@@ -28,6 +28,29 @@
             <span class="media-geral-numero"><%= Number(ratings.stats.media_geral).toFixed(1) %> / 5</span>
         </section>
 
+        <section class="alertas-especialidades">
+            <h2>Alertas da Comunidade</h2>
+            
+            <% if (alertas && alertas.length > 0) { %>
+                <div class="alertas-container">
+                    <% alertas.forEach(alerta => { %>
+                        <div class="alerta-card">
+                            <div class="alerta-header">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M236.8,188.09,149.35,36.22a24,24,0,0,0-42.7,0L19.2,188.09a23.93,23.93,0,0,0,21.35,35.91H215.45a23.93,23.93,0,0,0,21.35-35.91Zm-16.15,20.57a8,8,0,0,1-7.2,4.34H40.55a8,8,0,0,1-7.2-4.34,7.9,7.9,0,0,1,.45-8.81L121.25,48.14a8,8,0,0,1,13.5,0l87.45,151.87A7.9,7.9,0,0,1,220.65,208.66ZM120,144V104a8,8,0,0,1,16,0v40a8,8,0,0,1-16,0Zm20,36a12,12,0,1,1-12-12A12,12,0,0,1,140,180Z"></path></svg>
+                                <h3><%= alerta.especialidade_nome %> em falta</h3>
+                            </div>
+                            <div class="alerta-body">
+                                <p><strong><%= alerta.total_reports_falta %></strong> usuários reportaram esta especialidade como "em falta" nas últimas 72 horas.</p>
+                                <p class="alerta-ultimo-report">Último reporte: <%= new Date(alerta.ultimo_report).toLocaleString('pt-BR') %></p>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } else { %>
+                <p class="sem-alertas-mensagem">Não há nenhum alerta de especialidade no momento.</p>
+            <% } %>
+        </section>
+
         <section class="collapsible-section">
             <div class="collapsible-header">
                 <h2>Ver Médias Específicas</h2>

@@ -139,6 +139,7 @@ pages.get('/hospital', protect.entirely, async (req, res) => {
             });
         }
 
+        // 1. Mantenha sua consulta principal para os dados do hospital
         const { data: hospitalData, error } = await supabase
             .from('hospital')
             .select(`
@@ -156,7 +157,26 @@ pages.get('/hospital', protect.entirely, async (req, res) => {
                 message: 'Hospital não encontrado'
             });
         }
+        
+        // =======================================================
+        // NOVA ADIÇÃO: Buscar os alertas de especialidade
+        // =======================================================
+        const { data: alertas, error: erroAlertas } = await supabase
+            .from('vw_alertas_especialidade')
+            .select('*')
+            .eq('hospital_id', hospitalId);
+        
+        if (erroAlertas) {
+            console.error('Erro ao buscar alertas:', erroAlertas.message);
+            // Mesmo com erro nos alertas, a página ainda pode carregar.
+            // Apenas teremos um array vazio de alertas.
+        }
+        // =======================================================
+        // FIM DA NOVA ADIÇÃO
+        // =======================================================
 
+
+        // Todo o seu cálculo de médias e ordenação continua igual
         const avaliacoes = hospitalData.avaliacao_hospital || [];
         
         let ratingStats = null;
@@ -172,15 +192,14 @@ pages.get('/hospital', protect.entirely, async (req, res) => {
                 media_tempo_espera,
                 media_atendimento,
                 media_infraestrutura,
-                // Nova propriedade com a média geral
                 media_geral: (media_lotacao + media_tempo_espera + media_atendimento + media_infraestrutura) / 4
             };
         }
 
         const recentRatings = avaliacoes
-            .sort((a, b) => new Date(b.avaliacao_data) - new Date(a.avaliacao_data))
+            .sort((a, b) => new Date(b.avaliacao_data) - new Date(a.avaliacao_data));
 
-
+        
         const templateData = {
             hospital: {
                 hospital_id: hospitalData.hospital_id,
@@ -193,7 +212,9 @@ pages.get('/hospital', protect.entirely, async (req, res) => {
             ratings: {
                 stats: ratingStats,
                 recent: recentRatings
-            }
+            },
+            // NOVA ADIÇÃO: Passe a lista de alertas para o template
+            alertas: alertas || [] 
         };
 
         res.render('hospital', templateData);

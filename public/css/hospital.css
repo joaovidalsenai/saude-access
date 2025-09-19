@@ -252,3 +252,78 @@ header h1 {
         gap: 1rem;
     }
 }
+
+/* ... (todo o seu CSS existente permanece aqui) ... */
+
+/* ======================================================= */
+/* NOVOS ESTILOS PARA A SEÇÃO DE ALERTAS              */
+/* ======================================================= */
+
+.alertas-especialidades h2 {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.alertas-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.alerta-card {
+    background-color: var(--color-bg-variant, #fff3cd); /* Fundo amarelo claro para alerta */
+    border: 2px solid #ffeeba; /* Borda amarela */
+    border-left: 5px solid #ffc107; /* Borda esquerda mais grossa para destaque */
+    border-radius: 10px;
+    padding: 1rem 1.5rem;
+    color: #856404; /* Cor do texto escura para contraste */
+}
+
+.alerta-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
+}
+
+.alerta-header svg {
+    color: #ffc107; /* Cor do ícone */
+}
+
+.alerta-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.alerta-body p {
+    margin: 0.5rem 0 0 0;
+    line-height: 1.5;
+}
+
+.alerta-ultimo-report {
+    font-size: 0.85rem;
+    opacity: 0.8;
+    margin-top: 0.75rem;
+    text-align: right;
+}
+
+.sem-alertas-mensagem {
+    text-align: center;
+    color: var(--color-fg-muted);
+    padding: 1rem;
+    background-color: var(--color-bg-variant);
+    border-radius: 10px;
+    border: 2px dashed var(--cinza-claro);
+}
+
+/* Ajustes para o modo escuro */
+[data-theme="dark"] .alerta-card {
+    background-color: #332701;
+    border-color: #664d03;
+    border-left-color: #ffc107;
+    color: #ffda6a;
+}
+[data-theme="dark"] .alerta-header svg {
+    color: #ffda6a;
+}
