@@ -35,3 +35,7 @@
 .botao-hospital-nota.rating-5 {
     background-color: #22c55e;
 }
+
+.botao-hospital {
+    background-color: var(--cinza-botao-bom);
+}

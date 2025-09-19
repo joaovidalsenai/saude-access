@@ -16,6 +16,7 @@
     --section-border: #1c69e3;
     --section-shadow: rgba(0, 0, 0, 0.1);
     --input-placeholder: #5e5e5e;
+    --cinza-botao-bom: #f3f3f3;
 }
 
 [data-theme="dark"] {
@@ -34,6 +35,7 @@
     --section-border: #1c69e3;
     --section-shadow: rgba(0, 0, 0, 0.2);
     --input-placeholder: #c5c5c5;
+    --cinza-botao-bom: #3f3f3f;
 }
 
 * {
