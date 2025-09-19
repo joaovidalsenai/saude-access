@@ -16,7 +16,7 @@
     width: 100%;
     
     /* Estilos visuais */
-    background-color: var(--color-bg);
+    background-color: var(--cinza-botao-bom);
     border-radius: 15px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     
