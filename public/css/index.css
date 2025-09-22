@@ -1,0 +1,230 @@
+/* Definição das variáveis de cor do tema light */
+[data-theme="light"] {
+    --color-bg: #ffffff;
+    --color-fg: #000000;
+    --cinza-generico: #f0f2f5; /* Cinza mais suave para fundos */
+    --azul-generico: #1c69e3;
+    --azul-header: #1c69e3;
+    --cinza-botao: #EDEDED;
+    --branco: #FFFFFF;
+    --cor-texto-footer: #f0f2f5;
+    --cor-fundo-footer: #272727;
+}
+
+/* Estilos globais com a fonte Lexend */
+* {
+    font-family: "Lexend", sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    line-height: 1.6;
+}
+
+.container {
+    width: 90%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Navbar */
+.navbar {
+    background-color: var(--color-bg);
+    padding: 1rem 0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.navbar .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.logo {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--azul-header);
+    text-decoration: none;
+}
+
+.main-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* Botões */
+.btn {
+    padding: 0.6rem 1.2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    display: inline-block;
+    text-align: center;
+    text-decoration: none;
+    border: 2px solid transparent;
+    white-space: nowrap; /* Impede a quebra de linha do texto */
+}
+
+.btn-primary {
+    background-color: var(--azul-generico);
+    color: var(--branco);
+}
+
+.btn-primary:hover {
+    background-color: var(--color-bg);
+    color: var(--azul-generico);
+    border-color: var(--azul-generico);
+    transform: translateY(-2px);
+}
+
+.btn-secondary {
+    background-color: var(--cinza-botao);
+    color: var(--azul-header);
+}
+
+.btn-secondary:hover {
+    background-color: #e0e0e0;
+}
+
+.btn-lg {
+    padding: 0.8rem 2rem;
+    font-size: 1.1rem;
+}
+
+main {
+    padding-top: 1rem;
+}
+
+/* Seção Hero */
+.hero {
+    background-color: var(--color-bg);
+    padding: 4rem 0;
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: clamp(2.2rem, 6vw, 3rem);
+    color: var(--azul-header);
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.hero p {
+    font-size: clamp(1rem, 2.5vw, 1.2rem);
+    margin-bottom: 2.5rem;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Seção de Funcionalidades */
+.features {
+    padding: 4rem 0;
+    background-color: var(--cinza-generico);
+    text-align: center;
+}
+
+.features h2 {
+    font-size: clamp(1.8rem, 5vw, 2.2rem);
+    color: var(--azul-header);
+    margin-bottom: 3rem;
+    font-weight: 700;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: 1fr; /* Padrão é uma coluna para mobile */
+    gap: 2rem;
+}
+
+.feature-item {
+    background-color: var(--color-bg);
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+}
+
+.feature-item img {
+    margin-bottom: 1rem;
+}
+
+.feature-item h3 {
+    font-size: 1.4rem;
+    color: var(--azul-generico);
+    margin-bottom: 0.5rem;
+}
+
+/* Seção de Call to Action (CTA) */
+.cta-section {
+    background-color: var(--azul-header);
+    padding: 4rem 0;
+    text-align: center;
+}
+
+.cta-section h2, .cta-section p {
+    color: var(--branco);
+}
+
+.cta-section h2 {
+    font-size: clamp(1.8rem, 5vw, 2.2rem);
+    margin-bottom: 1rem;
+}
+
+.cta-section p {
+    margin-bottom: 2rem;
+    font-size: clamp(1rem, 2.5vw, 1.1rem);
+}
+
+/* Rodapé */
+.footer {
+    background-color: var(--cor-fundo-footer);
+    color: var(--cor-texto-footer);
+    padding: 2rem 0;
+    text-align: center;
+}
+
+.footer a {
+    color: var(--azul-generico);
+    font-weight: 600;
+}
+
+/* =================================== */
+/* MEDIA QUERIES                     */
+/* =================================== */
+
+/* Para tablets e desktops pequenos (a partir de 768px) */
+@media (min-width: 768px) {
+    .feature-grid {
+        /* Muda para 3 colunas em telas maiores */
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .main-nav {
+        gap: 1rem; /* Aumenta o espaçamento na navegação */
+    }
+}
+
+/* Para celulares com telas bem pequenas (abaixo de 400px) */
+@media (max-width: 400px) {
+    .logo {
+        font-size: 1.2rem; /* Diminui um pouco o logo para dar mais espaço */
+    }
+
+    .main-nav {
+        gap: 0.4rem; /* Diminui o espaço entre os botões */
+    }
+
+    .btn {
+        padding: 0.5rem 0.8rem; /* Diminui o preenchimento interno dos botões */
+        font-size: 0.9rem;    /* Diminui o tamanho da fonte dos botões */
+        font-weight: 600;
+    }
+}
