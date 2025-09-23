@@ -18,4 +18,19 @@ geo.get('/geolocate', async (req, res) => {
   }
 });
 
+geo.get('/reverse-geocode', async (req, res) => {
+  const { lat, lng } = req.query;
+
+  if (!lat || !lng) {
+    return res.status(400).json({ error: 'Latitude (lat) e Longitude (lng) são obrigatórias.' });
+  }
+
+  try {
+    const address = await geolocationService.getAddressFromCoordinates(parseFloat(lat), parseFloat(lng));
+    res.json(address);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export default geo;
