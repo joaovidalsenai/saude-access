@@ -1,5 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const locationButton = document.getElementById('get-location-btn');
+  const locationButton = document.getElementById('get-location-btn'); // Supondo que tenha um botão com este ID
 
   if (locationButton) {
     locationButton.addEventListener('click', () => {
