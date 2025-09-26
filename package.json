@@ -10,7 +10,6 @@
   },
   "keywords": [],
   "dependencies": {
-    "@googlemaps/google-maps-services-js": "^3.4.2",
     "@supabase/supabase-js": "^2.55.0",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",

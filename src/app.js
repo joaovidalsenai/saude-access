@@ -10,7 +10,6 @@ import pages from './routes/pages.routes.js';
 import auth from './routes/auth.routes.js';
 import usuario from './routes/usuario.routes.js';
 import avaliacao from './routes/avaliar.routes.js';
-import geo from './routes/geo.routes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -24,7 +23,6 @@ app.use(pages);
 app.use(auth);
 app.use(usuario);
 app.use(avaliacao);
-app.use(geo)
 
 // ===== INICIALIZAÇÃO DO SERVIDOR =====
 const PORT = process.env.PORT || alternativePORT;
