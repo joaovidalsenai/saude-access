@@ -1,78 +1,84 @@
-import express from "express";
-import { createClient } from "@supabase/supabase-js";
+import { createClient } from '@supabase/supabase-js';
+import dotenv from 'dotenv';
+import { Router } from 'express';
 
-const showH = express.Router();
+dotenv.config();
 
-// Inicialize o Supabase (verifique se suas variáveis de ambiente estão corretas)
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_KEY
-);
+// Renomeamos a variável do roteador para maior clareza
+const hospitais = Router();
 
-// --- ROTA DA API ---
-// OBJETIVO: Apenas retornar dados em formato JSON.
-// Esta rota NÃO deve redirecionar para o login.
-showH.get("/api/showH", async (req, res) => {
+const supabaseUrl = process.env.SUPABASE_URL;
+const supabaseKey = process.env.SUPABASE_ANON_KEY;
+
+if (!supabaseUrl || !supabaseKey) {
+  throw new Error('As variáveis de ambiente SUPABASE_URL e SUPABASE_ANON_KEY são obrigatórias.');
+}
+
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+// -----------------------------------------------------------------------------
+// ROTA #1: API que fornece a LISTA de hospitais
+// Endereço antigo: /api/showH
+// NOVO ENDEREÇO: /api/hospitais
+// -----------------------------------------------------------------------------
+hospitais.get("/api/hospitais", async (req, res) => {
   try {
     const { data, error } = await supabase
       .from("HOSPITAL")
-      .select(
-        "HOSPITAL_ID, HOSPITAL_NOME"
-      );
+      .select("HOSPITAL_ID, HOSPITAL_NOME");
 
-    if (error) {
-      throw error;
-    }
-    
-    // Responde com os dados puros em JSON
+    if (error) throw error;
     res.json(data);
-
   } catch (err) {
-    console.error("Erro na API /api/showH:", err.message);
-    res.status(500).json({ erro: "Falha ao buscar dados dos hospitais." });
+    console.error("Erro na API /api/hospitais:", err.message);
+    res.status(500).json({ erro: "Falha ao buscar a lista de hospitais." });
   }
 });
 
-
-// --- ROTAS DE PÁGINA ---
-
-// OBJETIVO: Renderizar a PÁGINA da lista de hospitais.
-showH.get("/showH", (req, res) => {
-  // Esta rota apenas renderiza o arquivo EJS. O JavaScript dentro dele
-  // será responsável por chamar a "/api/hospitais" para obter os dados.
+// -----------------------------------------------------------------------------
+// ROTA #2: Rota para renderizar a PÁGINA da LISTA de hospitais
+// Endereço antigo: /showH
+// NOVO ENDEREÇO: /hospitais
+// -----------------------------------------------------------------------------
+hospitais.get("/hospitais", (req, res) => {
+  // Esta rota apenas renderiza a página da lista.
   res.render('showH', { titulo: 'Hospitais Próximos' });
 });
 
-// OBJETIVO: Renderizar a PÁGINA de detalhes de um hospital específico.
-showH.get("/showH", async (req, res) => {
-  const hospitalId = req.query.id;
+// -----------------------------------------------------------------------------
+// ROTA #3: Rota para renderizar a PÁGINA de DETALHES de um hospital
+// Endereço antigo: /showH (com conflito)
+// NOVO ENDEREÇO: /hospital
+// -----------------------------------------------------------------------------
+hospitais.get("/hospital", async (req, res) => {
+  const hospitalId = req.query.id; // Pega o ID da URL, ex: /hospital?id=5
 
   if (!hospitalId) {
-    return res.status(400).send("ID do hospital não foi fornecido.");
+    return res.status(400).send("O ID do hospital é obrigatório.");
   }
 
   try {
+    // Consulta que busca todos os dados do hospital e suas avaliações
     const { data: hospital, error } = await supabase
       .from("HOSPITAL")
-      .select("*") // Pega todos os dados para a página de detalhes
+      .select(`*, AVALIACAO_HOSPITAL(*)`)
       .eq("HOSPITAL_ID", hospitalId)
-      .single(); // .single() para garantir que é um objeto, não um array
+      .single();
 
-    if (error) {
-      throw error;
-    }
+    if (error) throw error;
 
     if (!hospital) {
       return res.status(404).send("Hospital não encontrado.");
     }
     
-    // Renderiza a página de detalhes, passando os dados do hospital para o EJS
+    // Renderiza a página de detalhes (ex: 'hospital.ejs')
     res.render('hospital', { hospital: hospital });
 
   } catch (err) {
-    console.error("Erro ao buscar detalhes do hospital:", err.message);
-    res.status(500).send("Erro ao carregar a página do hospital.");
+    console.error(`Erro ao buscar detalhes do hospital ID ${hospitalId}:`, err.message);
+    res.status(500).send("Erro ao carregar a página de detalhes do hospital.");
   }
 });
 
-export default showW;
+// Exporta o roteador com as novas rotas
+export default hospitais;

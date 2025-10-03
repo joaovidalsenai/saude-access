@@ -74,7 +74,7 @@
             // Função para BUSCAR os hospitais da API (só executa uma vez)
             async function buscarHospitais() {
                 try {
-                    const response = await fetch('/api/showH');
+                    const response = await fetch('/api/hospitais');
                     if (!response.ok) throw new Error(`Falha na rede: ${response.statusText}`);
                     
                     hospitaisList = await response.json(); // Armazena na variável global

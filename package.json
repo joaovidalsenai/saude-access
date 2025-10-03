@@ -2,14 +2,14 @@
   "name": "saude-access",
   "version": "1.0.0",
   "description": "Site com front-end em HTML/CSS e back-end em Node.js/Express",
-  "type": "module",
+  "type": "module", 
   "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js"
   },
   "keywords": [],
-  "dependencies": {
+      "dependencies": {
     "@supabase/supabase-js": "^2.55.0",
     "bcrypt": "^6.0.0",
     "cookie-parser": "^1.4.7",

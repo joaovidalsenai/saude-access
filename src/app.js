@@ -5,12 +5,13 @@ dotenv.config();
 import express from 'express';
 import { fileURLToPath } from 'url';
 import path, { join } from 'path';
+import geo from './routes/geo.routes.js';
 
 import pages from './routes/pages.routes.js';
 import auth from './routes/auth.routes.js';
 import usuario from './routes/usuario.routes.js';
 import avaliacao from './routes/avaliar.routes.js';
-import showH from './routes/hospitais.routes.js';
+import hospitais from './routes/hospitais.routes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -24,7 +25,8 @@ app.use(pages);
 app.use(auth);
 app.use(usuario);
 app.use(avaliacao);
-app.use(showH);
+app.use(hospitais);
+app.use(geo);
 
 // ===== INICIALIZAÇÃO DO SERVIDOR =====
 const PORT = process.env.PORT || alternativePORT;
