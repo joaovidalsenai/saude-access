@@ -10,7 +10,17 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/js/global.js"></script>
     <script src="/js/auth-utils.js" defer></script>
-</head> 
+    <style>
+        /* Estilo opcional para melhorar a visualização da distância */
+        .botao-hospital-distancia {
+            display: block;
+            font-size: 0.9em;
+            color: #555;
+            margin-top: 5px;
+            font-weight: normal;
+        }
+    </style>
+</head>
 <body class="protected">
     <header>
         <h1><%= titulo %></h1>
@@ -18,104 +28,152 @@
     <main>
         <div class="container-hospitais">
             <div class="div-butoes" id="lista-hospitais-container">
-                <p>Obtendo sua localização para encontrar hospitais próximos...</p>
+                <% hospitais.forEach(hospital => { %>
+                    <a href="/hospital?id=<%= hospital.id %>"
+                       class="botao-hospital"
+                       data-endereco="<%= hospital.endereco %>">
+                        <span class="botao-hospital-nota rating-<%= Math.floor(hospital.nota) %>">
+                            <%= hospital.nota %>
+                        </span>
+                        <span class="botao-hospital-nome"><%= hospital.nome %></span>
+                        <span class="botao-hospital-distancia">Calculando distância...</span>
+                    </a>
+                <% }); %>
             </div>
         </div>
-</main>
+    </main>
     <%- include ('partials/navbar.ejs')%>
 
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const container = document.getElementById('lista-hospitais-container');
-            let hospitaisList = []; // Variável para armazenar a lista de hospitais
+        // Use a tag do EJS para injetar a chave da API do seu backend de forma segura.
+        // Exemplo no seu router: res.render('hospitais', { GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY });
+        const API_KEY = '<%= GOOGLE_MAPS_API_KEY %>';
 
-            function calcularDistancia(lat1, lon1, lat2, lon2) {
-                if ((lat1 == lat2) && (lon1 == lon2)) return 0;
-                const radlat1 = Math.PI * lat1/180;
-                const radlat2 = Math.PI * lat2/180;
-                const theta = lon1-lon2;
-                const radtheta = Math.PI * theta/180;
-                let dist = Math.sin(radlat1) * Math.sin(radlat2) + Math.cos(radlat1) * Math.cos(radlat2) * Math.cos(radtheta);
-                if (dist > 1) dist = 1;
-                dist = Math.acos(dist);
-                dist = dist * 180/Math.PI;
-                dist = dist * 60 * 1.1515 * 1.609344;
-                return dist.toFixed(1);
+        /**
+         * Função que inicia todo o processo quando a página é carregada.
+         */
+        function inicializarCalculoDeDistancia() {
+            if (!API_KEY || API_KEY.includes('<%=')) {
+                console.error("Chave da API do Google Maps não foi configurada corretamente no servidor.");
+                atualizarStatusGeral('Erro de configuração.');
+                return;
             }
 
-            // Função para RENDERIZAR a lista na tela
-            function renderizarHospitais(userLat, userLng) {
-                if (hospitaisList.length === 0) return;
-
-                // 1. Recalcula a distância para cada hospital
-                hospitaisList.forEach(hospital => {
-                    hospital.distancia = calcularDistancia(
-                        userLat, userLng,
-                        hospital.HOSPITAL_LATITUDE, hospital.HOSPITAL_LONGITUDE
-                    );
-                });
-                
-                // 2. Reordena a lista pela nova distância
-                hospitaisList.sort((a, b) => parseFloat(a.distancia) - parseFloat(b.distancia));
-                
-                // 3. Limpa o container e exibe a lista atualizada
-                container.innerHTML = '';
-                hospitaisList.forEach(hospital => {
-                    const hospitalElement = `
-                        <a href="/hospital?id=${hospital.HOSPITAL_ID}" class="botao-hospital">
-                            <span class="botao-hospital-distancia">${hospital.distancia} km</span>
-                            <span class="botao-hospital-nome">${hospital.HOSPITAL_NOME}</span>
-                        </a>
-                    `;
-                    container.innerHTML += hospitalElement;
-                });
-            }
-
-            // Função para BUSCAR os hospitais da API (só executa uma vez)
-            async function buscarHospitais() {
-                try {
-                    const response = await fetch('/api/hospitais');
-                    if (!response.ok) throw new Error(`Falha na rede: ${response.statusText}`);
-                    
-                    hospitaisList = await response.json(); // Armazena na variável global
-                    container.innerHTML = '<p>Localização encontrada! Calculando distâncias...</p>';
-
-                } catch (error) {
-                    container.innerHTML = `<p style="color: red;">Erro ao buscar hospitais: ${error.message}</p>`;
-                }
-            }
-
-            // Início do processo
             if (navigator.geolocation) {
-                // Mensagem inicial
-                container.innerHTML = '<p>Obtendo sua localização para encontrar hospitais próximos...</p>';
-                
-                // Busca a lista de hospitais da API assim que a página carrega
-                buscarHospitais();
-
-                // Usa watchPosition para "observar" a localização
-                navigator.geolocation.watchPosition(
+                navigator.geolocation.getCurrentPosition(
                     (position) => {
-                        // SUCESSO: A localização mudou!
-                        const { latitude, longitude } = position.coords;
-                        // Chama a função para recalcular e renderizar a lista
-                        renderizarHospitais(latitude, longitude);
+                        const userCoords = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        processarTodosHospitais(userCoords);
                     },
-                    (error) => {
-                        // ERRO
-                        container.innerHTML = '<p>Não foi possível obter sua localização. Habilite o serviço de localização no seu navegador.</p>';
-                    },
-                    {
-                        // Opções para alta precisão (útil para movimento)
-                        enableHighAccuracy: true,
-                        maximumAge: 10000, // Idade máxima do cache da posição
-                        timeout: 5000     // Tempo máximo para obter a posição
+                    () => {
+                        atualizarStatusGeral('Permita sua localização.');
                     }
                 );
             } else {
-                container.innerHTML = '<p>Geolocalização não é suportada por este navegador.</p>';
+                atualizarStatusGeral('Geolocalização indisponível.');
             }
-        });
+        }
+
+        /**
+         * Atualiza o texto de todos os spans de distância com uma mensagem.
+         */
+        function atualizarStatusGeral(mensagem) {
+            document.querySelectorAll('.botao-hospital-distancia').forEach(el => {
+                el.textContent = mensagem;
+            });
+        }
+
+        /**
+         * Itera por cada hospital na página e dispara o cálculo de distância.
+         * @param {object} userCoords - Coordenadas do usuário ({lat, lng}).
+         */
+        async function processarTodosHospitais(userCoords) {
+            const hospitalElements = document.querySelectorAll('.botao-hospital');
+            const promises = Array.from(hospitalElements).map(el => calcularDistanciaParaHospital(el, userCoords));
+
+            await Promise.all(promises);
+            ordenarHospitaisPorDistancia();
+        }
+
+        /**
+         * Calcula a distância para um único elemento de hospital.
+         * @param {HTMLElement} hospitalEl - O elemento <a> do hospital.
+         * @param {object} userCoords - Coordenadas do usuário.
+         */
+        async function calcularDistanciaParaHospital(hospitalEl, userCoords) {
+            const endereco = hospitalEl.dataset.endereco;
+            const distanciaEl = hospitalEl.querySelector('.botao-hospital-distancia');
+
+            try {
+                const hospitalCoords = await getCoordsFromAddress(endereco);
+                if (hospitalCoords) {
+                    const distancia = calcularDistanciaHaversine(
+                        userCoords.lat, userCoords.lng,
+                        hospitalCoords.lat, hospitalCoords.lng
+                    );
+                    distanciaEl.textContent = `Aprox. ${distancia.toFixed(1)} km`;
+                    hospitalEl.dataset.distancia = distancia;
+                } else {
+                    distanciaEl.textContent = 'Endereço inválido';
+                }
+            } catch (error) {
+                distanciaEl.textContent = 'Erro ao calcular';
+            }
+        }
+
+        /**
+         * Converte um endereço em coordenadas (latitude/longitude) usando a Geocoding API.
+         * ESTA FUNÇÃO TEM CUSTO (USA A API DO GOOGLE).
+         */
+        async function getCoordsFromAddress(address) {
+            if (!address || address.trim() === '') return null;
+            const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${API_KEY}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            if (data.status === 'OK') {
+                return data.results[0].geometry.location;
+            }
+            console.error(`Geocoding falhou para "${address}": ${data.status}`);
+            return null;
+        }
+
+        /**
+         * Calcula a distância em linha reta (em km) entre duas coordenadas.
+         * ESTA FUNÇÃO É GRATUITA (CÁLCULO MATEMÁTICO).
+         */
+        function calcularDistanciaHaversine(lat1, lon1, lat2, lon2) {
+            const R = 6371; // Raio da Terra em km
+            const dLat = (lat2 - lat1) * (Math.PI / 180);
+            const dLon = (lon2 - lon1) * (Math.PI / 180);
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                      Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) *
+                      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
+        }
+
+        /**
+         * Reordena os elementos dos hospitais na página do mais próximo ao mais distante.
+         */
+        function ordenarHospitaisPorDistancia() {
+            const container = document.getElementById('lista-hospitais-container');
+            const hospitais = Array.from(container.querySelectorAll('.botao-hospital'));
+
+            hospitais.sort((a, b) => {
+                const distA = parseFloat(a.dataset.distancia || 'Infinity');
+                const distB = parseFloat(b.dataset.distancia || 'Infinity');
+                return distA - distB;
+            });
+
+            // Adiciona os elementos ordenados de volta ao contêiner
+            hospitais.forEach(hospital => container.appendChild(hospital));
+        }
+
+        // Adiciona um listener para iniciar o processo quando a página terminar de carregar.
+        window.addEventListener('load', inicializarCalculoDeDistancia);
     </script>
-</body>
+    </body>
 </html>

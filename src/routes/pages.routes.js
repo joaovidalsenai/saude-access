@@ -133,12 +133,13 @@ pages.get('/hospital', protect.entirely, async (req, res) => {
     try {
         const hospitalId = req.query.id;
 
-        if (!hospitalId) {
+        // VALIDAÇÃO ADICIONADA AQUI
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+        if (!hospitalId || !uuidRegex.test(hospitalId)) {
             return res.status(400).render('error', {
-                message: 'O ID do hospital é obrigatório.'
+                message: 'O ID do hospital fornecido é inválido.'
             });
         }
-
         // 1. Mantenha sua consulta principal para os dados do hospital
         const { data: hospitalData, error } = await supabase
             .from('hospital')
@@ -148,11 +149,13 @@ pages.get('/hospital', protect.entirely, async (req, res) => {
                 hospital_contato(*),
                 avaliacao_hospital(*)
             `)
-            .eq('hospital_id', hospitalId)
+            .eq('hospital_id', hospitalId) // Agora é seguro usar hospitalId
             .single();
 
         if (error) {
             console.error('Supabase error:', error);
+            // Mesmo com um UUID válido, o hospital pode não existir.
+            // O erro do Supabase ou a falta de dados deve levar a um 404.
             return res.status(404).render('error', {
                 message: 'Hospital não encontrado'
             });
@@ -389,7 +392,7 @@ pages.get('/hospitais', protect.entirely, async (req, res) => {
 
     } catch (err) {
         console.error('Erro inesperado na rota /hospitais:', err.message);
-        res.status(500).send('Ocorreu um erro inesperado.');
+        res.status(500).send('Ocorreu um erro inesperado no Servidor.');
     }
 });
 

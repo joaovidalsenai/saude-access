@@ -24,8 +24,8 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 hospitais.get("/api/hospitais", async (req, res) => {
   try {
     const { data, error } = await supabase
-      .from("HOSPITAL")
-      .select("HOSPITAL_ID, HOSPITAL_NOME");
+      .from("hospital")
+      .select("hospital_id, hospital_nome");
 
     if (error) throw error;
     res.json(data);
@@ -60,9 +60,9 @@ hospitais.get("/hospital", async (req, res) => {
   try {
     // Consulta que busca todos os dados do hospital e suas avaliações
     const { data: hospital, error } = await supabase
-      .from("HOSPITAL")
-      .select(`*, AVALIACAO_HOSPITAL(*)`)
-      .eq("HOSPITAL_ID", hospitalId)
+      .from("avaliacao")
+      .select(`*, avaliacao_hospital(*)`)
+      .eq("hospital_id", hospitalId)
       .single();
 
     if (error) throw error;
