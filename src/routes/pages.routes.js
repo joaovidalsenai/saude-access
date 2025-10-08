@@ -43,6 +43,7 @@ pages.get('/perfil', protect.entirely, async (req, res) => {
           logradouro: rawUserProfile.endereco.endereco_logradouro,
           numero: rawUserProfile.endereco.endereco_numero,
           complemento: rawUserProfile.endereco.endereco_complemento || false,
+          bairro: rawUserProfile.endereco.endereco_bairro,
           cidade: rawUserProfile.endereco.endereco_cidade,
           estado: rawUserProfile.endereco.endereco_estado,
           cep: formatar.cep(rawUserProfile.endereco.endereco_cep)
