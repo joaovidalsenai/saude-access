@@ -8,35 +8,62 @@
     <title>Saúde Access</title>
     <link rel="stylesheet" href="/css/protected.css" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="/js/global.js"></script>
-    <script src="/js/auth-utils.js" defer></script>
+    <script src="js/global.js"></script>
+    <script src="js/auth-utils.js" defer></script>
     <style>
-        /* Estilo opcional para melhorar a visualização da distância */
-        .botao-hospital-distancia {
-            display: block;
-            font-size: 0.9em;
-            color: #555;
-            margin-top: 5px;
-            font-weight: normal;
+        .distancia-badge {
+            display: inline-block;
+            background-color: #007bff;
+            color: white;
+            padding: 6px 10px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-top: 6px;
+            font-weight: 500;
+        }
+        .distancia-carregando {
+            color: #999;
         }
     </style>
-</head>
+</head> 
 <body class="protected">
     <header>
         <h1><%= titulo %></h1>
     </header>
     <main>
+        <form action="#" class="form-busca-hospital">
+            <input
+                type="search"
+                name="pesquisar-hospitais"
+                class="inp-busca-hospital"
+                placeholder="Pesquisar hospital"
+                autocomplete="off"
+            />
+            <button type="submit" class="btn-busca-hospital" aria-label="Pesquisar">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="32"
+                    height="32"
+                    fill="currentColor"
+                    viewBox="0 0 256 256"
+                >
+                    <path
+                        d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"
+                    ></path>
+                </svg>
+            </button>
+        </form>
         <div class="container-hospitais">
-            <div class="div-butoes" id="lista-hospitais-container">
+            <div class="div-butoes">
                 <% hospitais.forEach(hospital => { %>
-                    <a href="/hospital?id=<%= hospital.id %>"
-                       class="botao-hospital"
-                       data-endereco="<%= hospital.endereco %>">
+                    <a href="/hospital?id=<%= hospital.id %>" class="botao-hospital" data-hospital-id="<%= hospital.id %>" data-lat="<%= hospital.lat || '' %>" data-lng="<%= hospital.lng || '' %>">
                         <span class="botao-hospital-nota rating-<%= Math.floor(hospital.nota) %>">
                             <%= hospital.nota %>
                         </span>
                         <span class="botao-hospital-nome"><%= hospital.nome %></span>
-                        <span class="botao-hospital-distancia">Calculando distância...</span>
+                        <% if (hospital.lat && hospital.lng) { %>
+                            <span class="distancia-badge distancia-carregando">Calculando...</span>
+                        <% } %>
                     </a>
                 <% }); %>
             </div>
@@ -45,135 +72,39 @@
     <%- include ('partials/navbar.ejs')%>
 
     <script>
-        // Use a tag do EJS para injetar a chave da API do seu backend de forma segura.
-        // Exemplo no seu router: res.render('hospitais', { GOOGLE_MAPS_API_KEY: process.env.GOOGLE_MAPS_API_KEY });
-        const API_KEY = '<%= GOOGLE_MAPS_API_KEY %>';
-
-        /**
-         * Função que inicia todo o processo quando a página é carregada.
-         */
-        function inicializarCalculoDeDistancia() {
-            if (!API_KEY || API_KEY.includes('<%=')) {
-                console.error("Chave da API do Google Maps não foi configurada corretamente no servidor.");
-                atualizarStatusGeral('Erro de configuração.');
-                return;
-            }
-
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        const userCoords = {
-                            lat: position.coords.latitude,
-                            lng: position.coords.longitude
-                        };
-                        processarTodosHospitais(userCoords);
-                    },
-                    () => {
-                        atualizarStatusGeral('Permita sua localização.');
-                    }
-                );
-            } else {
-                atualizarStatusGeral('Geolocalização indisponível.');
-            }
-        }
-
-        /**
-         * Atualiza o texto de todos os spans de distância com uma mensagem.
-         */
-        function atualizarStatusGeral(mensagem) {
-            document.querySelectorAll('.botao-hospital-distancia').forEach(el => {
-                el.textContent = mensagem;
-            });
-        }
-
-        /**
-         * Itera por cada hospital na página e dispara o cálculo de distância.
-         * @param {object} userCoords - Coordenadas do usuário ({lat, lng}).
-         */
-        async function processarTodosHospitais(userCoords) {
-            const hospitalElements = document.querySelectorAll('.botao-hospital');
-            const promises = Array.from(hospitalElements).map(el => calcularDistanciaParaHospital(el, userCoords));
-
-            await Promise.all(promises);
-            ordenarHospitaisPorDistancia();
-        }
-
-        /**
-         * Calcula a distância para um único elemento de hospital.
-         * @param {HTMLElement} hospitalEl - O elemento <a> do hospital.
-         * @param {object} userCoords - Coordenadas do usuário.
-         */
-        async function calcularDistanciaParaHospital(hospitalEl, userCoords) {
-            const endereco = hospitalEl.dataset.endereco;
-            const distanciaEl = hospitalEl.querySelector('.botao-hospital-distancia');
-
+        // Calcular distâncias dos hospitais quando a página carregar
+        document.addEventListener('DOMContentLoaded', async () => {
             try {
-                const hospitalCoords = await getCoordsFromAddress(endereco);
-                if (hospitalCoords) {
-                    const distancia = calcularDistanciaHaversine(
-                        userCoords.lat, userCoords.lng,
-                        hospitalCoords.lat, hospitalCoords.lng
-                    );
-                    distanciaEl.textContent = `Aprox. ${distancia.toFixed(1)} km`;
-                    hospitalEl.dataset.distancia = distancia;
-                } else {
-                    distanciaEl.textContent = 'Endereço inválido';
-                }
-            } catch (error) {
-                distanciaEl.textContent = 'Erro ao calcular';
+                const minhaLocalizacao = await mapsAPI.obterLocalizacaoAtual();
+                const botoes = document.querySelectorAll('.botao-hospital[data-lat][data-lng]');
+
+                botoes.forEach(async (botao) => {
+                    const lat = parseFloat(botao.dataset.lat);
+                    const lng = parseFloat(botao.dataset.lng);
+                    const badge = botao.querySelector('.distancia-badge');
+
+                    if (lat && lng && badge) {
+                        try {
+                            const resultado = await mapsAPI.calcularDistancia(
+                                minhaLocalizacao,
+                                { lat, lng }
+                            );
+
+                            badge.textContent = `${resultado.distancia.texto} • ${resultado.duracao.texto}`;
+                            badge.classList.remove('distancia-carregando');
+                        } catch (erro) {
+                            console.error('Erro ao calcular distância:', erro);
+                            badge.textContent = 'Erro ao calcular';
+                            badge.classList.remove('distancia-carregando');
+                        }
+                    }
+                });
+
+            } catch (erro) {
+                console.error('Erro ao obter localização:', erro);
+                // Continuar mesmo sem localização (graceful fallback)
             }
-        }
-
-        /**
-         * Converte um endereço em coordenadas (latitude/longitude) usando a Geocoding API.
-         * ESTA FUNÇÃO TEM CUSTO (USA A API DO GOOGLE).
-         */
-        async function getCoordsFromAddress(address) {
-            if (!address || address.trim() === '') return null;
-            const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(address)}&key=${API_KEY}`;
-            const response = await fetch(url);
-            const data = await response.json();
-            if (data.status === 'OK') {
-                return data.results[0].geometry.location;
-            }
-            console.error(`Geocoding falhou para "${address}": ${data.status}`);
-            return null;
-        }
-
-        /**
-         * Calcula a distância em linha reta (em km) entre duas coordenadas.
-         * ESTA FUNÇÃO É GRATUITA (CÁLCULO MATEMÁTICO).
-         */
-        function calcularDistanciaHaversine(lat1, lon1, lat2, lon2) {
-            const R = 6371; // Raio da Terra em km
-            const dLat = (lat2 - lat1) * (Math.PI / 180);
-            const dLon = (lon2 - lon1) * (Math.PI / 180);
-            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                      Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) *
-                      Math.sin(dLon / 2) * Math.sin(dLon / 2);
-            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            return R * c;
-        }
-
-        /**
-         * Reordena os elementos dos hospitais na página do mais próximo ao mais distante.
-         */
-        function ordenarHospitaisPorDistancia() {
-            const container = document.getElementById('lista-hospitais-container');
-            const hospitais = Array.from(container.querySelectorAll('.botao-hospital'));
-
-            hospitais.sort((a, b) => {
-                const distA = parseFloat(a.dataset.distancia || 'Infinity');
-                const distB = parseFloat(b.dataset.distancia || 'Infinity');
-                return distA - distB;
-            });
-
-            // Adiciona os elementos ordenados de volta ao contêiner
-            hospitais.forEach(hospital => container.appendChild(hospital));
-        }
-
-        // Adiciona um listener para iniciar o processo quando a página terminar de carregar.
-        window.addEventListener('load', inicializarCalculoDeDistancia);
+        });
     </script>
-    </body>
+</body>
 </html>

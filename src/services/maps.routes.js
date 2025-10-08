@@ -391,6 +391,7 @@ class RoutingService {
   }
 }
 
+
 // Instância singleton
 const routingService = new RoutingService();
 

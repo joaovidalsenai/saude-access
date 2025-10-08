@@ -12,11 +12,13 @@ import auth from './routes/auth.routes.js';
 import usuario from './routes/usuario.routes.js';
 import avaliacao from './routes/avaliar.routes.js';
 import hospitais from './routes/hospitais.routes.js';
+import { GoogleMapsService } from './services/maps.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const app = express();
 const alternativePORT = 3001;
+
 
 // --- Middlewares ---
 app.use(express.static(join(__dirname, '../public')));
@@ -28,8 +30,10 @@ app.use(avaliacao);
 app.use(hospitais);
 app.use(geo);
 
+
 // ===== INICIALIZAÇÃO DO SERVIDOR =====
 const PORT = process.env.PORT || alternativePORT;
 app.listen(PORT, () => {
     console.log(`Servidor rodando em http://localhost:${PORT}`);
 });
+

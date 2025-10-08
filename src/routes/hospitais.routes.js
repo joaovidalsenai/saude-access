@@ -50,33 +50,24 @@ hospitais.get("/hospitais", (req, res) => {
 // Endereço antigo: /showH (com conflito)
 // NOVO ENDEREÇO: /hospital
 // -----------------------------------------------------------------------------
-hospitais.get("/hospital", async (req, res) => {
-  const hospitalId = req.query.id; // Pega o ID da URL, ex: /hospital?id=5
 
-  if (!hospitalId) {
-    return res.status(400).send("O ID do hospital é obrigatório.");
-  }
-
+// Dentro de pages.routes.js
+hospitais.get('/hospital', (req, res) => {
   try {
-    // Consulta que busca todos os dados do hospital e suas avaliações
-    const { data: hospital, error } = await supabase
-      .from("avaliacao")
-      .select(`*, avaliacao_hospital(*)`)
-      .eq("hospital_id", hospitalId)
-      .single();
+    const { id } = req.query; // Pega o id=23 da URL
 
-    if (error) throw error;
-
-    if (!hospital) {
-      return res.status(404).send("Hospital não encontrado.");
+    // PROVAVELMENTE HÁ UMA VALIDAÇÃO AQUI:
+    // Exemplo: O código pode estar esperando algo diferente
+    if (!id || typeof id !== 'string' || id.trim() === '') {
+      // SE A VALIDAÇÃO FALHAR, ELE ENVIA O ERRO 400
+      return res.status(400).render('error'); // <- Este é o gatilho
     }
-    
-    // Renderiza a página de detalhes (ex: 'hospital.ejs')
-    res.render('hospital', { hospital: hospital });
 
-  } catch (err) {
-    console.error(`Erro ao buscar detalhes do hospital ID ${hospitalId}:`, err.message);
-    res.status(500).send("Erro ao carregar a página de detalhes do hospital.");
+    // ... resto do seu código para buscar o hospital ...
+    res.render('hospital', { hospitalData });
+
+  } catch (error) {
+    res.status(500).render('error');
   }
 });
 
