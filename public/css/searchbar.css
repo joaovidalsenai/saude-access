@@ -139,3 +139,46 @@ svg {
         margin-bottom: 0.5rem;
     }
 }
+
+/* Estilos para os resultados da busca (ADICIONAR NO FINAL DO ARQUIVO) */
+#search-results-container {
+    position: relative;
+    width: 100%;
+    margin-top: 0.5rem;
+}
+
+.search-results-list {
+    position: absolute;
+    width: 100%;
+    background-color: var(--color-bg);
+    border: 3px solid var(--section-border);
+    border-radius: 15px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    max-height: 250px;
+    overflow-y: auto;
+    box-shadow: 0 4px 12px var(--section-shadow);
+    z-index: 1000; /* Garante que a lista fique sobre outros elementos */
+}
+
+.search-results-list li a {
+    display: block;
+    padding: 0.8rem 1.5rem;
+    color: var(--color-fg);
+    text-decoration: none;
+    transition: background-color 0.2s ease;
+}
+
+.search-results-list li a:hover {
+    background-color: var(--hover-bg);
+}
+
+/* Estilos para mensagens de erro ou "nenhum resultado" */
+.search-no-results, .search-error {
+    padding: 0.8rem 1.5rem;
+    background-color: var(--cinza-generico);
+    border-radius: 15px;
+    color: var(--color-fg);
+    opacity: 0.8;
+}

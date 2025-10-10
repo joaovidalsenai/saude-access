@@ -210,6 +210,7 @@ pages.get('/hospital', protect.entirely, async (req, res) => {
             address: hospitalData.hospital_endereco[0] || {},
             hospital_email: hospitalData.hospital_contato[0].hospital_email || {},
             hospital_telefone: formatar.telefone(hospitalData.hospital_contato[0].hospital_telefone) || {},
+            hospital_site: hospitalData.hospital_contato[0].hospital_site || {},
             ratings: {
                 stats: ratingStats,
                 recent: recentRatings
@@ -391,6 +392,35 @@ pages.get('/hospitais', protect.entirely, async (req, res) => {
     } catch (err) {
         console.error('Erro inesperado na rota /hospitais:', err.message);
         res.status(500).send('Ocorreu um erro inesperado.');
+    }
+});
+
+pages.get('/api/hospitais/buscar', protect.entirely, async (req, res) => {
+    const { termo } = req.query; // Pega o termo de busca da URL, ex: /api/hospitais/buscar?termo=santa
+
+    if (!termo || termo.trim().length < 2) {
+        // Se não houver termo ou for muito curto, retorna um array vazio
+        return res.json([]);
+    }
+
+    try {
+        // Usamos .ilike() para uma busca "case-insensitive" que contenha o termo
+        const { data, error } = await supabase
+            .from('hospital')
+            .select('hospital_id, hospital_nome')
+            .ilike('hospital_nome', `%${termo}%`) // O '%' é um coringa que busca qualquer correspondência
+            .limit(10); // Limita a 10 resultados para não sobrecarregar
+
+        if (error) {
+            console.error('Erro na busca de hospitais:', error.message);
+            return res.status(500).json({ message: 'Erro ao buscar hospitais.' });
+        }
+
+        res.json(data); // Retorna a lista de hospitais encontrados em formato JSON
+
+    } catch (err) {
+        console.error('Erro inesperado na rota /api/hospitais/buscar:', err.message);
+        res.status(500).json({ message: 'Ocorreu um erro inesperado.' });
     }
 });
 
