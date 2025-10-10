@@ -210,6 +210,7 @@ pages.get('/hospital', protect.entirely, async (req, res) => {
             address: hospitalData.hospital_endereco[0] || {},
             hospital_email: hospitalData.hospital_contato[0].hospital_email || {},
             hospital_telefone: formatar.telefone(hospitalData.hospital_contato[0].hospital_telefone) || {},
+            hospital_site: hospitalData.hospital_contato[0].hospital_site || {},
             ratings: {
                 stats: ratingStats,
                 recent: recentRatings
