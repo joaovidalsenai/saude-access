@@ -431,3 +431,7 @@
         margin: 0.5rem auto;
     }
 }
+
+.config-botao:hover {
+    cursor: pointer;
+}
