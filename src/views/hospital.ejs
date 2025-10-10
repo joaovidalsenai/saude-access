@@ -10,10 +10,11 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/js/global.js"></script>
     <script src="/js/auth-utils.js" defer></script>
+    <script src="/js/hospital.js" defer></script>
 </head>
 <body class="protected">
     <header>
-        <a href="/hospitais" class="voltar-btn" aria-label="Voltar">
+        <a class="voltar-btn" aria-label="Voltar">
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M228,128a12,12,0,0,1-12,12H69l51.52,51.51a12,12,0,0,1-17,17l-72-72a12,12,0,0,1,0-17l72-72a12,12,0,0,1,17,17L69,116H216A12,12,0,0,1,228,128Z"></path></svg>
         </a>
         <h1><%= hospital.hospital_nome %></h1>
