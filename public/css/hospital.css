@@ -247,3 +247,17 @@ header h1 {
 [data-theme="dark"] .alerta-header svg {
     color: #ffda6a;
 }
+
+.contato-site {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    padding: 0.8rem;
+    background-color: var(--azul-generico); /* Fundo totalmente azul */
+    color: white; /* Cor do texto para contraste */
+    border-radius: 10px;
+}
+
+.contato-site:hover {
+    cursor: pointer;
+}
