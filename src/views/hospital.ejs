@@ -22,12 +22,24 @@
     </header>
     <main>
     <% if (ratings && ratings.stats) { %>
+        <%
+            // --- INÍCIO: Lógica de Classificação Consistente ---
+            // 1. Converte a média para um número de forma segura, usando 0 como padrão.
+            const media_bruta = Number(ratings.stats.media_geral) || 0;
+            // 2. Normaliza para 2 casas decimais para corrigir problemas de ponto flutuante.
+            const media_limpa = parseFloat(media_bruta.toFixed(2));
+            // 3. Prepara o texto a ser exibido (ex: 3.98 -> "3.9", 4.0 -> "4.0").
+            const media_texto = (Math.floor(media_limpa * 10) / 10).toFixed(1);
+            // 4. Prepara a classe para as estrelas (ex: 3.98 -> 3).
+            const media_classe = Math.floor(media_limpa);
+            // --- FIM: Lógica de Classificação Consistente ---
+        %>
         <section class="avaliacao-geral-container">
             <h2>Média Geral</h2>
-            <div class="estrelas-display rating-<%= Math.floor(ratings.stats.media_geral) %>">
+            <div class="estrelas-display rating-<%= media_classe %>">
                 <span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span>
             </div>
-            <span class="media-geral-numero"><%= Math.floor(ratings.stats.media_geral * 10) / 10 %> / 5</span>
+            <span class="media-geral-numero"><%= media_texto %> / 5</span>
         </section>
 
         <section class="alertas-especialidades">
