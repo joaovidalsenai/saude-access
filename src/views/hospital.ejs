@@ -24,10 +24,10 @@
     <% if (ratings && ratings.stats) { %>
         <section class="avaliacao-geral-container">
             <h2>Média Geral</h2>
-            <div class="estrelas-display rating-<%= Math.round(ratings.stats.media_geral) %>">
+            <div class="estrelas-display rating-<%= Math.floor(ratings.stats.media_geral) %>">
                 <span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span>
             </div>
-            <span class="media-geral-numero"><%= Number(ratings.stats.media_geral).toFixed(1) %> / 5</span>
+            <span class="media-geral-numero"><%= Math.floor(ratings.stats.media_geral * 10) / 10 %> / 5</span>
         </section>
 
         <section class="alertas-especialidades">
