@@ -375,11 +375,13 @@ pages.get('/hospitais', protect.entirely, async (req, res) => {
             // Se a ordenação for alfabética, a nota exibida é a média geral.
             // Caso contrário, é a nota do critério de ordenação.
             const notaParaExibir = (ordenarPor === 'alfabetica') ? h.media_geral : h[sortKey];
-            
+            // Lógica de truncamento para consistência com o hospital.ejs
+            const mediaTruncada = Math.floor(notaParaExibir * 10) / 10;
+
             return {
                 id: h.id,
                 nome: h.nome,
-                nota: parseFloat(notaParaExibir).toFixed(1)
+                nota: mediaTruncada.toFixed(1)
             };
         });
 
