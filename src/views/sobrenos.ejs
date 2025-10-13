@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&display=swap" rel="stylesheet">
+    <title>Saúde Access - Sobre Nós</title>
+    <style>
+        /* Definição das variáveis de cor do tema light */
+        [data-theme="light"] {
+            --color-bg: #ffffff;
+            --color-fg: #000000;
+            --cinza-generico: #f0f2f5;
+            --azul-generico: #1c69e3;
+            --azul-header: #1c69e3;
+            --cinza-botao: #EDEDED;
+            --branco: #FFFFFF;
+            --cor-texto-footer: #f0f2f5;
+            --cor-fundo-footer: #272727;
+        }
+
+        /* Estilos globais com a fonte Lexend */
+        * {
+            font-family: "Lexend", sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--color-bg);
+            color: var(--color-fg);
+            line-height: 1.6;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Navbar */
+        .navbar {
+            background-color: var(--color-bg);
+            padding: 1rem 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--azul-header);
+            text-decoration: none;
+        }
+
+        .main-nav {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        /* Botões */
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-block;
+            text-align: center;
+            text-decoration: none;
+            border: 2px solid transparent;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .btn-primary {
+            background-color: var(--azul-generico);
+            color: var(--branco);
+        }
+
+        .btn-primary:hover {
+            background-color: var(--color-bg);
+            color: var(--azul-generico);
+            border-color: var(--azul-generico);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--cinza-botao);
+            color: var(--azul-header);
+        }
+
+        .btn-secondary:hover {
+            background-color: #e0e0e0;
+        }
+
+        .btn-lg {
+            padding: 0.8rem 2rem;
+            font-size: 1.1rem;
+        }
+
+        main {
+            padding-top: 1rem;
+        }
+
+        /* Seção Hero */
+        .hero {
+            background-color: var(--color-bg);
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .hero .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.2rem, 6vw, 3rem);
+            color: var(--azul-header);
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            margin-bottom: 2.5rem;
+            max-width: 600px;
+        }
+
+        /* Seção Justificativa */
+        .justification {
+            background-color: var(--cinza-generico);
+            padding: 4rem 0;
+        }
+
+        .justification .container {
+            max-width: 1000px;
+        }
+
+        .justification h2 {
+            font-size: clamp(1.8rem, 5vw, 2.2rem);
+            color: var(--azul-header);
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+            text-align: left;
+        }
+
+        .justification h3 {
+            font-size: clamp(1.2rem, 4vw, 1.4rem);
+            color: #555;
+            margin-bottom: 2rem;
+            font-weight: 500;
+            text-align: left;
+            margin-left: 1rem;
+        }
+
+        .justification-content {
+            color: #555;
+            font-size: 1rem;
+            line-height: 1.9;
+            text-align: justify;
+        }
+
+        .justification-content p {
+            margin-bottom: 1.5rem;
+        }
+
+        /* Seção Team */
+        .team {
+            background-color: var(--color-bg);
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .team h2 {
+            font-size: clamp(1.8rem, 5vw, 2.2rem);
+            color: var(--azul-header);
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .team-description {
+            max-width: 700px;
+            margin: 0 auto 3rem;
+            color: #666;
+            font-size: 1rem;
+            line-height: 1.7;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .team-card {
+            background: var(--color-bg);
+            border: 2px solid #e8e8e8;
+            padding: 2.5rem 1.5rem;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1.5rem;
+            transition: all 0.3s ease;
+            min-height: 280px;
+        }
+
+        .team-card:hover {
+            border-color: var(--azul-header);
+            box-shadow: 0 8px 30px rgba(28, 105, 227, 0.1);
+            transform: translateY(-5px);
+        }
+
+        .team-photo {
+            width: 120px;
+            height: 120px;
+            background: #e8e8e8;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #bbb;
+            overflow: hidden;
+        }
+
+        .team-photo-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+        .team-name {
+            color: #333;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .team-role {
+            color: var(--azul-header);
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* Seção Values */
+        .values {
+            background-color: var(--cinza-generico);
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .values h2 {
+            font-size: clamp(1.8rem, 5vw, 2.2rem);
+            color: var(--azul-header);
+            margin-bottom: 3rem;
+            font-weight: 700;
+        }
+
+        .values-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        .value-card {
+            background: white;
+            padding: 2.5rem 2rem;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+        }
+
+        .value-card:hover {
+            box-shadow: 0 8px 30px rgba(28, 105, 227, 0.15);
+            transform: translateY(-5px);
+        }
+
+        .value-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--azul-header);
+            font-weight: 700;
+        }
+
+        .value-card p {
+            color: #666;
+            line-height: 1.8;
+            font-size: 0.95rem;
+        }
+
+        /* Seção Contact */
+        .contact {
+            background-color: var(--azul-header);
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .contact h2 {
+            color: var(--branco);
+            font-size: clamp(1.8rem, 5vw, 2.2rem);
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .contact p {
+            color: var(--branco);
+            margin-bottom: 2rem;
+            font-size: clamp(1rem, 2.5vw, 1.1rem);
+        }
+
+        .contact-form {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            text-align: left;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            padding: 0.9rem;
+            border: none;
+            border-radius: 6px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            color: #333;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .submit-button {
+            background: white;
+            color: var(--azul-header);
+            padding: 0.9rem 2.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 700;
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .submit-button:hover {
+            background: #e8e8e8;
+            transform: scale(1.02);
+        }
+
+        /* Rodapé */
+        .footer {
+            background-color: var(--cor-fundo-footer);
+            color: var(--cor-texto-footer);
+            padding: 2rem 0;
+            text-align: center;
+        }
+
+        .footer a {
+            color: var(--azul-generico);
+            font-weight: 600;
+            text-decoration: none;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+        }
+
+        /* Media Queries */
+        @media (min-width: 768px) {
+            .team-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .values-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            .main-nav {
+                gap: 1rem;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .team-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .values-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .logo {
+                font-size: 1.2rem;
+            }
+
+            .main-nav {
+                gap: 0.4rem;
+            }
+
+            .btn {
+                padding: 0.5rem 0.8rem;
+                font-size: 0.9rem;
+                font-weight: 600;
+            }
+
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body data-theme="light">
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="#" class="logo">Saúde Access</a>
+            <div class="main-nav">
+                <button class="btn btn-secondary" onclick="window.location.href = '\login'">Login</button>
+                <button class="btn btn-primary" onclick="window.location.href = '\cadastro'">Cadastre-se</button>
+            </div>
+        </div>
+    </nav>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <h1>A sua saúde, sempre à mão.</h1>
+                <p>Avalie hospitais, verifique a lotação em tempo real e tome as melhores decisões para o seu bem-estar.</p>
+                <button class="btn btn-primary btn-lg" onclick="window.location.href = '\cadastro'">Comece a usar agora</button>
+            </div>
+        </section>
+
+        <!-- Justification Section -->
+        <section class="justification">
+            <div class="container">
+                <h2>Saiba Mais</h2>
+                <h3>Justificativa do Projeto</h3>
+                <div class="justification-content">
+                    <p>O Brasil enfrenta desafios crônicos no acesso à saúde pública, como filas extensas, superlotação em unidades hospitalares, demora no atendimento e falta de informações acessíveis e confiáveis. Esses problemas afetam, principalmente, populações mais vulneráveis, que muitas vezes não têm acesso a ferramentas tecnológicas ou conhecimento suficiente para navegar com segurança pelo sistema de saúde.</p>
+                    
+                    <p>O projeto Saúde Access surge como uma resposta concreta a essa realidade. Idealizado por jovens preocupados com o bem-estar coletivo, o aplicativo propõe uma solução digital acessível, inclusiva e intuitiva, que conecta os usuários a dados atualizados sobre unidades de saúde, como tempo de espera, lotação, qualidade de atendimento e disponibilidade de serviços.</p>
+                    
+                    <p>A justificativa para o desenvolvimento do Saúde Access está enraizada na convicção de que a informação é uma ferramenta poderosa de transformação social. Ao empoderar o cidadão com dados claros e confiáveis, o projeto contribui para decisões mais conscientes, reduz o tempo de espera, distribui melhor a demanda entre unidades e potencialmente salva vidas. Além disso, fortalece a relação entre usuários e instituições de saúde, promovendo mais confiança, transparência e eficiência.</p>
+                    
+                    <p>Com base em princípios de empatia, inovação e compromisso social, o Saúde Access representa não apenas um avanço tecnológico, mas uma iniciativa com profundo impacto humano, que visa tornar o acesso à saúde um direito mais tangível, digno e justo para todos.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Team Section -->
+        <section class="team">
+            <div class="container">
+                <h2>Nossa Equipe</h2>
+                <p class="team-description">Conheça os profissionais dedicados que trabalham todos os dias para tornar este projeto uma realidade e fazer a diferença na vida de cada pessoa.</p>
+                <div class="team-grid">
+                    <div class="team-card">
+                        <img src="/images/joão.jpg" alt="João Pedro de Alencar Vidal" class="team-photo-img">
+                        <div class="team-name">João Pedro de Alencar Vidal</div>
+                    </div>
+                    <div class="team-card">
+                        <img src="/images/lara.jpg" alt="Lara Ferreira Pinho" class="team-photo-img">
+                        <div class="team-name">Lara Ferreira Pinho</div>
+                    </div>
+                    <div class="team-card">
+                        <img src="/images/lucas.jpg" alt="Lucas de Carvalho Silva" class="team-photo-img">
+                        <div class="team-name">Lucas de Carvalho Silva</div>
+                    </div>
+                    <div class="team-card">
+                        <img src="/images/eliada.jpg" alt="Eliada Bittencourt Barbosa Pereira" class="team-photo-img">
+                        <div class="team-name">Eliada Bittencourt Barbosa Pereira</div>
+                    </div>
+                    <div class="team-card">
+                        <img src="/images/matheus.jpg" alt="Matheus Euzébio Ferreira" class="team-photo-img">
+                        <div class="team-name">Matheus Euzébio Ferreira</div>
+                    </div>
+                    <div class="team-card">
+                        <img src="/images/iago.jpg" alt="Iago Tavares Rodrigues Gomes" class="team-photo-img">
+                        <div class="team-name">Iago Tavares Rodrigues Gomes</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Values Section -->
+        <section class="values">
+            <div class="container">
+                <h2>Valores</h2>
+                <div class="values-grid">
+                    <div class="value-card">
+                        <h3>Missão</h3>
+                        <p>Facilitar o acesso à saúde de forma eficiente e inclusiva, conectando usuários a informações confiáveis sobre unidades de saúde para decisões conscientes sobre seus cuidados.</p>
+                    </div>
+                    <div class="value-card">
+                        <h3>Visão</h3>
+                        <p>Ser uma das principais ferramentas digitais de apoio à navegação no sistema de saúde brasileiro, reduzindo filas e superlotação com experiência ágil e humanizada.</p>
+                    </div>
+                    <div class="value-card">
+                        <h3>Valores</h3>
+                        <p>Empatia, Transparência, Inovação, Compromisso Social e Melhoria Contínua guiam nosso desenvolvimento centrado nas necessidades reais dos usuários.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section class="contact">
+            <div class="container">
+                <h2>Fale Conosco</h2>
+                <p>Tem alguma dúvida ou gostaria de saber mais sobre nosso projeto? Entre em contato conosco através do formulário e responderemos o mais breve possível.</p>
+                <form class="contact-form">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nome">Nome</label>
+                            <input type="text" id="nome" name="nome" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="sobrenome">Sobrenome</label>
+                            <input type="text" id="sobrenome" name="sobrenome" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="mensagem">Mensagem</label>
+                        <textarea id="mensagem" name="mensagem" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">Enviar Mensagem</button>
+                </form>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>© 2024 Saúde Access. Todos os direitos reservados.</p>
+            <p>Precisa de ajuda? <a href="#">Fale com o Suporte Técnico</a></p>
+        </div>
+    </footer>
+</body>
+</html>

@@ -428,4 +428,6 @@ pages.get('/api/hospitais/buscar', protect.entirely, async (req, res) => {
 
 pages.get('/cadastro/info', protect.partially, (req, res) => res.render('cadastroInfo'));
 
+pages.get('/sobre-nos', protect.partially, (req, res) => res.render('sobrenos'));
+
 export default pages;
