@@ -9,92 +9,161 @@ rangeSlider.addEventListener('input', function () {
 document.addEventListener('DOMContentLoaded', function () {
     const temaToggle = document.getElementById('tema-toggle');
 
-    // --- INÍCIO DO CÓDIGO ADICIONADO ---
-
-    // 1. Verifica qual tema está salvo no armazenamento local
+    // Lógica do tema (sem alterações)
     const temaSalvo = localStorage.getItem('theme');
-
-    // 2. Se existir um tema salvo, aplica-o à página e ao botão
     if (temaSalvo) {
         document.documentElement.setAttribute('data-theme', temaSalvo);
-
-        // 3. Sincroniza a posição do botão toggle com o tema salvo
         if (temaSalvo === 'dark') {
             temaToggle.checked = true;
         } else {
             temaToggle.checked = false;
         }
     }
-    // --- FIM DO CÓDIGO ADICIONADO ---
-
-    // Adiciona o listener que já existia para o caso de o usuário mudar o tema
     temaToggle.addEventListener('change', mudarTema);
 
+    // ======================================================
+    // =========== INÍCIO: LÓGICA REESTRUTURADA ===========
+    // ======================================================
+
+    // --- Seletores dos Modais ---
     const modalEmail = document.getElementById('modal-email');
-    const btnCancelarEmail = document.getElementById('btn-cancelar-email');
-    const btnConfirmarEmail = document.getElementById('btn-confirmar-email');
-    const novoEmailInput = document.getElementById('novo-email-input');
-    const emailChangeError = document.getElementById('email-change-error');
+    const modalSenha = document.getElementById("modal-senha");
+    const modalReauth = document.getElementById('modal-reauth');
+    const modalNotificacao = document.getElementById('modal-notificacao');
 
-    // --- Lógica de Abertura (Botão "Alterar E-mail" na página de configurações) ---
-    const btnAlterarEmail = document.getElementById('item-alterar-email');
-    if (btnAlterarEmail) {
-        btnAlterarEmail.addEventListener('click', async () => {
-            // --- ETAPA 1: Reautenticação por Senha (Igual antes) ---
-            const currentPassword = prompt("Para alterar seu e-mail, por favor, confirme sua senha atual:");
-            if (!currentPassword) return;
+    // --- Elementos do Modal de Notificação ---
+    const notificacaoTitulo = document.getElementById('notificacao-titulo'); // <-- NOVO
+    const notificacaoMensagem = document.getElementById('notificacao-mensagem'); // <-- NOVO
+    const btnFecharNotificacao = document.getElementById('btn-fechar-notificacao'); // <-- NOVO
 
-            let reauthSuccess = false;
-            try {
-                const reauthResponse = await fetch('/auth/verificar', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ currentPassword: currentPassword })
-                });
-                const reauthResult = await reauthResponse.json();
-                reauthSuccess = reauthResponse.ok && reauthResult.success;
-            } catch (error) {
-                reauthSuccess = false;
-            }
-
-            // --- ETAPA 2: Abrir o Modal de E-mail se a senha estiver correta ---
-            if (reauthSuccess) {
-                // Limpar campo de input e erros anteriores
-                novoEmailInput.value = '';
-                emailChangeError.textContent = '';
-                // Abrir o modal
-                modalEmail.classList.remove('hidden');
-            } else {
-                alert("Senha incorreta. A alteração foi cancelada.");
-            }
-        });
+    // --- Função para exibir o modal de notificação ---
+    function mostrarNotificacao(titulo, mensagem) {
+        if (notificacaoTitulo && notificacaoMensagem && modalNotificacao) {
+            notificacaoTitulo.textContent = titulo;
+            notificacaoMensagem.textContent = mensagem;
+            modalNotificacao.classList.remove('hidden');
+        }
     }
 
-    // --- Lógica dos Botões Dentro do Modal de E-mail ---
+    // --- Lógica para fechar o modal de notificação ---
+    btnFecharNotificacao?.addEventListener('click', () => {
+        modalNotificacao.classList.add('hidden');
+    });
+    
+    // --- Seletores dos Botões de Ação na Página Principal ---
+    const btnAlterarEmail = document.getElementById('item-alterar-email');
+    const btnAbrirModalSenha = document.getElementById("item-alterar-senha");
 
-    // Botão Cancelar do modal de e-mail
-    btnCancelarEmail?.addEventListener('click', () => {
-        // --- ADICIONE ESTE LOG ---
-        modalEmail.classList.add('hidden');
+    // --- Elementos do Modal de Reautenticação ---
+    const btnConfirmarReauth = document.getElementById('btn-confirmar-reauth');
+    const btnCancelarReauth = document.getElementById('btn-cancelar-reauth');
+    const currentPasswordInput = document.getElementById('current-password-input');
+    const reauthError = document.getElementById('reauth-error');
+
+    // Variável para saber qual modal abrir após a senha ser confirmada
+    let acaoPendente = null; 
+
+    // --- Lógica para ABRIR o modal de reautenticação ---
+
+    // 1. Ao clicar em "Alterar Senha"
+    btnAbrirModalSenha?.addEventListener("click", () => {
+        acaoPendente = 'senha'; // Guarda a ação que o usuário quer fazer
+        reauthError.textContent = ''; // Limpa erros antigos
+        currentPasswordInput.value = ''; // Limpa o campo de senha
+        modalReauth.classList.remove("hidden"); // Abre o modal para pedir a senha atual
+        currentPasswordInput.focus();
     });
 
-    // Botão Confirmar do modal de e-mail
-    btnConfirmarEmail?.addEventListener('click', async () => {
-        // --- ADICIONE ESTE LOG ---
+    // 2. Ao clicar em "Alterar E-mail"
+    btnAlterarEmail?.addEventListener('click', () => {
+        acaoPendente = 'email'; // Guarda a ação que o usuário quer fazer
+        reauthError.textContent = ''; // Limpa erros antigos
+        currentPasswordInput.value = ''; // Limpa o campo de senha
+        modalReauth.classList.remove('hidden'); // Abre o modal para pedir a senha atual
+        currentPasswordInput.focus();
+    });
 
+    // --- Lógica dos botões DENTRO do modal de reautenticação ---
+
+    // Botão Cancelar
+    btnCancelarReauth?.addEventListener('click', () => {
+        modalReauth.classList.add('hidden');
+        acaoPendente = null; // Limpa a ação pendente
+    });
+
+    // Botão Confirmar (lógica principal de verificação)
+    btnConfirmarReauth?.addEventListener('click', async () => {
+        const currentPassword = currentPasswordInput.value;
+
+        if (!currentPassword) {
+            reauthError.textContent = "Por favor, digite sua senha atual.";
+            return;
+        }
+
+        // Feedback visual para o usuário
+        btnConfirmarReauth.disabled = true;
+        btnConfirmarReauth.textContent = "Verificando...";
+        reauthError.textContent = "";
+
+        try {
+            const response = await fetch('/auth/verificar', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ currentPassword: currentPassword })
+            });
+
+            const result = await response.json();
+
+            if (response.ok && result.success) {
+                // Senha correta!
+                modalReauth.classList.add("hidden");
+
+                // Agora, executa a ação que estava pendente
+                if (acaoPendente === 'senha') {
+                    modalSenha.classList.remove("hidden");
+                } else if (acaoPendente === 'email') {
+                    document.getElementById('novo-email-input').value = '';
+                    document.getElementById('email-change-error').textContent = '';
+                    modalEmail.classList.remove('hidden');
+                }
+                acaoPendente = null; // Limpa a ação
+            } else {
+                // Senha incorreta
+                reauthError.textContent = result.error || "Senha incorreta. Tente novamente.";
+            }
+        } catch (error) {
+            console.error("ERRO CRÍTICO no bloco catch:", error);
+            reauthError.textContent = "Ocorreu um erro de conexão. Tente novamente.";
+        } finally {
+            // Restaura o botão
+            btnConfirmarReauth.disabled = false;
+            btnConfirmarReauth.textContent = "Confirmar";
+        }
+    });
+
+    // --- O RESTANTE DO SEU CÓDIGO (LÓGICA DOS MODAIS DE ALTERAÇÃO) ---
+    // A lógica interna dos modais de alterar e-mail e senha continua praticamente a mesma,
+    // pois a verificação já foi feita.
+
+    // --- Lógica do Modal de E-mail ---
+    const btnCancelarEmail = document.getElementById('btn-cancelar-email');
+    const btnConfirmarEmail = document.getElementById('btn-confirmar-email');
+    
+    btnCancelarEmail?.addEventListener('click', () => modalEmail.classList.add('hidden'));
+    
+    btnConfirmarEmail?.addEventListener('click', async () => {
+        const novoEmailInput = document.getElementById('novo-email-input');
+        const emailChangeError = document.getElementById('email-change-error');
         const novoEmail = novoEmailInput.value.trim();
 
-        // Validação de formato
         if (!AuthUtils.validarEmail(novoEmail)) {
             emailChangeError.textContent = "Formato de e-mail inválido.";
             return;
         }
 
-        // Desabilitar botão para evitar cliques duplos
         btnConfirmarEmail.disabled = true;
         btnConfirmarEmail.textContent = "Salvando...";
 
-        // Chamar a API para alterar o e-mail
         try {
             const response = await fetch('/auth/alterar/email', {
                 method: 'POST',
@@ -103,58 +172,22 @@ document.addEventListener('DOMContentLoaded', function () {
             });
             const result = await response.json();
 
-            if (response.ok) { //
-                alert(result.message);
-                modalEmail.classList.add('hidden'); // Fechar modal em sucesso
+            if (response.ok) {
+                modalEmail.classList.add('hidden');
+                mostrarNotificacao('Sucesso!', result.message); 
             } else {
-                emailChangeError.textContent = result.error; // Mostrar erro da API no modal
+                emailChangeError.textContent = result.error;
             }
         } catch (error) {
-            emailChangeError.textContent = "Erro de conexão. Tente novamente."; //
+            emailChangeError.textContent = "Erro de conexão. Tente novamente.";
         } finally {
-            // Reabilitar botão
             btnConfirmarEmail.disabled = false;
             btnConfirmarEmail.textContent = "Salvar Alteração";
         }
     });
 
-    // --- CÓDIGO PARA ABRIR O MODAL ---
-    const btnAbrirModalSenha = document.getElementById("item-alterar-senha");
-    const modal = document.getElementById("modal-senha");
-
-    if (btnAbrirModalSenha && modal) {
-        btnAbrirModalSenha.addEventListener("click", async () => {
-            const currentPassword = prompt("Para sua segurança, por favor, digite sua senha atual:");
-
-            if (!currentPassword) {
-                console.log("Verificação cancelada pelo usuário.");
-                return;
-            }
-
-            try {
-                const response = await fetch('/auth/verificar', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ currentPassword: currentPassword })
-                });
-
-                const result = await response.json();
-
-                if (response.ok === true && result.success === true) {
-                    // Caminho A: Sucesso
-                    modal.classList.remove("hidden");
-                } else {
-                    // Caminho B: Falha
-                    alert("Senha incorreta ou erro na verificação: " + (result.error || "Tente novamente."));
-                }
-
-            } catch (error) {
-                console.error("ERRO CRÍTICO no bloco catch:", error);
-                alert("Ocorreu um erro inesperado na comunicação com o servidor.");
-            }
-        });
-    }
-
+    // --- Lógica do Modal de Senha (validação de critérios, etc.) ---
+    // (Esta parte do seu código permanece a mesma)
     const novaSenhaInput = document.getElementById('nova-senha');
     const criteriosLista = {
         length: document.getElementById('criterio-length'),
@@ -164,13 +197,10 @@ document.addEventListener('DOMContentLoaded', function () {
         special: document.getElementById('criterio-special')
     };
 
-    // Listener para o evento de digitação no campo de nova senha
     if (novaSenhaInput) {
         novaSenhaInput.addEventListener('input', () => {
             const senha = novaSenhaInput.value;
-            const validacaoResultado = AuthUtils.validarSenha(senha); // 
-
-            // Mapear resultados para a UI com base na ordem dos critérios em auth-utils.js 
+            const validacaoResultado = AuthUtils.validarSenha(senha);
             atualizarCriterioUI(criteriosLista.length, validacaoResultado.criterios[0].atende);
             atualizarCriterioUI(criteriosLista.uppercase, validacaoResultado.criterios[1].atende);
             atualizarCriterioUI(criteriosLista.lowercase, validacaoResultado.criterios[2].atende);
@@ -179,53 +209,31 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    /**
-     * Atualiza a classe de um elemento da lista de critérios (valido/invalido).
-     * @param {HTMLElement} elementoLi - O item da lista (<li>) a ser atualizado.
-     * @param {boolean} atende - Se o critério foi atendido ou não.
-     */
-    // Substitua pela versão abaixo (adicionando "if (elementoLi)"):
     function atualizarCriterioUI(elementoLi, atende) {
-        if (elementoLi) { // <-- ADICIONE ESTA VERIFICAÇÃO
-            if (atende) {
-                elementoLi.classList.add('valido');
-            } else {
-                elementoLi.classList.remove('valido');
-            }
+        if (elementoLi) {
+            elementoLi.classList.toggle('valido', atende);
         }
     }
 
-    // --- LÓGICA EXISTENTE DO MODAL (Cancelar/Confirmar) ---
-    const btnCancelar = document.getElementById("btn-cancelar");
-    const btnConfirmar = document.getElementById("btn-confirmar");
+    const btnCancelarSenha = document.getElementById("btn-cancelar");
+    const btnConfirmarSenha = document.getElementById("btn-confirmar");
 
-    btnCancelar?.addEventListener("click", () => {
-        modal.classList.add("hidden");
-    });
+    btnCancelarSenha?.addEventListener("click", () => modalSenha.classList.add("hidden"));
 
-    btnConfirmar?.addEventListener("click", async () => {
+    btnConfirmarSenha?.addEventListener("click", async () => {
         const novaSenha = document.getElementById("nova-senha").value;
         const confirmarSenha = document.getElementById("confirmar-senha").value;
 
         const validacaoResultado = AuthUtils.validarSenha(novaSenha);
-
         if (!validacaoResultado.valida) {
-            // Encontrar o primeiro critério que falhou para exibir uma mensagem específica
-            let mensagemErro = "A senha não atende aos requisitos mínimos."; // Mensagem padrão
-
-            const criterioFalho = validacaoResultado.criterios.find(criterio => !criterio.atende);
-            if (criterioFalho) {
-                mensagemErro = `A senha precisa ter: ${criterioFalho.texto}.`;
-            }
-
-            // Usar a função mostrarMensagem do próprio auth-utils para exibir o erro
+            const criterioFalho = validacaoResultado.criterios.find(c => !c.atende);
+            const mensagemErro = criterioFalho ? `A senha precisa ter: ${criterioFalho.texto}.` : "A senha não atende aos requisitos.";
             AuthUtils.mostrarMensagem(mensagemErro, 'erro');
-            return; // Para a execução
+            return;
         }
 
-
         if (novaSenha !== confirmarSenha) {
-            alert("As senhas não coincidem.");
+            mostrarNotificacao("Incorreto", "As senhas não coincidem");
             return;
         }
 
@@ -235,32 +243,26 @@ document.addEventListener('DOMContentLoaded', function () {
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ password: novaSenha })
             });
-
             const data = await response.json();
-
             if (response.ok) {
-                alert("✅ " + data.message);
-                modal.classList.add("hidden");
+                modalSenha.classList.add("hidden");
                 document.getElementById("nova-senha").value = "";
                 document.getElementById("confirmar-senha").value = "";
+                mostrarNotificacao("Sucesso!", data.message);
             } else {
-                alert("❌ Erro: " + data.error);
+                mostrarNotificacao("Erro", data.error);
             }
         } catch (error) {
-            alert("❌ Erro inesperado: " + error.message);
+            mostrarNotificacao("Erro inesperado", error.message);
         }
     });
+
 });
 
 function mudarTema() {
     const html = document.documentElement;
     const temaToggle = document.getElementById('tema-toggle');
-
-    if (temaToggle.checked) {
-        html.setAttribute("data-theme", "dark");
-        localStorage.setItem("theme", "dark");
-    } else {
-        html.setAttribute("data-theme", "light");
-        localStorage.setItem("theme", "light");
-    }
+    const tema = temaToggle.checked ? "dark" : "light";
+    html.setAttribute("data-theme", tema);
+    localStorage.setItem("theme", tema);
 }
