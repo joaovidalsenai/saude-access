@@ -15,8 +15,8 @@
         <div class="container">
             <a href="#" class="logo">Saúde Access</a>
             <div class="main-nav">
-                <button class="btn btn-secondary" onclick="window.location.href = '\login'">Login</button>
-                <button class="btn btn-primary" onclick="window.location.href = '\cadastro'">Cadastre-se</button>
+                <button class="btn btn-secondary" onclick="window.location.href = '/login'">Login</button>
+                <button class="btn btn-primary" onclick="window.location.href = '/cadastro'">Cadastre-se</button>
             </div>
         </div>
     </nav>
@@ -27,7 +27,7 @@
             <div class="container">
                 <h1>A sua saúde, sempre à mão.</h1>
                 <p>Avalie hospitais, verifique a lotação em tempo real e tome as melhores decisões para o seu bem-estar.</p>
-                <button class="btn btn-primary btn-lg" onclick="window.location.href = '\cadastro'">Comece a usar agora</button>
+                <button class="btn btn-primary btn-lg" onclick="window.location.href = '/cadastro'">Comece a usar agora</button>
             </div>
         </section>
 
@@ -36,14 +36,37 @@
             <div class="container">
                 <h2>Saiba Mais</h2>
                 <h3>Justificativa do Projeto</h3>
-                <div class="justification-content">
-                    <p>O Brasil enfrenta desafios crônicos no acesso à saúde pública, como filas extensas, superlotação em unidades hospitalares, demora no atendimento e falta de informações acessíveis e confiáveis. Esses problemas afetam, principalmente, populações mais vulneráveis, que muitas vezes não têm acesso a ferramentas tecnológicas ou conhecimento suficiente para navegar com segurança pelo sistema de saúde.</p>
-                    
-                    <p>O projeto Saúde Access surge como uma resposta concreta a essa realidade. Idealizado por jovens preocupados com o bem-estar coletivo, o aplicativo propõe uma solução digital acessível, inclusiva e intuitiva, que conecta os usuários a dados atualizados sobre unidades de saúde, como tempo de espera, lotação, qualidade de atendimento e disponibilidade de serviços.</p>
-                    
-                    <p>A justificativa para o desenvolvimento do Saúde Access está enraizada na convicção de que a informação é uma ferramenta poderosa de transformação social. Ao empoderar o cidadão com dados claros e confiáveis, o projeto contribui para decisões mais conscientes, reduz o tempo de espera, distribui melhor a demanda entre unidades e potencialmente salva vidas. Além disso, fortalece a relação entre usuários e instituições de saúde, promovendo mais confiança, transparência e eficiência.</p>
-                    
-                    <p>Com base em princípios de empatia, inovação e compromisso social, o Saúde Access representa não apenas um avanço tecnológico, mas uma iniciativa com profundo impacto humano, que visa tornar o acesso à saúde um direito mais tangível, digno e justo para todos.</p>
+                <div class="accordion">
+                    <div class="accordion-item">
+                        <button class="accordion-header" onclick="toggleAccordion(this)">
+                            O Desafio da Saúde no Brasil
+                            <span class="accordion-toggle">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <p>O Brasil enfrenta desafios crônicos no acesso à saúde pública, como filas extensas, superlotação em unidades hospitalares, demora no atendimento e falta de informações acessíveis e confiáveis. Esses problemas afetam, principalmente, populações mais vulneráveis, que muitas vezes não têm acesso a ferramentas tecnológicas ou conhecimento suficiente para navegar com segurança pelo sistema de saúde.</p>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <button class="accordion-header" onclick="toggleAccordion(this)">
+                            A Solução: Saúde Access
+                            <span class="accordion-toggle">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <p>O projeto Saúde Access surge como uma resposta concreta a essa realidade. Idealizado por jovens preocupados com o bem-estar coletivo, o aplicativo propõe uma solução digital acessível, inclusiva e intuitiva, que conecta os usuários a dados atualizados sobre unidades de saúde, como tempo de espera, lotação, qualidade de atendimento e disponibilidade de serviços.</p>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <button class="accordion-header" onclick="toggleAccordion(this)">
+                            Impacto e Transformação Social
+                            <span class="accordion-toggle">▼</span>
+                        </button>
+                        <div class="accordion-content">
+                            <p>A justificativa para o desenvolvimento do Saúde Access está enraizada na convicção de que a informação é uma ferramenta poderosa de transformação social. Ao empoderar o cidadão com dados claros e confiáveis, o projeto contribui para decisões mais conscientes, reduz o tempo de espera, distribui melhor a demanda entre unidades e potencialmente salva vidas.</p>
+                            <p>Além disso, fortalece a relação entre usuários e instituições de saúde, promovendo mais confiança, transparência e eficiência. Com base em princípios de empatia, inovação e compromisso social, o Saúde Access representa não apenas um avanço tecnológico, mas uma iniciativa com profundo impacto humano.</p>
+                        </div>
+                    </div>
                 </div>
             </div>
         </section>
@@ -127,7 +150,7 @@
                         <label for="mensagem">Mensagem</label>
                         <textarea id="mensagem" name="mensagem" required></textarea>
                     </div>
-                    <button type="submit" class="btn btn-primary btn-lg" style="width: 100%;">Enviar Mensagem</button>
+                    <button type="submit" class="submit-button">Enviar Mensagem</button>
                 </form>
             </div>
         </section>
@@ -140,5 +163,7 @@
             <p>Precisa de ajuda? <a href="#">Fale com o Suporte Técnico</a></p>
         </div>
     </footer>
+
+    <script src="/js/sobrenos.js"></script>
 </body>
 </html>
