@@ -428,12 +428,9 @@ pages.get('/api/hospitais/buscar', protect.entirely, async (req, res) => {
 
 pages.get('/cadastro/info', protect.partially, (req, res) => res.render('cadastroInfo'));
 
-<<<<<<< Updated upstream
 pages.get('/sobre-nos', protect.partially, (req, res) => res.render('sobrenos'));
-=======
 pages.get('/recuperar-senha', (req, res) => res.render('recuperarSenha'));
 
 pages.get('/redefinir-senha', (req, res) => res.render('redefinirSenha'));
->>>>>>> Stashed changes
 
 export default pages;
