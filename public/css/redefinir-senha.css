@@ -1,46 +1,22 @@
 @import url('styleGenerico.css');
 
-header {
-    position: relative;
-    width: 100%;
-    text-align: center;
-    padding: 1.5rem 1rem;
-    margin-bottom: 5dvh;
-}
-
-h1 {
-    color: var(--azul-header);
-    font-size: clamp(1.5rem, 5vw, 2rem);
-    cursor: pointer;
-}
-
-main {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-    flex: 1;
-    padding: 0 1rem;
-    max-width: 600px;
-}
-
-.recuperar-container {
+.redefinir-container {
     width: 100%;
     max-width: 500px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-top: 4rem;
+    margin-top: 2rem;
 }
 
-.recuperar-section {
+.redefinir-section {
     width: 100%;
     border-radius: 20px;
     overflow: hidden;
     padding: 1.5rem;
 }
 
-.recuperar-info {
+.redefinir-info {
     text-align: center;
     margin-bottom: 2rem;
     color: var(--color-fg);
@@ -53,7 +29,7 @@ form {
     gap: 1.5rem;
 }
 
-.recuperar-item {
+.redefinir-item {
     width: 100%;
     background-color: var(--color-bg);
     padding: 1.5rem;
@@ -64,16 +40,11 @@ form {
     transition: all 0.3s ease;
 }
 
-.recuperar-item:hover {
-    transform: translateY(-2px);
+.redefinir-item:focus-within {
     border-color: var(--azul-generico);
 }
 
-.recuperar-item:focus-within {
-    border-color: var(--azul-generico);
-}
-
-.recuperar-icon {
+.redefinir-icon {
     width: 2.5rem;
     height: 2.5rem;
     border-radius: 10px;
@@ -91,14 +62,14 @@ form {
     flex-direction: column;
 }
 
-.label-recuperar {
+.label-redefinir {
     color: var(--color-fg);
     font-size: 0.9rem;
     margin-bottom: 0.5rem;
     font-weight: 500;
 }
 
-.input-recuperar {
+.input-redefinir {
     width: 100%;
     border: 1px solid var(--cinza-generico);
     border-radius: 8px;
@@ -109,11 +80,11 @@ form {
     transition: all 0.3s ease;
 }
 
-.input-recuperar:focus {
+.input-redefinir:focus {
     border-color: var(--azul-generico);
 }
 
-.btn-enviar {
+.btn-redefinir {
     width: 100%;
     padding: 1rem;
     background-color: var(--azul-generico);
@@ -129,37 +100,15 @@ form {
     margin-top: 1rem;
 }
 
-.btn-enviar:hover {
-    transform: translateY(-2px);
+.btn-redefinir:disabled {
+    background-color: var(--cinza-generico);
+    cursor: not-allowed;
+    transform: none;
 }
 
-.recuperar-voltar {
-    margin-top: 3rem;
-    text-align: center;
-}
-
-.btn-voltar {
-    color: var(--azul-generico);
-    text-decoration: underline;
-    font-size: 1rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: opacity 0.2s ease;
-}
-
-.btn-voltar:hover {
-    opacity: 0.8;
-}
-
-/* Responsividade */
-@media screen and (max-width: 400px) {
-    .recuperar-container {
-        margin-top: 1rem;
-    }
-    .recuperar-section {
-        padding: 1rem 0.5rem;
-    }
-    .recuperar-item {
-        padding: 1.2rem;
-    }
+.error-message {
+    color: #e74c3c;
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+    display: none;
 }

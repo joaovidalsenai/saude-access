@@ -186,4 +186,55 @@ auth.post('/auth/verificar', protect.entirely, async (req, res) => {
     }
 });
 
+auth.post('/auth/recuperar-senha', async (req, res) => {
+    const { email } = req.body;
+
+    if (!email) {
+        return res.status(400).json({ error: 'O e-mail é obrigatório.' });
+    }
+
+    // O Supabase envia o e-mail de redefinição de senha.
+    // Importante: Por segurança, o Supabase não retorna um erro se o e-mail não existir,
+    // para evitar que invasores descubram quais e-mails estão cadastrados.
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `http://localhost:3001/redefinir-senha`, // URL para onde o usuário será redirecionado após clicar no link do e-mail
+    });
+
+    if (error) {
+        console.error("Erro ao solicitar recuperação de senha:", error);
+        // Retorna um erro genérico para o cliente
+        return res.status(500).json({ error: 'Ocorreu um erro ao processar sua solicitação.' });
+    }
+
+    // A resposta é sempre de sucesso para o cliente, mesmo que o e-mail não exista.
+    res.status(200).json({ message: 'Se o e-mail estiver cadastrado, um link de recuperação foi enviado.' });
+});
+
+auth.post('/auth/redefinir-senha', async (req, res) => {
+    const { accessToken, novaSenha } = req.body;
+
+    if (!accessToken || !novaSenha) {
+        return res.status(400).json({ error: 'Token e nova senha são obrigatórios.' });
+    }
+
+    if (novaSenha.length < 8) {
+        return res.status(400).json({ error: 'A nova senha deve ter pelo menos 8 caracteres.' });
+    }
+
+    // O Supabase usa o accessToken (que vem da URL) para verificar a identidade do usuário
+    // e então atualiza a senha.
+    const { error } = await supabase.auth.updateUser(
+        { password: novaSenha },
+        { accessToken: accessToken }
+    );
+
+    if (error) {
+        console.error("Erro ao atualizar a senha do usuário:", error);
+        // O token pode ser inválido, expirado, ou já utilizado.
+        return res.status(401).json({ error: 'Não foi possível atualizar a senha. O token pode ser inválido ou ter expirado.' });
+    }
+
+    res.status(200).json({ message: 'Senha redefinida com sucesso!' });
+});
+
 export default auth;
