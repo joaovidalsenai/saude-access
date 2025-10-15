@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="pt-br" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Saúde Access</title>
+
+    <link rel="stylesheet" href="/css/styleGenerico.css" />
+    <link rel="stylesheet" href="/css/redefinir-senha.css" />
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/js/global.js"></script>
+    <script src="/js/auth-utils.js" defer></script>
+    <script src="/js/redefinir-senha.js" defer></script>
+    <link rel="icon" type="image/x-icon" href="/favorite.ico">
+</head>
+<body>
+    <header>
+        <h1>Crie uma Nova Senha</h1>
+    </header>
+    <main>
+        <div class="redefinir-container">
+            <div class="redefinir-section">
+                <p class="redefinir-info">
+                    Sua nova senha deve ser diferente da anterior e ter no mínimo 8 caracteres.
+                </p>
+                <form id="formRedefinirSenha">
+                    <div class="redefinir-item">
+                        <div class="redefinir-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
+                                <path d="M208,80H176V56a48,48,0,0,0-96,0V80H48A16,16,0,0,0,32,96V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V96A16,16,0,0,0,208,80ZM96,56a32,32,0,0,1,64,0V80H96ZM208,208H48V96H208V208Z"></path>
+                            </svg>
+                        </div>
+                        <div class="input-group">
+                            <label for="nova-senha" class="label-redefinir">Nova Senha</label>
+                            <input type="password" name="nova-senha" id="nova-senha" placeholder="Digite sua nova senha" class="input-redefinir" required>
+                        </div>
+                    </div>
+
+                    <div class="redefinir-item">
+                        <div class="redefinir-icon">
+                           <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
+                                <path d="M208,80H176V56a48,48,0,0,0-96,0V80H48A16,16,0,0,0,32,96V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V96A16,16,0,0,0,208,80ZM96,56a32,32,0,0,1,64,0V80H96ZM208,208H48V96H208V208Z"></path>
+                            </svg>
+                        </div>
+                        <div class="input-group">
+                            <label for="confirmar-nova-senha" class="label-redefinir">Confirme a Nova Senha</label>
+                            <input type="password" name="confirmar-nova-senha" id="confirmar-nova-senha" placeholder="Confirme sua nova senha" class="input-redefinir" required>
+                            <div class="error-message" id="confirm-senha-error"></div>
+                        </div>
+                    </div>
+                    
+                    <button type="submit" class="btn-redefinir" id="btn-redefinir" disabled>
+                        Salvar Nova Senha
+                    </button>
+                </form>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
