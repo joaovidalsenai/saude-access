@@ -73,7 +73,11 @@ document.addEventListener('DOMContentLoaded', () => {
     // Recuperação do Access Token da URL
     const hash = window.location.hash.substring(1);
     const params = new URLSearchParams(hash);
+    
     accessToken = params.get('access_token');
+    refreshToken = params.get('refresh_token');
+
+    console.log('Access Token extraído:', accessToken); 
 
     if (!accessToken) {
         AuthUtils.mostrarMensagem('Token de redefinição inválido ou ausente. Por favor, solicite um novo link.', 'erro');
@@ -135,6 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     accessToken: accessToken,
+                    refreshToken: refreshToken,
                     novaSenha: novaSenha
                 })
             });

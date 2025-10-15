@@ -211,30 +211,53 @@ auth.post('/auth/recuperar-senha', async (req, res) => {
 });
 
 auth.post('/auth/redefinir-senha', async (req, res) => {
-    const { accessToken, novaSenha } = req.body;
+    // 1. Receber os tokens e a nova senha do cliente
+    const { accessToken, refreshToken, novaSenha } = req.body; // ATUALIZADO
 
-    if (!accessToken || !novaSenha) {
-        return res.status(400).json({ error: 'Token e nova senha são obrigatórios.' });
+    if (!accessToken || !refreshToken || !novaSenha) { // ATUALIZADO
+        return res.status(400).json({ error: 'Tokens e nova senha são obrigatórios.' });
     }
 
     if (novaSenha.length < 8) {
         return res.status(400).json({ error: 'A nova senha deve ter pelo menos 8 caracteres.' });
     }
 
-    // O Supabase usa o accessToken (que vem da URL) para verificar a identidade do usuário
-    // e então atualiza a senha.
-    const { error } = await supabase.auth.updateUser(
-        { password: novaSenha },
-        { accessToken: accessToken }
-    );
+    try {
+        // ** 2. Tentar estabelecer a sessão manualmente com os tokens de recuperação **
+        // Isso é necessário porque o token de recuperação não define cookies
+        // e é propenso a expiração rápida.
+        const { error: sessionError } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken
+        });
+        
+        if (sessionError) {
+            console.error("Erro ao estabelecer a sessão de recuperação:", sessionError);
+            return res.status(400).json({ 
+                error: 'Sessão de recuperação inválida ou expirada. Solicite um novo link.' 
+            });
+        }
 
-    if (error) {
-        console.error("Erro ao atualizar a senha do usuário:", error);
-        // O token pode ser inválido, expirado, ou já utilizado.
-        return res.status(401).json({ error: 'Não foi possível atualizar a senha. O token pode ser inválido ou ter expirado.' });
+        // ** 3. Atualizar a senha (agora que o Supabase deve ter uma sessão ativa) **
+        // Não é mais necessário passar o { accessToken: accessToken } no options
+        const { error: updateError } = await supabase.auth.updateUser({ 
+            password: novaSenha 
+        });
+
+        if (updateError) {
+            console.error("Erro ao atualizar a senha do usuário:", updateError);
+            return res.status(500).json({ 
+                error: updateError.message || 'Não foi possível atualizar a senha. Tente novamente mais tarde.' 
+            });
+        }
+
+        // Sucesso na redefinição
+        res.status(200).json({ message: 'Senha alterada com sucesso.' });
+
+    } catch (e) {
+        console.error("Erro crítico no fluxo de redefinição:", e);
+        res.status(500).json({ error: 'Ocorreu um erro interno. Tente novamente.' });
     }
-
-    res.status(200).json({ message: 'Senha redefinida com sucesso!' });
 });
 
 export default auth;
