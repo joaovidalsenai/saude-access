@@ -17,6 +17,7 @@ async function exemploRotaBasica() {
       'Cristo Redentor, Rio de Janeiro, RJ'
     );
     
+    
     const melhorRota = rota.best_route;
     console.log(`De: ${melhorRota.start_address}`);
     console.log(`Para: ${melhorRota.end_address}`);

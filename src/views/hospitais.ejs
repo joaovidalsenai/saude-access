@@ -3,107 +3,188 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hospitais Próximos</title>
     <link rel="stylesheet" href="/css/styleGenerico.css" />
     <link rel="stylesheet" href="/css/hospitais.css" />
-    <title>Saúde Access</title>
     <link rel="stylesheet" href="/css/protected.css" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/global.js"></script>
-    <script src="js/auth-utils.js" defer></script>
-    <style>
-        .distancia-badge {
-            display: inline-block;
-            background-color: #007bff;
-            color: white;
-            padding: 6px 10px;
-            border-radius: 4px;
-            font-size: 0.8rem;
-            margin-top: 6px;
-            font-weight: 500;
-        }
-        .distancia-carregando {
-            color: #999;
-        }
-    </style>
+    <script src="/js/global.js"></script>
+    <script src="/js/auth-utils.js" defer></script>
+    <!-- Importar o calculador de distâncias -->
+    <script src="/js/distance_calculator.js"></script>
 </head> 
 <body class="protected">
     <header>
         <h1><%= titulo %></h1>
     </header>
     <main>
-        <form action="#" class="form-busca-hospital">
-            <input
-                type="search"
-                name="pesquisar-hospitais"
-                class="inp-busca-hospital"
-                placeholder="Pesquisar hospital"
+        <form action="#" class="form-busca-hospital" onsubmit="return false;">
+            <input 
+                type="search" 
+                name="pesquisar-hospitais" 
+                class="inp-busca-hospital" 
+                placeholder="Pesquisar hospital" 
                 autocomplete="off"
-            />
+                oninput="filtrarHospitais(this.value)" />
             <button type="submit" class="btn-busca-hospital" aria-label="Pesquisar">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="32"
-                    height="32"
-                    fill="currentColor"
-                    viewBox="0 0 256 256"
-                >
-                    <path
-                        d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"
-                    ></path>
+                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
+                    <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
                 </svg>
             </button>
         </form>
+        
         <div class="container-hospitais">
-            <div class="div-butoes">
-                <% hospitais.forEach(hospital => { %>
-                    <a href="/hospital?id=<%= hospital.id %>" class="botao-hospital" data-hospital-id="<%= hospital.id %>" data-lat="<%= hospital.lat || '' %>" data-lng="<%= hospital.lng || '' %>">
-                        <span class="botao-hospital-nota rating-<%= Math.floor(hospital.nota) %>">
-                            <%= hospital.nota %>
-                        </span>
-                        <span class="botao-hospital-nome"><%= hospital.nome %></span>
-                        <% if (hospital.lat && hospital.lng) { %>
-                            <span class="distancia-badge distancia-carregando">Calculando...</span>
-                        <% } %>
-                    </a>
-                <% }); %>
+            <div class="div-butoes" id="lista-hospitais-container">
+                <p id="mensagem-status">Obtendo sua localização para encontrar hospitais próximos...</p>
             </div>
         </div>
     </main>
     <%- include ('partials/navbar.ejs')%>
 
     <script>
-        // Calcular distâncias dos hospitais quando a página carregar
-        document.addEventListener('DOMContentLoaded', async () => {
+        // Array global para armazenar todos os hospitais
+        let todosHospitais = [];
+        let hospitaisOrdenados = [];
+
+        document.addEventListener('DOMContentLoaded', () => {
+            buscarHospitaisProximos();
+        });
+
+        /**
+         * Busca hospitais próximos usando o calculador de distâncias
+         */
+        async function buscarHospitaisProximos() {
+            const container = document.getElementById('lista-hospitais-container');
+            const statusMsg = document.getElementById('mensagem-status');
+
             try {
-                const minhaLocalizacao = await mapsAPI.obterLocalizacaoAtual();
-                const botoes = document.querySelectorAll('.botao-hospital[data-lat][data-lng]');
+                // Verifica suporte à geolocalização
+                if (!distanceCalculator.isGeolocationSupported()) {
+                    throw new Error('Seu navegador não suporta geolocalização.');
+                }
 
-                botoes.forEach(async (botao) => {
-                    const lat = parseFloat(botao.dataset.lat);
-                    const lng = parseFloat(botao.dataset.lng);
-                    const badge = botao.querySelector('.distancia-badge');
-
-                    if (lat && lng && badge) {
-                        try {
-                            const resultado = await mapsAPI.calcularDistancia(
-                                minhaLocalizacao,
-                                { lat, lng }
-                            );
-
-                            badge.textContent = `${resultado.distancia.texto} • ${resultado.duracao.texto}`;
-                            badge.classList.remove('distancia-carregando');
-                        } catch (erro) {
-                            console.error('Erro ao calcular distância:', erro);
-                            badge.textContent = 'Erro ao calcular';
-                            badge.classList.remove('distancia-carregando');
-                        }
-                    }
-                });
+                statusMsg.textContent = 'Por favor, autorize o acesso à sua localização...';
+                
+                // Obtém a localização do usuário
+                await distanceCalculator.getUserLocation();
+                
+                statusMsg.textContent = 'Localização obtida! Buscando hospitais próximos...';
+                
+                // Busca hospitais do servidor e calcula distâncias
+                hospitaisOrdenados = await distanceCalculator.calculateDistancesWithAPI();
+                todosHospitais = [...hospitaisOrdenados];
+                
+                // Renderiza a lista
+                renderizarLista(hospitaisOrdenados);
 
             } catch (erro) {
-                console.error('Erro ao obter localização:', erro);
-                // Continuar mesmo sem localização (graceful fallback)
+                console.error('Erro ao buscar hospitais próximos:', erro);
+                
+                // Mensagem de erro amigável
+                let mensagemErro = erro.message;
+                if (erro.message.includes('negada') || erro.message.includes('denied')) {
+                    mensagemErro = `
+                        <strong>Permissão de localização necessária</strong><br>
+                        Para encontrar hospitais próximos, precisamos acessar sua localização.<br>
+                        <small>Clique no ícone de cadeado/localização na barra de endereços para permitir.</small>
+                    `;
+                }
+                
+                container.innerHTML = `
+                    <div class="erro-container">
+                        <p>${mensagemErro}</p>
+                        <button onclick="buscarHospitaisProximos()" class="btn-retentar">
+                            Tentar Novamente
+                        </button>
+                    </div>
+                `;
             }
+        }
+
+        /**
+         * Renderiza a lista de hospitais na página
+         * @param {Array} hospitais - Lista de hospitais ordenados
+         */
+        function renderizarLista(hospitais) {
+            const container = document.getElementById('lista-hospitais-container');
+            container.innerHTML = ''; 
+
+            if (!hospitais || hospitais.length === 0) {
+                container.innerHTML = '<p class="mensagem-vazia">Nenhum hospital encontrado nas proximidades.</p>';
+                return;
+            }
+            
+            const fragment = document.createDocumentFragment();
+            
+            hospitais.forEach((hospital, index) => {
+                const link = document.createElement('a');
+                link.href = `/hospital?id=${hospital.id}`;
+                link.className = 'botao-hospital';
+                
+                // Adiciona animação de entrada escalonada
+                link.style.animationDelay = `${index * 0.05}s`;
+                
+                link.innerHTML = `
+                    <div class="botao-hospital-content">
+                        <span class="botao-hospital-nome">${hospital.nome}</span>
+                        <span class="distancia-badge">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
+                                <path d="M128,64a40,40,0,1,0,40,40A40,40,0,0,0,128,64Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,128Zm0-112a88.1,88.1,0,0,0-88,88c0,31.4,14.51,64.68,42,96.25a254.19,254.19,0,0,0,41.45,38.3,8,8,0,0,0,9.18,0A254.19,254.19,0,0,0,174,200.25c27.45-31.57,42-64.85,42-96.25A88.1,88.1,0,0,0,128,16Zm0,206c-16.53-13-72-60.75-72-118a72,72,0,0,1,144,0C200,161.23,144.53,209,128,222Z"></path>
+                            </svg>
+                            ${hospital.distancia_texto} • ${hospital.tempo_texto}
+                        </span>
+                    </div>
+                `;
+                
+                fragment.appendChild(link);
+            });
+            
+            container.appendChild(fragment);
+        }
+
+        /**
+         * Filtra hospitais com base no termo de busca
+         * @param {string} termo - Termo de busca
+         */
+        function filtrarHospitais(termo) {
+            if (!termo || termo.trim() === '') {
+                renderizarLista(hospitaisOrdenados);
+                return;
+            }
+
+            const termoLower = termo.toLowerCase().trim();
+            const hospitaisFiltrados = todosHospitais.filter(hospital => 
+                hospital.nome.toLowerCase().includes(termoLower)
+            );
+
+            renderizarLista(hospitaisFiltrados);
+        }
+
+        /**
+         * Atualiza as distâncias quando a localização do usuário muda
+         */
+        function monitorarLocalizacao() {
+            distanceCalculator.watchLocation(async (novaLocalizacao) => {
+                console.log('Localização atualizada:', novaLocalizacao);
+                // Recalcula distâncias
+                try {
+                    hospitaisOrdenados = await distanceCalculator.calculateDistancesWithAPI();
+                    todosHospitais = [...hospitaisOrdenados];
+                    
+                    // Re-renderiza se não houver filtro ativo
+                    const inputBusca = document.querySelector('.inp-busca-hospital');
+                    if (!inputBusca.value) {
+                        renderizarLista(hospitaisOrdenados);
+                    }
+                } catch (erro) {
+                    console.error('Erro ao atualizar distâncias:', erro);
+                }
+            });
+        }
+
+        // Limpa o monitoramento quando sair da página
+        window.addEventListener('beforeunload', () => {
+            distanceCalculator.stopWatchingLocation();
         });
     </script>
 </body>
