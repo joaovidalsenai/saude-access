@@ -3,316 +3,310 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= hospital.nome_hospital %> - Saúde Access</title>
     <link rel="stylesheet" href="/css/styleGenerico.css">
     <link rel="stylesheet" href="/css/hospital.css">
+    <title>Saúde Access</title>
     <link rel="stylesheet" href="/css/protected.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/js/global.js"></script>
     <script src="/js/auth-utils.js" defer></script>
-    <script src="/js/distanceCalculator.js"></script>
-    <script src="https://maps.googleapis.com/maps/api/js?key=<%= process.env.GOOGLE_MAPS_API_KEY || '' %>&callback=initMap&libraries=places" async defer></script>
+    <style>
+        .rota-container {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 16px;
+            margin: 16px 0;
+            border: 1px solid #dee2e6;
+        }
+        .rota-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 16px;
+            margin-bottom: 12px;
+        }
+        .rota-info-item {
+            padding: 12px;
+            background-color: white;
+            border-radius: 6px;
+            text-align: center;
+        }
+        .rota-info-valor {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #007bff;
+        }
+        .rota-info-label {
+            font-size: 0.9rem;
+            color: #666;
+            margin-top: 4px;
+        }
+        .botao-rota {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 16px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+            width: 100%;
+            justify-content: center;
+        }
+        .botao-rota:hover {
+            background-color: #218838;
+        }
+        .botao-rota:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        .rota-erro {
+            color: #dc3545;
+            padding: 12px;
+            background-color: #f8d7da;
+            border-radius: 6px;
+            margin-bottom: 12px;
+        }
+    </style>
 </head>
 <body class="protected">
     <header>
         <a href="/hospitais" class="voltar-btn" aria-label="Voltar">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
-                <path d="M228,128a12,12,0,0,1-12,12H69l51.52,51.51a12,12,0,0,1-17,17l-72-72a12,12,0,0,1,0-17l72-72a12,12,0,0,1,17,17L69,116H216A12,12,0,0,1,228,128Z"></path>
-            </svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M228,128a12,12,0,0,1-12,12H69l51.52,51.51a12,12,0,0,1-17,17l-72-72a12,12,0,0,1,0-17l72-72a12,12,0,0,1,17,17L69,116H216A12,12,0,0,1,228,128Z"></path></svg>
         </a>
-        <h1><%= hospital.nome_hospital %></h1>
+        <h1><%= hospital.hospital_nome %></h1>
     </header>
-
-    <main data-hospital-id="<%= hospital.hospital_id %>" data-hospital-lat="<%= address.hospital_latitude %>" data-hospital-lng="<%= address.hospital_longitude %>">
+    <main data-hospital-lat="<%= address.endereco_lat %>" data-hospital-lng="<%= address.endereco_lng %>">
         
-        <% if (address.hospital_latitude && address.hospital_longitude) { %>
+        <!-- Seção de Rota -->
+        <% if (address.endereco_lat && address.endereco_lng) { %>
             <section class="rota-container" id="secao-rota">
-                <h2>Sua Rota</h2>
+                <h2>Rota para o Hospital</h2>
                 <div id="rota-mensagem" class="rota-erro" style="display: none;"></div>
                 <div class="rota-info" id="rota-info">
                     <div class="rota-info-item">
-                        <div class="rota-info-valor">
-                            <div class="skeleton-loader"></div>
-                        </div>
+                        <div class="rota-info-valor">--</div>
                         <div class="rota-info-label">Distância</div>
                     </div>
                     <div class="rota-info-item">
-                        <div class="rota-info-valor">
-                            <div class="skeleton-loader"></div>
-                        </div>
+                        <div class="rota-info-valor">--</div>
                         <div class="rota-info-label">Tempo Estimado</div>
                     </div>
                 </div>
                 <button class="botao-rota" id="btn-abrir-mapa" onclick="abrirRotaGoogleMaps()" disabled>
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
-                        <path d="M200,224H150.54A266.56,266.56,0,0,0,174,200.25c27.45-31.57,42-64.85,42-96.25a88,88,0,0,0-176,0c0,31.4,14.51,64.68,42,96.25A266.56,266.56,0,0,0,105.46,224H56a8,8,0,0,0,0,16H200a8,8,0,0,0,0-16ZM56,104a72,72,0,0,1,144,0c0,57.23-55.47,105-72,118C111.47,209,56,161.23,56,104Zm112,0a40,40,0,1,0-40,40A40,40,0,0,0,168,104Zm-64,0a24,24,0,1,1,24,24A24,24,0,0,1,104,104Z"></path>
+                        <path d="M128,16A112,112,0,1,0,240,128,112.13,112.13,0,0,0,128,16Zm0,208a96,96,0,1,1,96-96A96.11,96.11,0,0,1,128,224Zm80-96a8,8,0,0,1-8,8H128a8,8,0,0,1-8-8V64a8,8,0,0,1,16,0v56h64A8,8,0,0,1,208,128Z"/>
                     </svg>
                     Abrir no Google Maps
                 </button>
-                <small class="rota-disclaimer">* Tempo estimado baseado em condições normais de trânsito</small>
             </section>
         <% } %>
 
-        <!-- Seção de Endereço com Mapa -->
-        <section class="collapsible-section" id="secao-endereco">
-            <div class="collapsible-header">
-                <h2>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256">
-                        <path d="M128,64a40,40,0,1,0,40,40A40,40,0,0,0,128,64Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,128Zm0-112a88.1,88.1,0,0,0-88,88c0,31.4,14.51,64.68,42,96.25a254.19,254.19,0,0,0,41.45,38.3,8,8,0,0,0,9.18,0A254.19,254.19,0,0,0,174,200.25c27.45-31.57,42-64.85,42-96.25A88.1,88.1,0,0,0,128,16Zm0,206c-16.53-13-72-60.75-72-118a72,72,0,0,1,144,0C200,161.23,144.53,209,128,222Z"></path>
-                    </svg>
-                    Endereço
-                </h2>
-                <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
-                    <path d="M213.66,101.66l-80,80a8,8,0,0,1-11.32,0l-80-80A8,8,0,0,1,53.66,90.34L128,164.69l74.34-74.35a8,8,0,0,1,11.32,11.32Z"></path>
-                </svg>
+    <% if (ratings && ratings.stats) { %>
+        <section class="avaliacao-geral-container">
+            <h2>Média Geral</h2>
+            <div class="estrelas-display rating-<%= Math.round(ratings.stats.media_geral) %>">
+                <span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span><span class="estrela-svg"></span>
             </div>
+            <span class="media-geral-numero"><%= Number(ratings.stats.media_geral).toFixed(1) %> / 5</span>
+        </section>
+
+        <section class="alertas-especialidades">
+            <h2>Alertas da Comunidade</h2>
             
+            <% if (alertas && alertas.length > 0) { %>
+                <div class="alertas-container">
+                    <% alertas.forEach(alerta => { %>
+                        <div class="alerta-card">
+                            <div class="alerta-header">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M236.8,188.09,149.35,36.22a24,24,0,0,0-42.7,0L19.2,188.09a23.93,23.93,0,0,0,21.35,35.91H215.45a23.93,23.93,0,0,0,21.35-35.91Zm-16.15,20.57a8,8,0,0,1-7.2,4.34H40.55a8,8,0,0,1-7.2-4.34,7.9,7.9,0,0,1,.45-8.81L121.25,48.14a8,8,0,0,1,13.5,0l87.45,151.87A7.9,7.9,0,0,1,220.65,208.66ZM120,144V104a8,8,0,0,1,16,0v40a8,8,0,0,1-16,0Zm20,36a12,12,0,1,1-12-12A12,12,0,0,1,140,180Z"></path></svg>
+                                <h3><%= alerta.especialidade_nome %> em falta</h3>
+                            </div>
+                            <div class="alerta-body">
+                                <p><strong><%= alerta.total_reports_falta %></strong> usuários reportaram esta especialidade como "em falta" nas últimas 72 horas.</p>
+                                <p class="alerta-ultimo-report">Último reporte: <%= new Date(alerta.ultimo_report).toLocaleString('pt-BR') %></p>
+                            </div>
+                        </div>
+                    <% }); %>
+                </div>
+            <% } else { %>
+                <p class="sem-alertas-mensagem">Não há nenhum alerta de especialidade no momento.</p>
+            <% } %>
+        </section>
+
+        <section class="collapsible-section">
+            <div class="collapsible-header">
+                <h2>Estatísticas Gerais</h2>
+                <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"></path></svg>
+            </div>
+            <div class="collapsible-content">
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <span class="stat-numero"><%= ratings.stats.total_avaliacoes %></span>
+                        <span class="stat-label">Avaliações</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-numero"><%= Number(ratings.stats.media_lotacao).toFixed(1) %>/5</span>
+                        <span class="stat-label">Média Lotação</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-numero"><%= Number(ratings.stats.media_tempo_espera).toFixed(1) %>/5</span>
+                        <span class="stat-label">Média Tempo</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-numero"><%= Number(ratings.stats.media_atendimento).toFixed(1) %>/5</span>
+                        <span class="stat-label">Média Atendimento</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-numero"><%= Number(ratings.stats.media_infraestrutura).toFixed(1) %>/5</span>
+                        <span class="stat-label">Média Infra</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+    <% } else { %>
+        <section class="lotacao-container">
+            <h2>Informações de lotação</h2>
+            <div class="sem-dados">
+                <p>Não há dados de avaliação disponíveis para este hospital ainda.</p>
+                <p>Seja o primeiro a avaliar!</p>
+            </div>
+        </section>
+    <% } %>
+
+        <section class="collapsible-section">
+            <div class="collapsible-header">
+                <h2>Endereço</h2>
+                <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"></path></svg>
+            </div>
             <div class="collapsible-content">
                 <div class="endereco-info">
-                    <% if (address.hospital_logradouro || address.hospital_numero) { %>
-                        <div class="endereco-item">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
-                                <path d="M240,208H224V96a16,16,0,0,0-16-16H164.94L139.31,52.94A16,16,0,0,0,128,48H48A16,16,0,0,0,32,64V208H16a8,8,0,0,0,0,16H240a8,8,0,0,0,0-16ZM208,96V208H144V160a8,8,0,0,0-8-8H88a8,8,0,0,0-8,8v48H48V64h80l28.8,28.8A8,8,0,0,0,162.34,96Z"></path>
-                            </svg>
-                            <div class="endereco-texto">
-                                <span><%= address.hospital_logradouro %><%= address.hospital_numero ? ', ' + address.hospital_numero : '' %></span>
-                                <% if (address.hospital_complemento) { %>
-                                    <span class="complemento"><%= address.hospital_complemento %></span>
-                                <% } %>
-                            </div>
-                        </div>
-                    <% } %>
-                    
-                    <% if (address.hospital_bairro) { %>
-                        <div class="endereco-item">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
-                                <path d="M128,64a40,40,0,1,0,40,40A40,40,0,0,0,128,64Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,128Zm0-112a88.1,88.1,0,0,0-88,88c0,31.4,14.51,64.68,42,96.25a254.19,254.19,0,0,0,41.45,38.3,8,8,0,0,0,9.18,0A254.19,254.19,0,0,0,174,200.25c27.45-31.57,42-64.85,42-96.25A88.1,88.1,0,0,0,128,16Zm0,206c-16.53-13-72-60.75-72-118a72,72,0,0,1,144,0C200,161.23,144.53,209,128,222Z"></path>
-                            </svg>
-                            <div class="endereco-texto">
-                                <span><%= address.hospital_bairro %></span>
-                            </div>
-                        </div>
-                    <% } %>
-                    
-                    <% if (address.hospital_cidade || address.hospital_estado) { %>
-                        <div class="endereco-item">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
-                                <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm88,104a87.5,87.5,0,0,1-3.07,23.21L184,123.47V104a8,8,0,0,0-8-8H147.31l-22.65-22.65a8,8,0,0,0-11.32,0L88,98.67,69.66,80.34a8,8,0,0,0-11.32,0L40,98.67V96a8,8,0,0,0-16,0v32a8,8,0,0,0,2.34,5.66l18.34,18.34a8,8,0,0,0,11.32,0L82.34,125.66,106.67,150a8,8,0,0,0,11.32,0l18.34-18.34a8,8,0,0,0,0-11.32L114.67,98.67,118,95.33,138.34,115.66a8,8,0,0,0,5.66,2.34H168v18.67a8,8,0,0,0,2.34,5.66l24,24A88,88,0,1,1,128,40a87.89,87.89,0,0,1,64,27.36V64a8,8,0,0,1,8-8h0a8,8,0,0,1,8,8V85.19A88,88,0,0,1,216,128Z"></path>
-                            </svg>
-                            <div class="endereco-texto">
-                                <span><%= address.hospital_cidade %><%= address.hospital_estado ? ' - ' + address.hospital_estado : '' %></span>
-                            </div>
-                        </div>
-                    <% } %>
-                    
-                    <% if (address.hospital_cep) { %>
-                        <div class="endereco-item">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" viewBox="0 0 256 256">
-                                <path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48ZM203.43,64,128,133.15,52.57,64ZM216,192H40V74.19l82.59,75.71a8,8,0,0,0,10.82,0L216,74.19V192Z"></path>
-                            </svg>
-                            <div class="endereco-texto">
-                                <span>CEP: <%= address.hospital_cep %></span>
-                            </div>
-                        </div>
-                    <% } %>
-                </div>
-                
-                <div class="mapa-container">
-                    <div id="mapa-hospital" class="mapa-hospital">
-                        <div class="mapa-loading">
-                            <div class="spinner"></div>
-                            <p>Carregando mapa...</p>
+                    <div class="endereco-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M128,64a40,40,0,1,0,40,40A40,40,0,0,0,128,64Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,128Zm0-112a88.1,88.1,0,0,0-88,88c0,31.4,14.51,64.68,42,96.25a254.19,254.19,0,0,0,41.45,38.3,8,8,0,0,0,9.18,0A254.19,254.19,0,0,0,174,200.25c27.45-31.57,42-64.85,42-96.25A88.1,88.1,0,0,0,128,16Zm0,206c-16.53-13-72-60.75-72-118a72,72,0,0,1,144,0C200,161.23,144.53,209,128,222Z"></path></svg>
+                        <div class="endereco-texto">
+                            <span><%= address.endereco_logradouro %><%= address.endereco_numero ? ', ' + address.endereco_numero : '' %></span>
+                            <span><%= address.endereco_bairro %> - CEP: <%= address.endereco_cep %></span>
+                            <% if (address.endereco_complemento) { %>
+                            <span class="complemento"><%= address.endereco_complemento %></span>
+                            <% } %>
                         </div>
                     </div>
                 </div>
             </div>
         </section>
 
+        <section class="collapsible-section">
+            <div class="collapsible-header">
+                <h2>Contato</h2>
+                <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"></path></svg>
+            </div>
+            <div class="collapsible-content">
+                <div class="contato-info">
+                    <% if (hospital_telefone) { %>
+                    <div class="contato-item">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M164.39,145.34a8,8,0,0,1,7.59-.69l47.16,21.13a8,8,0,0,1,4.8,8.3A48.33,48.33,0,0,1,176,216,136,136,0,0,1,40,80,48.33,48.33,0,0,1,81.92,32.06a8,8,0,0,1,8.3,4.8l21.13,47.2a8,8,0,0,1-.66,7.53L89.32,117a7.93,7.93,0,0,0-.54,7.81c8.27,16.93,25.77,34.22,42.75,42.41a7.92,7.92,0,0,0,7.83-.59Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/></svg>                        <span>Telefone: <strong><%= hospital_telefone %></strong></span>
+                    </div>
+                    <% } %>
+                    <% if (hospital_email) { %>
+                    <div class="contato-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M224,48H32a8,8,0,0,0-8,8V192a16,16,0,0,0,16,16H216a16,16,0,0,0,16-16V56A8,8,0,0,0,224,48ZM203.43,64,128,133.15,52.57,64ZM216,192H40V74.19l82.59,75.71a8,8,0,0,0,10.82,0L216,74.19V192Z"></path></svg>
+                        <span>Email: <strong><%= hospital_email %></strong></span>
+                    </div>
+                    <% } %>
+                </div>
+            </div>
+        </section>
+
+        <section class="acoes-container">
+            <button type="button" class="acao-btn acao-principal" onclick="window.location.href='/hospital/avaliacao?id=<%= hospital.hospital_id %>'">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#ffffff" viewBox="0 0 256 256"><path d="M234,80.12A24,24,0,0,0,216,72H160V56a40,40,0,0,0-40-40,8,8,0,0,0-7.16,4.42L75.06,96H32a16,16,0,0,0-16,16v88a16,16,0,0,0,16,16H204a24,24,0,0,0,23.82-21l12-96A24,24,0,0,0,234,80.12ZM32,112H72v88H32ZM223.94,97l-12,96a8,8,0,0,1-7.94,7H88V105.89l36.71-73.43A24,24,0,0,1,144,56V80a8,8,0,0,0,8,8h64a8,8,0,0,1,7.94,9Z"></path></svg>
+                Avaliar hospital
+            </button>
+        </section>
     </main>
-    
     <%- include ('partials/navbar.ejs')%>
 
     <script>
-        let rotaAtual = null;
-        let mapaGoogleMaps = null;
-        let markerHospital = null;
-        let mapaCarregado = false;
-
         document.addEventListener('DOMContentLoaded', () => {
-            inicializarColapsaveis();
-            carregarRota();
-        });
-
-        function inicializarColapsaveis() {
             const collapsibleHeaders = document.querySelectorAll('.collapsible-header');
+
             collapsibleHeaders.forEach(header => {
                 header.addEventListener('click', () => {
                     const section = header.closest('.collapsible-section');
-                    const wasOpen = section.classList.contains('open');
                     section.classList.toggle('open');
-                    if (!wasOpen && section.id === 'secao-endereco' && !mapaCarregado) {
-                        setTimeout(() => inicializarMapaSeNecessario(), 400);
-                    }
                 });
             });
-        }
 
-        window.initMap = function() {
-            console.log('Google Maps API carregada');
-        };
-
-        function inicializarMapaSeNecessario() {
-            if (mapaCarregado) return;
-            const main = document.querySelector('main');
-            const hospitalLat = parseFloat(main.dataset.hospitalLat);
-            const hospitalLng = parseFloat(main.dataset.hospitalLng);
-            if (isNaN(hospitalLat) || isNaN(hospitalLng)) {
-                mostrarErroMapa('Coordenadas do hospital não disponíveis.');
-                return;
-            }
-            if (typeof google === 'undefined' || typeof google.maps === 'undefined') {
-                mostrarErroMapa('Carregando Google Maps...');
-                setTimeout(inicializarMapaSeNecessario, 1000);
-                return;
-            }
-            criarMapa(hospitalLat, hospitalLng);
-        }
-
-        function criarMapa(lat, lng) {
-            const mapaElement = document.getElementById('mapa-hospital');
-            try {
-                const coordenadas = { lat, lng };
-                mapaGoogleMaps = new google.maps.Map(mapaElement, {
-                    center: coordenadas,
-                    zoom: 15,
-                    mapTypeControl: true,
-                    mapTypeControlOptions: {
-                        style: google.maps.MapTypeControlStyle.DROPDOWN_MENU,
-                        position: google.maps.ControlPosition.TOP_RIGHT
-                    },
-                    streetViewControl: true,
-                    streetViewControlOptions: {
-                        position: google.maps.ControlPosition.RIGHT_BOTTOM
-                    },
-                    fullscreenControl: true,
-                    zoomControl: true,
-                    styles: [{
-                        featureType: "poi.medical",
-                        elementType: "geometry",
-                        stylers: [{ color: "#ffdede" }]
-                    }]
-                });
-
-                markerHospital = new google.maps.Marker({
-                    position: coordenadas,
-                    map: mapaGoogleMaps,
-                    title: document.querySelector('h1').textContent,
-                    animation: google.maps.Animation.DROP,
-                    icon: {
-                        url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 256 256"><path fill="#DC3545" d="M128,16a88.1,88.1,0,0,0-88,88c0,75.3,80,132.17,83.41,134.55a8,8,0,0,0,9.18,0C136,236.17,216,179.3,216,104A88.1,88.1,0,0,0,128,16Zm0,56a32,32,0,1,1-32,32A32,32,0,0,1,128,72Z"/></svg>'),
-                        scaledSize: new google.maps.Size(48, 48),
-                        anchor: new google.maps.Point(24, 48)
-                    }
-                });
-
-                const infoWindow = new google.maps.InfoWindow({
-                    content: '<div style="padding:10px;max-width:200px;"><h3 style="margin:0 0 8px 0;font-size:16px;color:#333;">' + document.querySelector('h1').textContent + '</h3><p style="margin:0;font-size:14px;color:#666;">Clique em "Abrir no Google Maps" para obter direções</p></div>'
-                });
-
-                markerHospital.addListener('click', () => {
-                    infoWindow.open(mapaGoogleMaps, markerHospital);
-                });
-
-                if (distanceCalculator.userLocation) {
-                    const userMarker = new google.maps.Marker({
-                        position: {
-                            lat: distanceCalculator.userLocation.lat,
-                            lng: distanceCalculator.userLocation.lng
-                        },
-                        map: mapaGoogleMaps,
-                        title: 'Sua localização',
-                        icon: {
-                            url: 'data:image/svg+xml;charset=UTF-8,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 256 256"><circle cx="128" cy="128" r="96" fill="#4285F4"/><circle cx="128" cy="128" r="72" fill="white"/><circle cx="128" cy="128" r="48" fill="#4285F4"/></svg>'),
-                            scaledSize: new google.maps.Size(32, 32),
-                            anchor: new google.maps.Point(16, 16)
-                        }
-                    });
-
-                    const bounds = new google.maps.LatLngBounds();
-                    bounds.extend(coordenadas);
-                    bounds.extend(distanceCalculator.userLocation);
-                    mapaGoogleMaps.fitBounds(bounds);
-                    
-                    const linha = new google.maps.Polyline({
-                        path: [distanceCalculator.userLocation, coordenadas],
-                        geodesic: true,
-                        strokeColor: '#4285F4',
-                        strokeOpacity: 0.7,
-                        strokeWeight: 3,
-                        map: mapaGoogleMaps
-                    });
-                }
-                mapaCarregado = true;
-                console.log('Mapa carregado com sucesso');
-            } catch (erro) {
-                console.error('Erro ao criar mapa:', erro);
-                mostrarErroMapa('Erro ao carregar o mapa. Tente novamente mais tarde.');
-            }
-        }
-
-        function mostrarErroMapa(mensagem) {
-            const mapaElement = document.getElementById('mapa-hospital');
-            mapaElement.innerHTML = '<div class="mapa-erro"><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" fill="currentColor" viewBox="0 0 256 256"><path d="M236.8,188.09,149.35,36.22h0a24.76,24.76,0,0,0-42.7,0L19.2,188.09a23.51,23.51,0,0,0,0,23.72A24.35,24.35,0,0,0,40.55,224h174.9a24.35,24.35,0,0,0,21.33-12.19A23.51,23.51,0,0,0,236.8,188.09ZM120,104a8,8,0,0,1,16,0v40a8,8,0,0,1-16,0Zm8,88a12,12,0,1,1,12-12A12,12,0,0,1,128,192Z"></path></svg><p>' + mensagem + '</p></div>';
-        }
+            // Carregar rota ao abrir a página
+            carregarRota();
+        });
 
         async function carregarRota() {
-            const rotaMensagem = document.getElementById('rota-mensagem');
-            const rotaInfo = document.getElementById('rota-info');
-            const btnAbrirMapa = document.getElementById('btn-abrir-mapa');
             try {
                 const main = document.querySelector('main');
                 const hospitalLat = parseFloat(main.dataset.hospitalLat);
                 const hospitalLng = parseFloat(main.dataset.hospitalLng);
-                if (isNaN(hospitalLat) || isNaN(hospitalLng)) {
-                    throw new Error('Coordenadas do hospital inválidas.');
+
+                if (!hospitalLat || !hospitalLng) {
+                    console.log('Coordenadas do hospital não disponíveis');
+                    return;
                 }
-                if (!distanceCalculator.isGeolocationSupported()) {
-                    throw new Error('Seu navegador não suporta geolocalização.');
-                }
-                rotaAtual = await distanceCalculator.calculateSingleDistance(hospitalLat, hospitalLng);
-                rotaInfo.innerHTML = '<div class="rota-info-item"><div class="rota-info-valor">' + rotaAtual.distancia.texto + '</div><div class="rota-info-label">Distância</div></div><div class="rota-info-item"><div class="rota-info-valor">' + rotaAtual.duracao.texto + '</div><div class="rota-info-label">Tempo Estimado</div></div>';
-                btnAbrirMapa.disabled = false;
-                rotaInfo.classList.add('loaded');
+
+                // Obter localização do usuário
+                const minhaLocalizacao = await mapsAPI.obterLocalizacaoAtual();
+
+                // Calcular rota
+                const resultado = await mapsAPI.obterRota(
+                    minhaLocalizacao,
+                    { lat: hospitalLat, lng: hospitalLng }
+                );
+
+                // Atualizar elementos na página
+                const rota = resultado.rota;
+                const rotaInfoDiv = document.getElementById('rota-info');
+                const btnAbrir = document.getElementById('btn-abrir-mapa');
+                
+                rotaInfoDiv.innerHTML = `
+                    <div class="rota-info-item">
+                        <div class="rota-info-valor">${rota.distancia.texto}</div>
+                        <div class="rota-info-label">Distância</div>
+                    </div>
+                    <div class="rota-info-item">
+                        <div class="rota-info-valor">${rota.duracao.texto}</div>
+                        <div class="rota-info-label">Tempo Estimado</div>
+                    </div>
+                `;
+
+                // Habilitar botão
+                btnAbrir.disabled = false;
+
+                // Armazenar coordenadas globalmente para o Google Maps
+                window.rotaHospital = {
+                    origem: minhaLocalizacao,
+                    destino: { lat: hospitalLat, lng: hospitalLng }
+                };
+
             } catch (erro) {
                 console.error('Erro ao carregar rota:', erro);
-                if (rotaMensagem) {
-                    rotaMensagem.textContent = erro.message || 'Erro ao calcular rota.';
-                    rotaMensagem.style.display = 'block';
-                }
-                if (rotaInfo) {
-                    rotaInfo.innerHTML = '<div class="rota-info-item"><div class="rota-info-valor">--</div><div class="rota-info-label">Distância</div></div><div class="rota-info-item"><div class="rota-info-valor">--</div><div class="rota-info-label">Tempo Estimado</div></div>';
-                }
-                if (erro.message.includes('negada') || erro.message.includes('denied')) {
-                    rotaMensagem.innerHTML = erro.message + '<br><button onclick="carregarRota()" class="btn-retentar-pequeno">Tentar Novamente</button>';
-                }
+                const rotaMensagem = document.getElementById('rota-mensagem');
+                rotaMensagem.textContent = 'Erro ao calcular rota. Ative a geolocalização ou tente novamente.';
+                rotaMensagem.style.display = 'block';
             }
         }
 
         function abrirRotaGoogleMaps() {
-            const main = document.querySelector('main');
-            const hospitalLat = parseFloat(main.dataset.hospitalLat);
-            const hospitalLng = parseFloat(main.dataset.hospitalLng);
-            if (isNaN(hospitalLat) || isNaN(hospitalLng)) {
-                alert('Coordenadas do hospital não disponíveis.');
+            if (!window.rotaHospital) {
+                alert('Rota não disponível. Tente recarregar a página.');
                 return;
             }
-            const url = distanceCalculator.getGoogleMapsDirectionsURL(hospitalLat, hospitalLng);
-            window.open(url, '_blank', 'noopener,noreferrer');
-        }
 
-        window.addEventListener('beforeunload', () => {
-            distanceCalculator.stopWatchingLocation();
-        });
+            const { origem, destino } = window.rotaHospital;
+            const url = `https://www.google.com/maps/dir/${origem.lat},${origem.lng}/${destino.lat},${destino.lng}`;
+            window.open(url, '_blank');
+        }
     </script>
 </body>
 </html>
