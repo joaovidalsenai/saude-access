@@ -6,6 +6,7 @@ import formatar from '../utils/formatar.js';
 import dadosUsuario, { AuthError, NotFoundError } from '../middlewares/dadosUsuario.js';
 import cookieParser from 'cookie-parser';
 import supabase from '../db/supabase.js';
+import { deg2rad, getDistanceFromLatLonInKm } from '../utils/geoloc.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -286,12 +287,18 @@ pages.get('/hospital/avaliacao', protect.entirely, async (req, res) => {
     }
 });
 
+// Em pages.routes.js
+
 pages.get('/hospitais', protect.entirely, async (req, res) => {
-    // Opções de ordenação: 'alfabetica', 'media_geral', 'lotacao', 'tempo_espera', 'atendimento', 'infraestrutura'
-    const ordenarPor = req.query.ordenar || 'alfabetica'; 
+    // Opções: 'alfabetica', 'media_geral', 'lotacao', ... 'distancia'
+    const ordenarPor = req.query.ordenar || 'alfabetica';
+    
+    // --- NOVO: Pega as coordenadas do usuário da URL ---
+    const userLat = parseFloat(req.query.lat);
+    const userLng = parseFloat(req.query.lng);
 
     try {
-        // 1. Busca todos os hospitais e suas respectivas avaliações
+        // 1. Busca hospitais, avaliações E ENDEREÇOS (para lat/lng)
         const { data: hospitais, error } = await supabase
             .from('hospital')
             .select(`
@@ -302,6 +309,10 @@ pages.get('/hospitais', protect.entirely, async (req, res) => {
                     avaliacao_tempo_espera,
                     avaliacao_atendimento,
                     avaliacao_infraestrutura
+                ),
+                hospital_endereco (
+                    hospital_latitude,
+                    hospital_longitude
                 )
             `);
 
@@ -310,7 +321,7 @@ pages.get('/hospitais', protect.entirely, async (req, res) => {
             return res.status(500).send('Não foi possível carregar os hospitais.');
         }
 
-        // 2. Calcula as médias para cada hospital
+        // 2. Calcula as médias E A DISTÂNCIA para cada hospital
         const hospitaisComMedias = hospitais.map(h => {
             const avaliacoes = h.avaliacao_hospital;
             let medias = {
@@ -330,10 +341,26 @@ pages.get('/hospitais', protect.entirely, async (req, res) => {
                 medias.media_geral = (medias.media_lotacao + medias.media_tempo_espera + medias.media_atendimento + medias.media_infraestrutura) / 4;
             }
 
+            // --- NOVO: Cálculo de Distância ---
+            let distancia = Infinity; // Padrão é "infinito"
+            const endereco = h.hospital_endereco?.[0]; // Pega o primeiro endereço
+
+            // Só calcula se o usuário passou lat/lng e o hospital tem lat/lng
+            if (ordenarPor === 'distancia' && userLat && userLng && endereco) {
+                distancia = getDistanceFromLatLonInKm(
+                    userLat,
+                    userLng,
+                    endereco.hospital_latitude,
+                    endereco.hospital_longitude
+                );
+            }
+            // --- FIM DO CÁLCULO DE DISTÂNCIA ---
+
             return {
                 id: h.hospital_id,
                 nome: h.hospital_nome,
-                ...medias
+                ...medias,
+                distancia: distancia // Adiciona a distância ao objeto
             };
         });
 
@@ -362,6 +389,18 @@ pages.get('/hospitais', protect.entirely, async (req, res) => {
                 titulo = 'Hospitais por Infraestrutura';
                 sortKey = 'media_infraestrutura';
                 break;
+            // --- NOVO: Caso de Distância ---
+            case 'distancia':
+                // Só muda o título se o usuário realmente passou a localização
+                if (userLat && userLng) {
+                    titulo = 'Hospitais por Distância';
+                    sortKey = 'distancia';
+                } else {
+                    // Se pediu distância mas não passou lat/lng, ordena por nome
+                    titulo = 'Hospitais (Localização não fornecida)';
+                    sortKey = 'nome'; 
+                }
+                break;
         }
 
         // 4. Ordena a lista de hospitais
@@ -369,25 +408,39 @@ pages.get('/hospitais', protect.entirely, async (req, res) => {
             if (ordenarPor === 'alfabetica') {
                 return a.nome.localeCompare(b.nome); // Ordem alfabética
             }
-            // Para todos os outros casos, ordena pela nota (do maior para o menor)
+            // --- NOVO: Ordenação por Distância (crescente) ---
+            if (sortKey === 'distancia') {
+                return a.distancia - b.distancia; // Do mais perto para o mais longe
+            }
+            // Para todos os outros casos (notas), ordena do maior para o menor
             return b[sortKey] - a[sortKey];
         });
 
-        // 5. Formata os dados para o EJS (COM A CORREÇÃO)
+        // 5. Formata os dados para o EJS (COM A CORREÇÃO E DISTÂNCIA)
         const hospitaisFormatados = hospitaisComMedias.map(h => {
-            // **A CORREÇÃO ESTÁ AQUI**
-            // Se a ordenação for alfabética, a nota exibida é a média geral.
+            // Se a ordenação for alfabética OU por distância, a nota exibida é a média geral.
             // Caso contrário, é a nota do critério de ordenação.
-            const notaParaExibir = (ordenarPor === 'alfabetica') ? h.media_geral : h[sortKey];
-            // Lógica de truncamento para consistência com o hospital.ejs
+            const notaParaExibir = (sortKey === 'nome' || sortKey === 'distancia') ? h.media_geral : h[sortKey];
+            
             const mediaTruncada = Math.floor(notaParaExibir * 10) / 10;
+
+            // --- NOVO: Formata a distância ---
+            let distanciaFormatada = null;
+            // Se a distância for um número válido (não Infinity), formata para "X.X km"
+            if (h.distancia !== Infinity && isFinite(h.distancia)) {
+                distanciaFormatada = h.distancia.toFixed(1) + ' km';
+            }
+            // --- FIM DA FORMATAÇÃO ---
 
             return {
                 id: h.id,
                 nome: h.nome,
-                nota: mediaTruncada.toFixed(1)
+                nota: mediaTruncada.toFixed(1),
+                distancia: distanciaFormatada // <-- ADICIONADO AQUI
             };
         });
+
+        console.log(hospitaisFormatados);
 
         // 6. Renderiza a página
         res.render('hospitais', {

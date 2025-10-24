@@ -261,3 +261,40 @@ header h1 {
 .contato-site:hover {
     cursor: pointer;
 }
+
+/* public/css/hospitais.css */
+
+/* ... (seus estilos existentes) ... */
+
+/* Ajusta o layout do botão para alinhar a nota e o bloco de info */
+.botao-hospital {
+    /* (você já tem estilos aqui, mas certifique-se de que ele se comporta bem com flex) */
+    display: flex;
+    align-items: center;
+    gap: 12px; /* Espaço entre a bolinha da nota e o texto */
+}
+
+/* Novo container para o texto (nome e distância) */
+.botao-hospital-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; /* Alinha os textos à esquerda */
+    /* Remove o alinhamento central que o 'span' antigo poderia ter */
+    text-align: left;
+}
+
+/* Estilo para o nome (pode ajustar se já tiver) */
+.botao-hospital-nome {
+    font-size: 1rem; /* Tamanho padrão */
+    font-weight: 600; /* Semi-negrito */
+    color: var(--texto-principal); /* (assumindo que você tem essa variável) */
+    line-height: 1.3;
+}
+
+/* NOVO: Estilo para a distância */
+.botao-hospital-distancia {
+    font-size: 0.85rem; /* Um pouco menor que o nome */
+    color: #ffc107; /* (assumindo que você tem essa variável, ou use #666) */
+    font-weight: 400; /* Peso normal */
+    line-height: 1.2;
+}
