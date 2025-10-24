@@ -346,7 +346,7 @@ pages.get('/hospitais', protect.entirely, async (req, res) => {
             const endereco = h.hospital_endereco?.[0]; // Pega o primeiro endereço
 
             // Só calcula se o usuário passou lat/lng e o hospital tem lat/lng
-            if (ordenarPor === 'distancia' && userLat && userLng && endereco) {
+            if (userLat && userLng && endereco) {
                 distancia = getDistanceFromLatLonInKm(
                     userLat,
                     userLng,
