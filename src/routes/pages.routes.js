@@ -440,8 +440,6 @@ pages.get('/hospitais', protect.entirely, async (req, res) => {
             };
         });
 
-        console.log(hospitaisFormatados);
-
         // 6. Renderiza a página
         res.render('hospitais', {
             titulo,
