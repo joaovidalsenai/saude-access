@@ -468,6 +468,87 @@ main {
     text-decoration: underline;
 }
 
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    z-index: 9999;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal.active {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-content {
+    background: white;
+    padding: clamp(2rem, 5vw, 3rem);
+    border-radius: 20px;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: slideUp 0.4s ease;
+    position: relative;
+}
+
+.modal-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 1.5rem;
+    background: var(--azul-header);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    font-weight: bold;
+    animation: scaleIn 0.5s ease;
+}
+
+.modal-icon.error {
+    background: #e74c3c;
+}
+
+.modal-content h3 {
+    color: var(--azul-header);
+    font-size: clamp(1.5rem, 4vw, 1.8rem);
+    margin-bottom: 1rem;
+    font-weight: 700;
+}
+
+.modal-content p {
+    color: #666;
+    font-size: clamp(1rem, 2.5vw, 1.1rem);
+    margin-bottom: 2rem;
+    line-height: 1.6;
+}
+
+.modal-button {
+    background: var(--azul-header);
+    color: white;
+    padding: 0.9rem 2.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.modal-button:hover {
+    background: #1557c7;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(28, 105, 227, 0.3);
+}
+
 /* Media Queries */
 @media (min-width: 600px) {
     .form-row {
@@ -516,4 +597,37 @@ main {
     .accordion-header {
         font-size: 0.9rem;
     }
+    /* Modal de Feedback */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes scaleIn {
+    0% {
+        transform: scale(0);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
 }
