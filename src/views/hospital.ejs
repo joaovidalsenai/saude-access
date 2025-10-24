@@ -7,11 +7,28 @@
     <link rel="stylesheet" href="/css/hospital.css">
     <title>Saúde Access</title>
     <link rel="stylesheet" href="/css/protected.css">
+    
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/js/global.js"></script>
     <script src="/js/auth-utils.js" defer></script>
     <script src="/js/hospital.js" defer></script>
+    
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
     <link rel="icon" type="image/x-icon" href="/favorite.ico">
+    
+    <style>
+        #map {
+            height: 300px;
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 12px;
+        }
+    </style>
 </head>
 <body class="protected">
     <header>
@@ -23,16 +40,10 @@
     <main>
     <% if (ratings && ratings.stats) { %>
         <%
-            // --- INÍCIO: Lógica de Classificação Consistente ---
-            // 1. Converte a média para um número de forma segura, usando 0 como padrão.
             const media_bruta = Number(ratings.stats.media_geral) || 0;
-            // 2. Normaliza para 2 casas decimais para corrigir problemas de ponto flutuante.
             const media_limpa = parseFloat(media_bruta.toFixed(2));
-            // 3. Prepara o texto a ser exibido (ex: 3.98 -> "3.9", 4.0 -> "4.0").
             const media_texto = (Math.floor(media_limpa * 10) / 10).toFixed(1);
-            // 4. Prepara a classe para as estrelas (ex: 3.98 -> 3).
             const media_classe = Math.floor(media_limpa);
-            // --- FIM: Lógica de Classificação Consistente ---
         %>
         <section class="avaliacao-geral-container">
             <h2>Média Geral</h2>
@@ -123,6 +134,20 @@
                             <% } %>
                         </div>
                     </div>
+                    
+                    <!-- Mapa Leaflet -->
+                    <% if (address.latitude && address.longitude) { %>
+                        <div id="map" style="z-index: 0;"></div>
+                        <script>
+                            // Armazena as coordenadas em variáveis JavaScript
+                            window.hospitalLat = <%= address.latitude %>;
+                            window.hospitalLng = <%= address.longitude %>;
+                            window.hospitalNome = '<%= hospital.hospital_nome.replace(/'/g, "\\'") %>';
+                            window.hospitalEndereco = '<%= address.endereco_logradouro.replace(/'/g, "\\'") %>, <%= address.endereco_numero %>';
+                        </script>
+                    <% } else { %>
+                        <p style="margin-top: 12px; color: #666; font-size: 14px;">Localização não disponível</p>
+                    <% } %>
                 </div>
             </div>
         </section>
@@ -173,6 +198,32 @@
                     section.classList.toggle('open');
                 });
             });
+
+            // Inicializar o mapa Leaflet se as coordenadas existirem
+            if (typeof window.hospitalLat !== 'undefined' && typeof window.hospitalLng !== 'undefined') {
+                const map = L.map('map').setView([window.hospitalLat, window.hospitalLng], 15);
+                
+                // Adicionar tiles do OpenStreetMap
+                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                    attribution: '© OpenStreetMap contributors',
+                    maxZoom: 19
+                }).addTo(map);
+                
+                // Adicionar marcador
+                const marker = L.marker([window.hospitalLat, window.hospitalLng]).addTo(map);
+                marker.bindPopup('<b>' + window.hospitalNome + '</b><br>' + window.hospitalEndereco);
+                
+                // Ajustar o mapa quando a seção for expandida
+                const enderecoSection = document.querySelectorAll('.collapsible-section')[1]; // A seção de endereço
+                if (enderecoSection) {
+                    const observer = new MutationObserver(() => {
+                        if (enderecoSection.classList.contains('open')) {
+                            setTimeout(() => map.invalidateSize(), 100);
+                        }
+                    });
+                    observer.observe(enderecoSection, { attributes: true, attributeFilter: ['class'] });
+                }
+            }
         });
     </script>
 </body>

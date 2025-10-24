@@ -207,7 +207,12 @@ pages.get('/hospital', protect.entirely, async (req, res) => {
                 hospital_nome: hospitalData.hospital_nome,
                 hospital_cnpj: hospitalData.hospital_cnpj
             },
-            address: hospitalData.hospital_endereco[0] || {},
+            address: {
+                ...hospitalData.hospital_endereco[0],
+                // Adicione as coordenadas aqui
+                latitude: hospitalData.hospital_endereco[0]?.hospital_latitude || null,
+                longitude: hospitalData.hospital_endereco[0]?.hospital_longitude || null
+            },
             hospital_email: hospitalData.hospital_contato[0].hospital_email || {},
             hospital_telefone: formatar.telefone(hospitalData.hospital_contato[0].hospital_telefone) || {},
             hospital_site: hospitalData.hospital_contato[0].hospital_site || {},
@@ -215,7 +220,6 @@ pages.get('/hospital', protect.entirely, async (req, res) => {
                 stats: ratingStats,
                 recent: recentRatings
             },
-            // NOVA ADIÇÃO: Passe a lista de alertas para o template
             alertas: alertas || [] 
         };
 
