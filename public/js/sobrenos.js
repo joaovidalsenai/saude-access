@@ -1,68 +1,82 @@
+// Inicialização
+emailjs.init('ogzroqAs66IL1N7Ya');
 
-// ========== INICIALIZAÇÃO DO EMAILJS ==========
-(function() {
-    emailjs.init('ogzroqAs66IL1N7Ya'); // ⚠️ TROQUE pela Public Key verdadeira (não é o Service ID!)
-})();
-
-// ========== FUNÇÃO DO ACCORDION (mantida como estava) ==========
+// Accordion
 function toggleAccordion(header) {
     const content = header.nextElementSibling;
     const isActive = header.classList.contains('active');
    
-    // Fecha todos os itens
     document.querySelectorAll('.accordion-header').forEach(h => {
         h.classList.remove('active');
         h.nextElementSibling.classList.remove('active');
     });
    
-    // Abre o item clicado se não estava ativo
     if (!isActive) {
         header.classList.add('active');
         content.classList.add('active');
     }
 }
 
-// ========== FUNCIONALIDADE DO FORMULÁRIO DE CONTATO ==========
-const contactForm = document.querySelector('.contact-form');
-const submitButton = document.querySelector('.submit-button');
-
-if (contactForm && submitButton) {
-    contactForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-       
-        // Desabilita o botão e mostra loading
-        submitButton.disabled = true;
-        const textoOriginal = submitButton.textContent;
-        submitButton.textContent = 'Enviando...';
-        submitButton.style.cursor = 'wait';
-       
-        // Prepara os dados do formulário
-        const templateParams = {
-            from_name: document.getElementById('name').value,
-            from_surname: document.getElementById('surname').value,
-            from_email: document.getElementById('email').value,
-            subject: document.getElementById('subject').value,
-            message: document.getElementById('message').value
-        };
-       
-        // Log para debug (remova depois)
-        console.log('Enviando dados:', templateParams);
-       
-        // Envia o email usando EmailJS
-        emailjs.send('service_t0swn8a', 'template_xywrtvl', templateParams)
-            .then(function(response) {
-                console.log('✓ Sucesso!', response.status, response.text);
-                alert('✓ Mensagem enviada com sucesso! Entraremos em contato em breve.');
-                contactForm.reset();
-                submitButton.disabled = false;
-                submitButton.textContent = textoOriginal;
-                submitButton.style.cursor = 'pointer';
-            }, function(error) {
-                console.error('✗ Erro completo:', error);
-                alert('✗ Erro ao enviar mensagem. Por favor, tente novamente.');
-                submitButton.disabled = false;
-                submitButton.textContent = textoOriginal;
-                submitButton.style.cursor = 'pointer';
-            });
-    });
-}
+// Formulário
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('.contact-form');
+    
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Captura os valores COM log detalhado
+            const nome = document.getElementById('name');
+            const sobrenome = document.getElementById('surname');
+            const email = document.getElementById('email');
+            const assunto = document.getElementById('subject');
+            const mensagem = document.getElementById('message');
+            
+            console.log('=== ELEMENTOS ENCONTRADOS ===');
+            console.log('Campo nome existe?', nome !== null);
+            console.log('Campo sobrenome existe?', sobrenome !== null);
+            console.log('Campo email existe?', email !== null);
+            console.log('Campo assunto existe?', assunto !== null);
+            console.log('Campo mensagem existe?', mensagem !== null);
+            
+            if (!nome || !sobrenome || !email || !assunto || !mensagem) {
+                alert('❌ ERRO: Um ou mais campos não foram encontrados no HTML!');
+                return;
+            }
+            
+            const dados = {
+                name: nome.value,
+                surname: sobrenome.value,
+                email: email.value,
+                subject: assunto.value,
+                message: mensagem.value,
+                date: new Date().toLocaleString('pt-BR')
+            };
+            
+            console.log('=== VALORES CAPTURADOS ===');
+            console.log(dados);
+            
+            // Envia
+            const btn = e.target.querySelector('.submit-button');
+            btn.disabled = true;
+            btn.textContent = 'Enviando...';
+            
+            emailjs.send('service_t0swn8a', 'template_xywrtvl', dados)
+                .then(function(response) {
+                    console.log('✅ SUCESSO:', response);
+                    alert('✅ Mensagem enviada!');
+                    form.reset();
+                })
+                .catch(function(error) {
+                    console.error('❌ ERRO:', error);
+                    alert('❌ Erro: ' + (error.text || error.message));
+                })
+                .finally(function() {
+                    btn.disabled = false;
+                    btn.textContent = 'Enviar Mensagem';
+                });
+        });
+    } else {
+        console.error('❌ FORMULÁRIO NÃO ENCONTRADO!');
+    }
+});
