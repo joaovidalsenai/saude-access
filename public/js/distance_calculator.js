@@ -1,4 +1,4 @@
-// public/js/distanceCalculator.js
+// public/js/distance_calculator.js
 
 /**
  * Serviço de cálculo de distâncias e rotas
@@ -101,13 +101,28 @@ class DistanceCalculator {
                 break;
             case 'driving':
             default:
-                speedKmh = 40; // 40 km/h média urbana
+                // Velocidade varia baseado na distância
+                // Distâncias curtas: mais lento (trânsito, semáforos)
+                // Distâncias longas: mais rápido (vias expressas)
+                const km = meters / 1000;
+                if (km < 2) {
+                    speedKmh = 20; // Trânsito urbano denso
+                } else if (km < 5) {
+                    speedKmh = 30; // Trânsito urbano moderado
+                } else if (km < 10) {
+                    speedKmh = 40; // Vias principais
+                } else {
+                    speedKmh = 50; // Rodovias/vias expressas
+                }
                 break;
         }
 
         const hours = (meters / 1000) / speedKmh;
         const minutes = Math.round(hours * 60);
 
+        if (minutes < 1) {
+            return '< 1 min';
+        }
         if (minutes < 60) {
             return `${minutes} min`;
         }
@@ -118,10 +133,9 @@ class DistanceCalculator {
 
     /**
      * Calcula distâncias para uma lista de hospitais usando a API do servidor
-     * @param {Array} hospitais - Lista de hospitais com coordenadas
      * @returns {Promise<Array>} Lista de hospitais ordenados por distância
      */
-    async calculateDistancesWithAPI(hospitais) {
+    async calculateDistancesWithAPI() {
         if (!this.userLocation) {
             await this.getUserLocation();
         }
@@ -131,10 +145,26 @@ class DistanceCalculator {
         );
 
         if (!response.ok) {
-            throw new Error('Erro ao calcular distâncias com o servidor.');
+            const errorData = await response.json().catch(() => ({}));
+            throw new Error(errorData.erro || 'Erro ao calcular distâncias com o servidor.');
         }
 
-        return await response.json();
+        const data = await response.json();
+
+        if (!data.sucesso || !data.hospitais) {
+            throw new Error(data.erro || 'Nenhum hospital encontrado');
+        }
+
+        // Retorna os hospitais com formatação adicional
+        return data.hospitais.map(hospital => ({
+            id: hospital.id,
+            nome: hospital.nome,
+            latitude: hospital.latitude,
+            longitude: hospital.longitude,
+            distancia_valor: hospital.distancia_metros,
+            distancia_texto: this.formatDistance(hospital.distancia_metros),
+            tempo_texto: this.estimateTravelTime(hospital.distancia_metros, 'driving')
+        }));
     }
 
     /**
@@ -155,11 +185,14 @@ class DistanceCalculator {
                 hospital.longitude
             );
 
+            // Aplica fator de correção para distância real de rua (1.3x)
+            const realDistance = distance * 1.3;
+
             return {
                 ...hospital,
-                distancia_valor: distance,
-                distancia_texto: this.formatDistance(distance),
-                tempo_texto: this.estimateTravelTime(distance, 'driving')
+                distancia_valor: realDistance,
+                distancia_texto: this.formatDistance(realDistance),
+                tempo_texto: this.estimateTravelTime(realDistance, 'driving')
             };
         });
 
@@ -185,13 +218,16 @@ class DistanceCalculator {
             hospitalLng
         );
 
+        // Aplica fator de correção para distância real de rua (1.3x)
+        const realDistance = distance * 1.3;
+
         return {
             distancia: {
-                valor: distance,
-                texto: this.formatDistance(distance)
+                valor: realDistance,
+                texto: this.formatDistance(realDistance)
             },
             duracao: {
-                texto: this.estimateTravelTime(distance, 'driving')
+                texto: this.estimateTravelTime(realDistance, 'driving')
             },
             origem: this.userLocation,
             destino: { lat: hospitalLat, lng: hospitalLng }
