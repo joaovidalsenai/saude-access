@@ -1,5 +1,9 @@
 /* public/css/hospitais.css */
 
+/* ============================================ */
+/* CORES DAS NOTAS                             */
+/* ============================================ */
+
 /* Define a cor padrão do texto dentro da bolinha como branco para consistência */
 .botao-hospital-nota {
     color: #ffffff; 
@@ -8,7 +12,7 @@
 /* Cor Padrão (Cinza) para hospitais sem nota ou com nota 0 */
 .botao-hospital-nota.rating-0 {
     background-color: #cccccc;
-    color: #333333; /* Mantém o texto escuro aqui para o fundo cinza claro */
+    color: #333333;
 }
 
 /* Nota 1 (Vermelho - mesma cor da estrela) */
@@ -36,6 +40,580 @@
     background-color: #22c55e;
 }
 
+/* ============================================ */
+/* LAYOUT DOS CARDS DE HOSPITAIS              */
+/* ============================================ */
+
 .botao-hospital {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    border-radius: 12px;
     background-color: var(--cinza-botao-bom);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-decoration: none;
+    cursor: pointer;
+    opacity: 0;
+    animation: fadeInUp 0.4s ease forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.botao-hospital:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--hover-shadow);
+}
+
+/* Header do botão (nota + nome + distância) */
+.botao-hospital-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Lado esquerdo: nota + nome */
+.botao-hospital-esquerda {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+    min-width: 0;
+}
+
+/* Bolinha da nota */
+.botao-hospital-nota {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+/* Nome do hospital */
+.botao-hospital-nome {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-fg);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Lado direito: distância */
+.botao-hospital-direita {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+/* Badge de distância */
+.distancia-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.75rem;
+    background-color: var(--azul-generico);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.distancia-badge svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+/* ============================================ */
+/* CONTAINERS E LISTAGENS                      */
+/* ============================================ */
+
+.container-hospitais {
+    width: 100%;
+}
+
+.div-butoes {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+#mensagem-status {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--color-fg);
+    opacity: 0.7;
+}
+
+.mensagem-vazia {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--color-fg);
+    opacity: 0.6;
+}
+
+.erro-container {
+    text-align: center;
+    padding: 2rem 1rem;
+}
+
+.erro-container p {
+    color: var(--color-fg);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.btn-retentar {
+    padding: 0.75rem 1.5rem;
+    background-color: var(--azul-generico);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.btn-retentar:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+}
+
+/* ============================================ */
+/* FORMULÁRIO DE BUSCA                         */
+/* ============================================ */
+
+.form-busca-hospital {
+    display: flex;
+    width: 100%;
+    margin-bottom: 1.5rem;
+    gap: 0.5rem;
+}
+
+.inp-busca-hospital {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--cinza-generico);
+    border-radius: 10px;
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    font-size: 1rem;
+}
+
+.inp-busca-hospital::placeholder {
+    color: var(--input-placeholder);
+}
+
+.inp-busca-hospital:focus {
+    border-color: var(--azul-generico);
+}
+
+.btn-busca-hospital {
+    padding: 0.75rem;
+    background-color: var(--azul-generico);
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s ease;
+}
+
+.btn-busca-hospital:hover {
+    opacity: 0.9;
+}
+
+.btn-busca-hospital svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* ============================================ */
+/* RESPONSIVIDADE                              */
+/* ============================================ */
+
+@media screen and (max-width: 480px) {
+    .botao-hospital-nota {
+        min-width: 2.2rem;
+        height: 2.2rem;
+        font-size: 0.8rem;
+    }
+    
+    .botao-hospital-nome {
+        font-size: 0.9rem;
+    }
+    
+    .distancia-badge {
+        font-size: 0.75rem;
+        padding: 0.35rem 0.6rem;
+    }
+    
+    .distancia-badge svg {
+        width: 14px;
+        height: 14px;
+    }
+}
+/* public/css/hospitais.css */
+
+/* ============================================ */
+/* CORES DAS NOTAS                             */
+/* ============================================ */
+
+/* Define a cor padrão do texto dentro da bolinha como branco para consistência */
+.botao-hospital-nota {
+    color: #ffffff; 
+}
+
+/* Cor Padrão (Cinza) para hospitais sem nota ou com nota 0 */
+.botao-hospital-nota.rating-0 {
+    background-color: #cccccc;
+    color: #333333;
+}
+
+/* Nota 1 (Vermelho - mesma cor da estrela) */
+.botao-hospital-nota.rating-1 {
+    background-color: #ef4444;
+}
+
+/* Nota 2 (Laranja - mesma cor da estrela) */
+.botao-hospital-nota.rating-2 {
+    background-color: #f97316;
+}
+
+/* Nota 3 (Amarelo - mesma cor da estrela) */
+.botao-hospital-nota.rating-3 {
+    background-color: #facc15;
+}
+
+/* Nota 4 (Verde Claro - mesma cor da estrela) */
+.botao-hospital-nota.rating-4 {
+    background-color: #84cc16;
+}
+
+/* Nota 5 (Verde Escuro - mesma cor da estrela) */
+.botao-hospital-nota.rating-5 {
+    background-color: #22c55e;
+}
+
+/* ============================================ */
+/* LAYOUT DOS CARDS DE HOSPITAIS              */
+/* ============================================ */
+
+.botao-hospital {
+    display: block;
+    width: 100%;
+    padding: 1rem;
+    margin-bottom: 0.75rem;
+    border-radius: 12px;
+    background-color: var(--cinza-botao-bom);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-decoration: none;
+    cursor: pointer;
+    opacity: 0;
+    animation: fadeInUp 0.4s ease forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.botao-hospital:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--hover-shadow);
+}
+
+/* Header do botão (nota + nome + distância) */
+.botao-hospital-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Lado esquerdo: nota + nome */
+.botao-hospital-esquerda {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+    min-width: 0;
+}
+
+/* Bolinha da nota */
+.botao-hospital-nota {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+/* Nome do hospital */
+.botao-hospital-nome {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-fg);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Lado direito: distância */
+.botao-hospital-direita {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+/* Badge de distância */
+.distancia-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.75rem;
+    background-color: var(--azul-generico);
+    color: white;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.distancia-badge svg {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+}
+
+/* ============================================ */
+/* CONTAINERS E LISTAGENS                      */
+/* ============================================ */
+
+.container-hospitais {
+    width: 100%;
+}
+
+.div-butoes {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+#mensagem-status {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--color-fg);
+    opacity: 0.7;
+}
+
+.mensagem-vazia {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--color-fg);
+    opacity: 0.6;
+}
+
+.erro-container {
+    text-align: center;
+    padding: 2rem 1rem;
+}
+
+.erro-container p {
+    color: var(--color-fg);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.btn-retentar {
+    padding: 0.75rem 1.5rem;
+    background-color: var(--azul-generico);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.btn-retentar:hover {
+    transform: translateY(-2px);
+    opacity: 0.9;
+}
+
+/* ============================================ */
+/* ABAS DE ORDENAÇÃO                           */
+/* ============================================ */
+
+.abas-ordenacao {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+}
+
+.abas-ordenacao::-webkit-scrollbar {
+    height: 4px;
+}
+
+.abas-ordenacao::-webkit-scrollbar-track {
+    background: var(--scroll-track);
+    border-radius: 2px;
+}
+
+.abas-ordenacao::-webkit-scrollbar-thumb {
+    background: var(--scroll-thumb);
+    border-radius: 2px;
+}
+
+.aba-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    background-color: var(--cinza-botao);
+    color: var(--color-fg);
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+    border: 2px solid transparent;
+}
+
+.aba-btn svg {
+    flex-shrink: 0;
+}
+
+.aba-btn:hover {
+    background-color: var(--hover-bg);
+    transform: translateY(-1px);
+}
+
+.aba-btn.active {
+    background-color: var(--azul-generico);
+    color: white;
+    border-color: var(--azul-generico);
+}
+
+.aba-btn.active svg {
+    color: white;
+}
+
+/* ============================================ */
+/* FORMULÁRIO DE BUSCA                         */
+/* ============================================ */
+
+.form-busca-hospital {
+    display: flex;
+    width: 100%;
+    margin-bottom: 1.5rem;
+    gap: 0.5rem;
+}
+
+.inp-busca-hospital {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 2px solid var(--cinza-generico);
+    border-radius: 10px;
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+    font-size: 1rem;
+}
+
+.inp-busca-hospital::placeholder {
+    color: var(--input-placeholder);
+}
+
+.inp-busca-hospital:focus {
+    border-color: var(--azul-generico);
+}
+
+.btn-busca-hospital {
+    padding: 0.75rem;
+    background-color: var(--azul-generico);
+    color: white;
+    border-radius: 10px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.2s ease;
+}
+
+.btn-busca-hospital:hover {
+    opacity: 0.9;
+}
+
+.btn-busca-hospital svg {
+    width: 24px;
+    height: 24px;
+}
+
+/* ============================================ */
+/* RESPONSIVIDADE                              */
+/* ============================================ */
+
+@media screen and (max-width: 480px) {
+    .botao-hospital-nota {
+        min-width: 2.2rem;
+        height: 2.2rem;
+        font-size: 0.8rem;
+    }
+    
+    .botao-hospital-nome {
+        font-size: 0.9rem;
+    }
+    
+    .distancia-badge {
+        font-size: 0.75rem;
+        padding: 0.35rem 0.6rem;
+    }
+    
+    .distancia-badge svg {
+        width: 14px;
+        height: 14px;
+    }
+
+    .aba-btn {
+        padding: 0.6rem 0.8rem;
+        font-size: 0.85rem;
+    }
+
+    .aba-btn svg {
+        width: 16px;
+        height: 16px;
+    }
 }

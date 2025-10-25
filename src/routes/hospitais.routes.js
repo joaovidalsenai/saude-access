@@ -47,14 +47,19 @@ router.get('/proximos', async (req, res) => {
             });
         }
 
-        // Buscar todos os hospitais com suas coordenadas da tabela hospital_endereco
-        // Primeiro, vamos buscar SEM especificar as colunas para ver o que vem
+        // Buscar todos os hospitais com suas coordenadas e avaliações
         const { data: hospitais, error } = await supabase
             .from('hospital')
             .select(`
                 hospital_id,
                 hospital_nome,
-                hospital_endereco (*)
+                hospital_endereco (*),
+                avaliacao_hospital (
+                    avaliacao_lotacao,
+                    avaliacao_tempo_espera,
+                    avaliacao_atendimento,
+                    avaliacao_infraestrutura
+                )
             `);
 
         if (error) {
@@ -70,9 +75,6 @@ router.get('/proximos', async (req, res) => {
         // Debug: Ver estrutura do primeiro hospital
         if (hospitais && hospitais.length > 0) {
             console.log('Estrutura do primeiro hospital:', JSON.stringify(hospitais[0], null, 2));
-            if (hospitais[0].hospital_endereco) {
-                console.log('Chaves do hospital_endereco:', Object.keys(hospitais[0].hospital_endereco));
-            }
         }
 
         if (!hospitais || hospitais.length === 0) {
@@ -117,13 +119,45 @@ router.get('/proximos', async (req, res) => {
                     lng
                 );
 
+                // Calcular médias das avaliações
+                let mediaGeral = 0;
+                let mediaTempoEspera = 0;
+                let mediaInfraestrutura = 0;
+                
+                if (hospital.avaliacao_hospital && hospital.avaliacao_hospital.length > 0) {
+                    const total = hospital.avaliacao_hospital.length;
+                    
+                    const somaMedias = hospital.avaliacao_hospital.reduce((acc, avaliacao) => {
+                        const mediaAvaliacao = (
+                            avaliacao.avaliacao_lotacao +
+                            avaliacao.avaliacao_tempo_espera +
+                            avaliacao.avaliacao_atendimento +
+                            avaliacao.avaliacao_infraestrutura
+                        ) / 4;
+                        return acc + mediaAvaliacao;
+                    }, 0);
+                    
+                    const somaTempoEspera = hospital.avaliacao_hospital.reduce((acc, av) => 
+                        acc + av.avaliacao_tempo_espera, 0);
+                    
+                    const somaInfraestrutura = hospital.avaliacao_hospital.reduce((acc, av) => 
+                        acc + av.avaliacao_infraestrutura, 0);
+                    
+                    mediaGeral = somaMedias / total;
+                    mediaTempoEspera = somaTempoEspera / total;
+                    mediaInfraestrutura = somaInfraestrutura / total;
+                }
+
                 return {
                     id: hospital.hospital_id,
                     nome: hospital.hospital_nome,
                     latitude: lat,
                     longitude: lng,
                     distancia_km: distanciaKm,
-                    distancia_metros: Math.round(distanciaKm * 1000)
+                    distancia_metros: Math.round(distanciaKm * 1000),
+                    media_geral: parseFloat(mediaGeral.toFixed(1)),
+                    media_tempo_espera: parseFloat(mediaTempoEspera.toFixed(1)),
+                    media_infraestrutura: parseFloat(mediaInfraestrutura.toFixed(1))
                 };
             });
 
@@ -135,7 +169,8 @@ router.get('/proximos', async (req, res) => {
                 lat: hospitaisComDistancia[0].latitude,
                 lng: hospitaisComDistancia[0].longitude,
                 distancia_km: hospitaisComDistancia[0].distancia_km,
-                distancia_metros: hospitaisComDistancia[0].distancia_metros
+                distancia_metros: hospitaisComDistancia[0].distancia_metros,
+                media_geral: hospitaisComDistancia[0].media_geral
             });
         }
 
@@ -186,34 +221,90 @@ router.get('/:id', async (req, res) => {
     try {
         const { id } = req.params;
 
-        const { data: hospital, error } = await supabase
+        // Buscar dados do hospital
+        const { data: hospital, error: hospitalError } = await supabase
             .from('hospital')
             .select(`
-                *,
-                hospital_endereco (*)
+                hospital_id,
+                hospital_nome,
+                hospital_cnpj
             `)
             .eq('hospital_id', id)
             .single();
 
-        if (error || !hospital) {
-            console.error('Erro ao buscar hospital:', error);
+        if (hospitalError || !hospital) {
+            console.error('Erro ao buscar hospital:', hospitalError);
             return res.status(404).send('Hospital não encontrado');
         }
 
-        // hospital_endereco vem como array, pegar o primeiro
-        const enderecoData = Array.isArray(hospital.hospital_endereco) && hospital.hospital_endereco.length > 0
-            ? hospital.hospital_endereco[0]
+        // Buscar endereço
+        const { data: enderecos, error: enderecoError } = await supabase
+            .from('hospital_endereco')
+            .select('*')
+            .eq('hospital_id', id);
+
+        // Buscar contatos
+        const { data: contatos, error: contatoError } = await supabase
+            .from('hospital_contato')
+            .select('*')
+            .eq('hospital_id', id);
+
+        // Buscar avaliações para calcular estatísticas
+        const { data: avaliacoes, error: avaliacoesError } = await supabase
+            .from('avaliacao_hospital')
+            .select('*')
+            .eq('hospital_id', id);
+
+        // Buscar alertas de especialidades
+        const { data: alertas, error: alertasError } = await supabase
+            .from('vw_alertas_especialidade')
+            .select('*')
+            .eq('hospital_id', id);
+
+        const enderecoData = Array.isArray(enderecos) && enderecos.length > 0
+            ? enderecos[0]
             : {};
 
-        // Mesclar os dados do endereço no objeto principal para compatibilidade
-        const hospitalComEndereco = {
-            ...hospital,
-            ...enderecoData
-        };
+        // Calcular estatísticas
+        let stats = null;
+        if (avaliacoes && avaliacoes.length > 0) {
+            const somaLotacao = avaliacoes.reduce((acc, av) => acc + av.avaliacao_lotacao, 0);
+            const somaTempo = avaliacoes.reduce((acc, av) => acc + av.avaliacao_tempo_espera, 0);
+            const somaAtendimento = avaliacoes.reduce((acc, av) => acc + av.avaliacao_atendimento, 0);
+            const somaInfra = avaliacoes.reduce((acc, av) => acc + av.avaliacao_infraestrutura, 0);
+            const total = avaliacoes.length;
+
+            const mediaLotacao = somaLotacao / total;
+            const mediaTempo = somaTempo / total;
+            const mediaAtendimento = somaAtendimento / total;
+            const mediaInfra = somaInfra / total;
+            const mediaGeral = (mediaLotacao + mediaTempo + mediaAtendimento + mediaInfra) / 4;
+
+            stats = {
+                total_avaliacoes: total,
+                media_lotacao: mediaLotacao,
+                media_tempo: mediaTempo,
+                media_atendimento: mediaAtendimento,
+                media_infraestrutura: mediaInfra,
+                media_geral: mediaGeral
+            };
+        }
+
+        // Formatar alertas
+        const alertasFormatados = alertas ? alertas.map(alerta => ({
+            mensagem: `${alerta.especialidade_nome} em falta - ${alerta.total_reports_falta} relatos nas últimas 72h`
+        })) : [];
 
         res.render('hospital', {
-            hospital: hospitalComEndereco,
+            hospital: {
+                hospital_id: hospital.hospital_id,
+                nome_hospital: hospital.hospital_nome,
+                hospital_cnpj: hospital.hospital_cnpj
+            },
             address: enderecoData,
+            contacts: contatos || [],
+            stats: stats,
+            alertas: alertasFormatados,
             process: process
         });
     } catch (erro) {

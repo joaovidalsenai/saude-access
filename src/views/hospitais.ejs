@@ -10,7 +10,6 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/js/global.js"></script>
     <script src="/js/auth-utils.js" defer></script>
-    <!-- Importar o calculador de distâncias -->
     <script src="/js/distance_calculator.js"></script>
 </head> 
 <body class="protected">
@@ -32,6 +31,34 @@
                 </svg>
             </button>
         </form>
+
+        <!-- Abas de ordenação -->
+        <div class="abas-ordenacao">
+            <button class="aba-btn active" data-ordem="proximidade" onclick="ordenarPor('proximidade')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 256 256">
+                    <path d="M128,64a40,40,0,1,0,40,40A40,40,0,0,0,128,64Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,128Zm0-112a88.1,88.1,0,0,0-88,88c0,31.4,14.51,64.68,42,96.25a254.19,254.19,0,0,0,41.45,38.3,8,8,0,0,0,9.18,0A254.19,254.19,0,0,0,174,200.25c27.45-31.57,42-64.85,42-96.25A88.1,88.1,0,0,0,128,16Zm0,206c-16.53-13-72-60.75-72-118a72,72,0,0,1,144,0C200,161.23,144.53,209,128,222Z"></path>
+                </svg>
+                Mais Próximos
+            </button>
+            <button class="aba-btn" data-ordem="avaliacao" onclick="ordenarPor('avaliacao')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 256 256">
+                    <path d="M239.18,97.26A16.38,16.38,0,0,0,224.92,86l-59-4.76L143.14,26.15a16.36,16.36,0,0,0-30.27,0L90.11,81.23,31.08,86a16.46,16.46,0,0,0-9.37,28.86l45,38.83L53,211.75a16.38,16.38,0,0,0,24.5,17.82L128,198.49l50.53,31.08A16.4,16.4,0,0,0,203,211.75l-13.76-58.07,45-38.83A16.43,16.43,0,0,0,239.18,97.26Z"></path>
+                </svg>
+                Bem Avaliados
+            </button>
+            <button class="aba-btn" data-ordem="tempo" onclick="ordenarPor('tempo')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 256 256">
+                    <path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm0,192a88,88,0,1,1,88-88A88.1,88.1,0,0,1,128,216Zm64-88a8,8,0,0,1-8,8H128a8,8,0,0,1-8-8V72a8,8,0,0,1,16,0v48h48A8,8,0,0,1,192,128Z"></path>
+                </svg>
+                Menor Espera
+            </button>
+            <button class="aba-btn" data-ordem="infraestrutura" onclick="ordenarPor('infraestrutura')">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 256 256">
+                    <path d="M240,208H224V96a16,16,0,0,0-16-16H164.94L139.31,52.94A16,16,0,0,0,128,48H48A16,16,0,0,0,32,64V208H16a8,8,0,0,0,0,16H240a8,8,0,0,0,0-16ZM208,96V208H144V160a8,8,0,0,0-8-8H88a8,8,0,0,0-8,8v48H48V64h80l28.8,28.8A8,8,0,0,0,162.34,96Z"></path>
+                </svg>
+                Infraestrutura
+            </button>
+        </div>
         
         <div class="container-hospitais">
             <div class="div-butoes" id="lista-hospitais-container">
@@ -42,35 +69,27 @@
     <%- include ('partials/navbar.ejs')%>
 
     <script>
-        // Array global para armazenar todos os hospitais
         let todosHospitais = [];
         let hospitaisOrdenados = [];
+        let ordemAtual = 'proximidade';
 
         document.addEventListener('DOMContentLoaded', () => {
             buscarHospitaisProximos();
         });
 
-        /**
-         * Busca hospitais próximos usando o calculador de distâncias
-         */
         async function buscarHospitaisProximos() {
             const container = document.getElementById('lista-hospitais-container');
             const statusMsg = document.getElementById('mensagem-status');
 
             try {
-                // Verifica suporte à geolocalização
                 if (!distanceCalculator.isGeolocationSupported()) {
                     throw new Error('Seu navegador não suporta geolocalização.');
                 }
 
                 statusMsg.textContent = 'Por favor, autorize o acesso à sua localização...';
-                
-                // Obtém a localização do usuário
                 await distanceCalculator.getUserLocation();
-                
                 statusMsg.textContent = 'Localização obtida! Buscando hospitais próximos...';
                 
-                // Busca hospitais do servidor usando a API
                 const response = await fetch(
                     `/hospitais/proximos?lat=${distanceCalculator.userLocation.lat}&lon=${distanceCalculator.userLocation.lng}`
                 );
@@ -86,7 +105,6 @@
                     throw new Error(data.erro || 'Nenhum hospital encontrado');
                 }
 
-                // Processa os hospitais com o distanceCalculator para formatação consistente
                 hospitaisOrdenados = data.hospitais.map(hospital => ({
                     id: hospital.id,
                     nome: hospital.nome,
@@ -94,24 +112,22 @@
                     longitude: hospital.longitude,
                     distancia_valor: hospital.distancia_metros,
                     distancia_texto: distanceCalculator.formatDistance(hospital.distancia_metros),
-                    tempo_texto: distanceCalculator.estimateTravelTime(hospital.distancia_metros, 'driving')
+                    tempo_texto: distanceCalculator.estimateTravelTime(hospital.distancia_metros, 'driving'),
+                    media_geral: hospital.media_geral || 0,
+                    media_tempo_espera: hospital.media_tempo_espera || 0,
+                    media_infraestrutura: hospital.media_infraestrutura || 0
                 }));
 
                 todosHospitais = [...hospitaisOrdenados];
                 
                 console.log(`${hospitaisOrdenados.length} hospitais encontrados`);
-                
-                // Renderiza a lista
-                renderizarLista(hospitaisOrdenados);
+                ordenarPor('proximidade');
 
             } catch (erro) {
                 console.error('Erro ao buscar hospitais próximos:', erro);
-                
-                // Inicializa os arrays vazios em caso de erro
                 hospitaisOrdenados = [];
                 todosHospitais = [];
                 
-                // Mensagem de erro amigável
                 let mensagemErro = erro.message;
                 
                 if (erro.message.includes('negada') || erro.message.includes('denied') || erro.message.includes('Permissão')) {
@@ -138,10 +154,43 @@
             }
         }
 
-        /**
-         * Renderiza a lista de hospitais na página
-         * @param {Array} hospitais - Lista de hospitais ordenados
-         */
+        function ordenarPor(tipo) {
+            ordemAtual = tipo;
+            
+            // Atualizar visual das abas
+            document.querySelectorAll('.aba-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            document.querySelector(`[data-ordem="${tipo}"]`).classList.add('active');
+
+            // Criar cópia para ordenar
+            let hospitaisParaOrdenar = [...hospitaisOrdenados];
+
+            switch(tipo) {
+                case 'proximidade':
+                    hospitaisParaOrdenar.sort((a, b) => a.distancia_valor - b.distancia_valor);
+                    break;
+                case 'avaliacao':
+                    hospitaisParaOrdenar.sort((a, b) => b.media_geral - a.media_geral);
+                    break;
+                case 'tempo':
+                    hospitaisParaOrdenar.sort((a, b) => {
+                        // Hospitais sem avaliação vão para o final
+                        if (a.media_tempo_espera === 0 && b.media_tempo_espera === 0) return 0;
+                        if (a.media_tempo_espera === 0) return 1;
+                        if (b.media_tempo_espera === 0) return -1;
+                        // Menor tempo de espera primeiro (nota MAIOR é MELHOR)
+                        return b.media_tempo_espera - a.media_tempo_espera;
+                    });
+                    break;
+                case 'infraestrutura':
+                    hospitaisParaOrdenar.sort((a, b) => b.media_infraestrutura - a.media_infraestrutura);
+                    break;
+            }
+
+            renderizarLista(hospitaisParaOrdenar);
+        }
+
         function renderizarLista(hospitais) {
             const container = document.getElementById('lista-hospitais-container');
             container.innerHTML = ''; 
@@ -157,19 +206,26 @@
                 const link = document.createElement('a');
                 link.href = `/hospitais/${hospital.id}`;
                 link.className = 'botao-hospital';
-                
-                // Adiciona animação de entrada escalonada
                 link.style.animationDelay = `${index * 0.05}s`;
                 
+                const notaArredondada = Math.round(hospital.media_geral);
+                const ratingClass = notaArredondada > 0 ? `rating-${notaArredondada}` : 'rating-0';
+                const notaTexto = hospital.media_geral > 0 ? hospital.media_geral.toFixed(1) : 'N/A';
+                
                 link.innerHTML = `
-                    <div class="botao-hospital-content">
-                        <span class="botao-hospital-nome">${hospital.nome}</span>
-                        <span class="distancia-badge">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
-                                <path d="M128,64a40,40,0,1,0,40,40A40,40,0,0,0,128,64Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,128Zm0-112a88.1,88.1,0,0,0-88,88c0,31.4,14.51,64.68,42,96.25a254.19,254.19,0,0,0,41.45,38.3,8,8,0,0,0,9.18,0A254.19,254.19,0,0,0,174,200.25c27.45-31.57,42-64.85,42-96.25A88.1,88.1,0,0,0,128,16Zm0,206c-16.53-13-72-60.75-72-118a72,72,0,0,1,144,0C200,161.23,144.53,209,128,222Z"></path>
-                            </svg>
-                            ${hospital.distancia_texto} • ${hospital.tempo_texto}
-                        </span>
+                    <div class="botao-hospital-header">
+                        <div class="botao-hospital-esquerda">
+                            <span class="botao-hospital-nota ${ratingClass}">${notaTexto}</span>
+                            <span class="botao-hospital-nome">${hospital.nome}</span>
+                        </div>
+                        <div class="botao-hospital-direita">
+                            <span class="distancia-badge">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 256 256">
+                                    <path d="M128,64a40,40,0,1,0,40,40A40,40,0,0,0,128,64Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,128Zm0-112a88.1,88.1,0,0,0-88,88c0,31.4,14.51,64.68,42,96.25a254.19,254.19,0,0,0,41.45,38.3,8,8,0,0,0,9.18,0A254.19,254.19,0,0,0,174,200.25c27.45-31.57,42-64.85,42-96.25A88.1,88.1,0,0,0,128,16Zm0,206c-16.53-13-72-60.75-72-118a72,72,0,0,1,144,0C200,161.23,144.53,209,128,222Z"></path>
+                                </svg>
+                                ${hospital.distancia_texto}
+                            </span>
+                        </div>
                     </div>
                 `;
                 
@@ -179,13 +235,9 @@
             container.appendChild(fragment);
         }
 
-        /**
-         * Filtra hospitais com base no termo de busca
-         * @param {string} termo - Termo de busca
-         */
         function filtrarHospitais(termo) {
             if (!termo || termo.trim() === '') {
-                renderizarLista(hospitaisOrdenados);
+                ordenarPor(ordemAtual);
                 return;
             }
 
@@ -194,55 +246,31 @@
                 hospital.nome.toLowerCase().includes(termoLower)
             );
 
-            renderizarLista(hospitaisFiltrados);
+            // Aplicar ordenação aos filtrados
+            let hospitaisOrdenados = [...hospitaisFiltrados];
+            switch(ordemAtual) {
+                case 'proximidade':
+                    hospitaisOrdenados.sort((a, b) => a.distancia_valor - b.distancia_valor);
+                    break;
+                case 'avaliacao':
+                    hospitaisOrdenados.sort((a, b) => b.media_geral - a.media_geral);
+                    break;
+                case 'tempo':
+                    hospitaisOrdenados.sort((a, b) => {
+                        if (a.media_tempo_espera === 0 && b.media_tempo_espera === 0) return 0;
+                        if (a.media_tempo_espera === 0) return 1;
+                        if (b.media_tempo_espera === 0) return -1;
+                        return b.media_tempo_espera - a.media_tempo_espera;
+                    });
+                    break;
+                case 'infraestrutura':
+                    hospitaisOrdenados.sort((a, b) => b.media_infraestrutura - a.media_infraestrutura);
+                    break;
+            }
+
+            renderizarLista(hospitaisOrdenados);
         }
 
-        /**
-         * Atualiza as distâncias quando a localização do usuário muda
-         */
-        function monitorarLocalizacao() {
-            distanceCalculator.watchLocation(async (novaLocalizacao) => {
-                console.log('Localização atualizada:', novaLocalizacao);
-                // Recalcula distâncias
-                try {
-                    const response = await fetch(
-                        `/hospitais/proximos?lat=${novaLocalizacao.lat}&lon=${novaLocalizacao.lng}`
-                    );
-
-                    if (response.ok) {
-                        const data = await response.json();
-                        
-                        if (data.sucesso && data.hospitais) {
-                            hospitaisOrdenados = data.hospitais.map(hospital => ({
-                                id: hospital.id,
-                                nome: hospital.nome,
-                                latitude: hospital.latitude,
-                                longitude: hospital.longitude,
-                                distancia_valor: hospital.distancia_metros,
-                                distancia_texto: distanceCalculator.formatDistance(hospital.distancia_metros),
-                                tempo_texto: distanceCalculator.estimateTravelTime(hospital.distancia_metros, 'driving')
-                            }));
-                            
-                            todosHospitais = [...hospitaisOrdenados];
-                            
-                            // Re-renderiza se não houver filtro ativo
-                            const inputBusca = document.querySelector('.inp-busca-hospital');
-                            if (!inputBusca.value) {
-                                renderizarLista(hospitaisOrdenados);
-                            }
-                        }
-                    }
-                } catch (erro) {
-                    console.error('Erro ao atualizar distâncias:', erro);
-                }
-            });
-        }
-
-        // Opcional: Ativar monitoramento de localização
-        // Descomente a linha abaixo se quiser que a lista atualize automaticamente quando o usuário se mover
-        // monitorarLocalizacao();
-
-        // Limpa o monitoramento quando sair da página
         window.addEventListener('beforeunload', () => {
             distanceCalculator.stopWatchingLocation();
         });
