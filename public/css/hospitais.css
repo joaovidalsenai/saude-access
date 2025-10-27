@@ -69,7 +69,7 @@
     bottom: 0;
     right: 0;
     font-size: 0.85rem;
-    color: var(--texto-secundario, #666);
+    color: var(--texto-secundario);
     font-weight: 400;
     line-height: 1.2;
 }
