@@ -4,7 +4,9 @@
 .div-butoes {
     display: flex;
     flex-direction: column;
-    gap: 1.2rem; /* Aumentado o espaço entre os itens */
+    gap: 1.1rem;
+    height: 65vh;
+    max-height: 65vh;
 }
 
 /* --- LAYOUT DO ITEM DE AVALIAÇÃO (NOVO BLOCO) --- */

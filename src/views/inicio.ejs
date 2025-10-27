@@ -8,7 +8,8 @@
     <link rel="stylesheet" href="/css/searchbar.css">
     <link rel="stylesheet" href="/css/protected.css">
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/auth-utils.js"></script>
+    <script src="/js/auth-utils.js"></script>
+    <script src="/js/inicio.js" defer></script>
     <link rel="icon" type="image/x-icon" href="/favorite.ico">
 </head>
 <body class="protected">
@@ -32,50 +33,51 @@
         <section class="ajuda-container">
             <h2>Opções de busca</h2>
             <div class="ajuda-butoes">
-                <a href="/hospitais?ordenar=alfabetica" class="botao-hospital">
+                
+                <button type="button" class="botao-hospital botao-filtro" data-url="/hospitais?ordenar=alfabetica">
                     <span class="botao-hospital-nota">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
                             <path d="M248,208h-8V128a16,16,0,0,0-16-16H168V48a16,16,0,0,0-16-16H56A16,16,0,0,0,40,48V208H32a8,8,0,0,0,0,16H248a8,8,0,0,0,0-16Zm-24-80v80H168V128ZM56,48h96V208H136V160a8,8,0,0,0-8-8H80a8,8,0,0,0-8,8v48H56Zm64,160H88V168h32ZM72,96a8,8,0,0,1,8-8H96V72a8,8,0,0,1,16,0V88h16a8,8,0,0,1,0,16H112v16a8,8,0,0,1-16,0V104H80A8,8,0,0,1,72,96Z"></path>
                         </svg>
                     </span>
                     <span class="botao-hospital-nome">Hospitais cadastrados</span>
-                </a>
+                </button>
 
-                <a href="/hospitais?ordenar=media_geral" class="botao-hospital">
+                <button type="button" class="botao-hospital botao-filtro" data-url="/hospitais?ordenar=media_geral">
                     <span class="botao-hospital-nota">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
                             <path d="M240,56v64a8,8,0,0,1-16,0V75.31l-82.34,82.35a8,8,0,0,1-11.32,0L96,123.31,29.66,189.66a8,8,0,0,1-11.32-11.32l72-72a8,8,0,0,1,11.32,0L136,140.69,212.69,64H168a8,8,0,0,1,0-16h64A8,8,0,0,1,240,56Z"></path>
                         </svg>
                     </span>
                     <span class="botao-hospital-nome">Hospitais mais bem avaliados</span>
-                </a>
+                </button>
 
-                <a href="/hospitais?ordenar=tempo_espera" class="botao-hospital">
+                <button type="button" class="botao-hospital botao-filtro" data-url="/hospitais?ordenar=tempo_espera">
                     <span class="botao-hospital-nota">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
                             <path d="M128,40a96,96,0,1,0,96,96A96.11,96.11,0,0,0,128,40Zm0,176a80,80,0,1,1,80-80A80.09,80.09,0,0,1,128,216ZM173.66,90.34a8,8,0,0,1,0,11.32l-40,40a8,8,0,0,1-11.32-11.32l40-40A8,8,0,0,1,173.66,90.34ZM96,16a8,8,0,0,1,8-8h48a8,8,0,0,1,0,16H104A8,8,0,0,1,96,16Z"></path>
                         </svg>
                     </span>
                     <span class="botao-hospital-nome">Hospitais com menor espera</span>
-                </a>
+                </button>
 
-                <a href="/hospitais?ordenar=infraestrutura" class="botao-hospital">
+                <button type="button" class="botao-hospital botao-filtro" data-url="/hospitais?ordenar=infraestrutura">
                     <span class="botao-hospital-nota">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
                             <path d="M234,80.12A24,24,0,0,0,216,72H160V56a40,40,0,0,0-40-40,8,8,0,0,0-7.16,4.42L75.06,96H32a16,16,0,0,0-16,16v88a16,16,0,0,0,16,16H204a24,24,0,0,0,23.82-21l12-96A24,24,0,0,0,234,80.12ZM32,112H72v88H32ZM223.94,97l-12,96a8,8,0,0,1-7.94,7H88V105.89l36.71-73.43A24,24,0,0,1,144,56V80a8,8,0,0,0,8,8h64a8,8,0,0,1,7.94,9Z"></path>
                         </svg>
                     </span>
                     <span class="botao-hospital-nome">Hospitais com melhor infraestrutura</span>
-                </a>
+                </button>
 
-                <a href="/hospitais" class="botao-hospital">
+                <button type="button" class="botao-hospital botao-filtro" data-url="/hospitais?ordenar=distancia">
                     <span class="botao-hospital-nota">
                         <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
                             <path d="M112,80a16,16,0,1,1,16,16A16,16,0,0,1,112,80ZM64,80a64,64,0,0,1,128,0c0,59.95-57.58,93.54-60,94.95a8,8,0,0,1-7.94,0C121.58,173.54,64,140,64,80Zm16,0c0,42.2,35.84,70.21,48,78.5,12.15-8.28,48-36.3,48-78.5a48,48,0,0,0-96,0Zm122.77,67.63a8,8,0,0,0-5.54,15C213.74,168.74,224,176.92,224,184c0,13.36-36.52,32-96,32s-96-18.64-96-32c0-7.08,10.26-15.26,26.77-21.36a8,8,0,0,0-5.54-15C29.22,156.49,16,169.41,16,184c0,31.18,57.71,48,112,48s112-16.82,112-48C240,169.41,226.78,156.49,202.77,147.63Z"></path>
                         </svg>
                     </span>
                     <span class="botao-hospital-nome">Hospitais mais próximos</span>
-                </a>
+                </button>
             </div>
         </section>
 

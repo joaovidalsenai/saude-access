@@ -44,23 +44,27 @@
         <div class="container-hospitais">
             <div class="div-butoes">
                 <% hospitais.forEach(hospital => { %>
-                    <%
-                        // --- INÍCIO: Lógica de Classificação Consistente ---
-                        // 1. Converte a nota para um número de forma segura, usando 0 como padrão.
-                        const nota_bruta = Number(hospital.nota) || 0;
-                        // 2. Normaliza para 2 casas decimais para corrigir problemas de ponto flutuante.
-                        const nota_limpa = parseFloat(nota_bruta.toFixed(2));
-                        // 3. Prepara o texto a ser exibido (ex: 3.98 -> "3.9", 4.0 -> "4.0").
-                        const nota_texto = (Math.floor(nota_limpa * 10) / 10).toFixed(1);
-                        // 4. Prepara a classe para a cor (ex: 3.98 -> 3).
-                        const nota_classe = Math.floor(nota_limpa);
-                        // --- FIM: Lógica de Classificação Consistente ---
-                    %>
-                    <a href="/hospital?id=<%= hospital.id %>" class="botao-hospital">
-                        <span class="botao-hospital-nota rating-<%= nota_classe %>"><%= nota_texto %></span>
-                        <span class="botao-hospital-nome"><%= hospital.nome %></span>
-                    </a>
-                <% }) %>
+    <%
+        // ... (sua lógica de nota_bruta, nota_limpa, etc. continua aqui) ...
+        const nota_bruta = Number(hospital.nota) || 0;
+        const nota_limpa = parseFloat(nota_bruta.toFixed(2));
+        const nota_texto = (Math.floor(nota_limpa * 10) / 10).toFixed(1);
+        const nota_classe = Math.floor(nota_limpa);
+    %>
+    <a href="/hospital?id=<%= hospital.id %>" class="botao-hospital">
+        <span class="botao-hospital-nota rating-<%= nota_classe %>"><%= nota_texto %></span>
+        
+        <div class="botao-hospital-info">
+            <span class="botao-hospital-nome"><%= hospital.nome %></span>
+            
+            <% if (hospital.distancia) { %>
+                <span class="botao-hospital-distancia">
+                    <%= hospital.distancia %>
+                </span>
+            <% } %>
+        </div>
+    </a>
+<% }) %>
             </div>
         </div>
     </main>

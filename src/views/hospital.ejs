@@ -7,11 +7,20 @@
     <link rel="stylesheet" href="/css/hospital.css">
     <title>Saúde Access</title>
     <link rel="stylesheet" href="/css/protected.css">
+    
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="/js/global.js"></script>
     <script src="/js/auth-utils.js" defer></script>
     <script src="/js/hospital.js" defer></script>
+    
     <link rel="icon" type="image/x-icon" href="/favorite.ico">
+    
+    <script 
+        async 
+        defer 
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAvFTn2ptqkklu71dIauAqO0R1s76KiQl8&callback=initMap&libraries=marker,routes">
+    </script>
+
 </head>
 <body class="protected">
     <header>
@@ -23,16 +32,10 @@
     <main>
     <% if (ratings && ratings.stats) { %>
         <%
-            // --- INÍCIO: Lógica de Classificação Consistente ---
-            // 1. Converte a média para um número de forma segura, usando 0 como padrão.
             const media_bruta = Number(ratings.stats.media_geral) || 0;
-            // 2. Normaliza para 2 casas decimais para corrigir problemas de ponto flutuante.
             const media_limpa = parseFloat(media_bruta.toFixed(2));
-            // 3. Prepara o texto a ser exibido (ex: 3.98 -> "3.9", 4.0 -> "4.0").
             const media_texto = (Math.floor(media_limpa * 10) / 10).toFixed(1);
-            // 4. Prepara a classe para as estrelas (ex: 3.98 -> 3).
             const media_classe = Math.floor(media_limpa);
-            // --- FIM: Lógica de Classificação Consistente ---
         %>
         <section class="avaliacao-geral-container">
             <h2>Média Geral</h2>
@@ -96,6 +99,22 @@
             </div>
         </section>
         
+        <% if (locals.especialidades && especialidades.length > 0) { %>
+            <section class="collapsible-section">
+                <div class="collapsible-header">
+                    <h2>Especialidades</h2>
+                    <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"></path></svg>
+                </div>
+                <div class="collapsible-content">
+                    <ul class="especialidades-lista" style="list-style: none; padding-left: 10px; margin: 0;">
+                        <% especialidades.forEach(esp => { %>
+                            <li style="padding: 8px 0; border-bottom: 1px solid #333;"><%= esp.especialidade_nome %></li>
+                        <% }); %>
+                    </ul>
+                </div>
+            </section>
+        <% } %>
+
     <% } else { %>
         <section class="lotacao-container">
             <h2>Informações de lotação</h2>
@@ -113,14 +132,84 @@
             </div>
             <div class="collapsible-content">
                 <div class="endereco-info">
+                    <% if (address) { %>
+                        <div id="map" style="z-index: 0;"></div>
+                        <script>
+                            window.hospitalLat = <%= address.latitude || 'null' %>;
+                            window.hospitalLng = <%= address.longitude || 'null' %>;
+                            window.hospitalNome = '<%= hospital.hospital_nome.replace(/'/g, "\\'") %>';
+                            window.hospitalEndereco = '<%= (address.endereco_logradouro || "").replace(/'/g, "\\'") %>, <%= (address.endereco_numero || "").replace(/'/g, "\\'") %>';
+                            window.hospitalCep = '<%= (address.endereco_cep || "").replace(/'/g, "\\'") %>';
+                            window.hospitalBairro = '<%= (address.endereco_bairro || "").replace(/'/g, "\\'") %>';
+                            window.enderecoParaGeocodificar = [
+                                '<%= (address.endereco_logradouro || "").replace(/'/g, "\\'") %>',
+                                '<%= (address.endereco_numero || "").replace(/'/g, "\\'") %>',
+                                '<%= (address.endereco_bairro || "").replace(/'/g, "\\'") %>',
+                                '<%= (address.endereco_cep || "").replace(/'/g, "\\'") %>'
+                            ].filter(Boolean).join(', ') + ', Brasil';
+                        </script>
+                    <% } else { %>
+                        <p style="margin-top: 12px; color: #666; font-size: 14px;">Localização não disponível</p>
+                    <% } %>
+                    
                     <div class="endereco-item">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M128,64a40,40,0,1,0,40,40A40,40,0,0,0,128,64Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,128Zm0-112a88.1,88.1,0,0,0-88,88c0,31.4,14.51,64.68,42,96.25a254.19,254.19,0,0,0,41.45,38.3,8,8,0,0,0,9.18,0A254.19,254.19,0,0,0,174,200.25c27.45-31.57,42-64.85,42-96.25A88.1,88.1,0,0,0,128,16Zm0,206c-16.53-13-72-60.75-72-118a72,72,0,0,1,144,0C200,161.23,144.53,209,128,222Z"></path></svg>
                         <div class="endereco-texto">
                             <span><%= address.endereco_logradouro %><%= address.endereco_numero ? ', ' + address.endereco_numero : '' %></span>
                             <span><%= address.endereco_bairro %> - CEP: <%= address.endereco_cep %></span>
                             <% if (address.endereco_complemento) { %>
-                            <span class="complemento"><%= address.endereco_complemento %></span>
+                                <span class="complemento"><%= address.endereco_complemento %></span>
                             <% } %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section class="collapsible-section">
+            <div class="collapsible-header">
+                <h2>Tempo de Chegada</h2>
+                <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"></path></svg>
+            </div>
+            <div class="collapsible-content">
+                <div id="rotasError" class="erro-localizacao" style="display: none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M236.8,188.09,149.35,36.22a24,24,0,0,0-42.7,0L19.2,188.09a23.93,23.93,0,0,0,21.35,35.91H215.45a23.93,23.93,0,0,0,21.35-35.91Z"></path></svg>
+                    <span id="rotasErrorText">Não foi possível obter sua localização. Permita o acesso para ver as rotas.</span>
+                </div>
+                <div class="rotas-container">
+                    <div class="rota-opcao" data-mode="DRIVING">
+                        <div class="rota-info">
+                            <div class="rota-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#0066cc" viewBox="0 0 256 256"><path d="M240,104H229.2L201.42,41.5A16,16,0,0,0,186.8,32H69.2a16,16,0,0,0-14.62,9.5L26.8,104H16a8,8,0,0,0,0,16h8v80a16,16,0,0,0,16,16H64a16,16,0,0,0,16-16V184h96v16a16,16,0,0,0,16,16h24a16,16,0,0,0,16-16V120h8a8,8,0,0,0,0-16ZM69.2,48H186.8l24.89,56H44.31ZM64,200H40V184H64Zm128,0V184h24v16Zm24-32H40V120H216ZM56,144a8,8,0,0,1,8-8H80a8,8,0,0,1,0,16H64A8,8,0,0,1,56,144Zm112,0a8,8,0,0,1,8-8h16a8,8,0,0,1,0,16H176A8,8,0,0,1,168,144Z"></path></svg>
+                            </div>
+                            <div class="rota-detalhes">
+                                <h3>De carro</h3>
+                                <div class="rota-tempo skeleton-loading" style="width: 80px;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rota-opcao" data-mode="TRANSIT">
+                        <div class="rota-info">
+                            <div class="rota-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#28a745" viewBox="0 0 256 256"><path d="M184,32H72A32,32,0,0,0,40,64V208a16,16,0,0,0,16,16H80a16,16,0,0,0,16-16V192h64v16a16,16,0,0,0,16,16h24a16,16,0,0,0,16-16V64A32,32,0,0,0,184,32ZM56,176V120H200v56Zm0-96H200v24H56ZM72,48H184a16,16,0,0,1,16,16H56A16,16,0,0,1,72,48Zm8,160H56V192H80Zm96,0V192h24v16Zm-72-60a12,12,0,1,1-12-12A12,12,0,0,1,104,148Zm72,0a12,12,0,1,1-12-12A12,12,0,0,1,176,148Zm72-68v24a8,8,0,0,1-16,0V80a8,8,0,0,1,16,0ZM24,80v24a8,8,0,0,1-16,0V80a8,8,0,0,1,16,0Z"></path></svg>
+                            </div>
+                            <div class="rota-detalhes">
+                                <h3>Transporte público</h3>
+                                <div class="rota-tempo skeleton-loading" style="width: 80px;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="rota-opcao" data-mode="TWO_WHEELER">
+                        <div class="rota-info">
+                            <div class="rota-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#dc3545" viewBox="0 0 256 256"><path d="M216,120a41,41,0,0,0-6.6.55l-5.82-15.14A55.64,55.64,0,0,1,216,104a8,8,0,0,0,0-16H196.88L183.47,53.13A8,8,0,0,0,176,48H144a8,8,0,0,0,0,16h26.51l9.23,24H152c-18.5,0-33.5,4.31-43.37,12.46a16,16,0,0,1-16.76,2.07C81.29,97.72,31.13,77.33,26.71,75.6L21,73.36A17.74,17.74,0,0,0,16,72a8,8,0,0,0-2.87,15.46h0c.46.18,47.19,18.3,72.13,29.63a32.15,32.15,0,0,0,33.56-4.29c4.86-4,14.57-8.8,33.19-8.8h18.82a71.74,71.74,0,0,0-24.17,36.59A15.86,15.86,0,0,1,131.32,152H79.2a40,40,0,1,0,0,16h52.12a31.91,31.91,0,0,0,30.74-23.1,56,56,0,0,1,26.59-33.72l5.82,15.13A40,40,0,1,0,216,120ZM40,168H62.62a24,24,0,1,1,0-16H40a8,8,0,0,0,0,16Zm176,16a24,24,0,0,1-15.58-42.23l8.11,21.1a8,8,0,1,0,14.94-5.74L215.35,136l.65,0a24,24,0,0,1,0,48Z"></path></svg>
+                            </div>
+                            <div class="rota-detalhes">
+                                <h3>De moto</h3>
+                                <div class="rota-tempo skeleton-loading" style="width: 80px;"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -141,7 +230,8 @@
                     <% } %>
                     <% if (hospital_telefone) { %>
                     <div class="contato-item">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M164.39,145.34a8,8,0,0,1,7.59-.69l47.16,21.13a8,8,0,0,1,4.8,8.3A48.33,48.33,0,0,1,176,216,136,136,0,0,1,40,80,48.33,48.33,0,0,1,81.92,32.06a8,8,0,0,1,8.3,4.8l21.13,47.2a8,8,0,0,1-.66,7.53L89.32,117a7.93,7.93,0,0,0-.54,7.81c8.27,16.93,25.77,34.22,42.75,42.41a7.92,7.92,0,0,0,7.83-.59Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/></svg>                        <span>Telefone: <strong><%= hospital_telefone %></strong></span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M164.39,145.34a8,8,0,0,1,7.59-.69l47.16,21.13a8,8,0,0,1,4.8,8.3A48.33,48.33,0,0,1,176,216,136,136,0,0,1,40,80,48.33,48.33,0,0,1,81.92,32.06a8,8,0,0,1,8.3,4.8l21.13,47.2a8,8,0,0,1-.66,7.53L89.32,117a7.93,7.93,0,0,0-.54,7.81c8.27,16.93,25.77,34.22,42.75,42.41a7.92,7.92,0,0,0,7.83-.59Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/></svg>
+                        <span>Telefone: <strong><%= hospital_telefone %></strong></span>
                     </div>
                     <% } %>
                     <% if (hospital_email) { %>
@@ -164,9 +254,199 @@
     <%- include ('partials/navbar.ejs')%>
 
     <script>
+        let map;
+        let directionsService;
+        let directionsRenderer;
+        let userLocation;
+
+        async function initMap() {
+            const mapContainer = document.getElementById('map');
+            if (!mapContainer) return;
+
+            const fallbackPosition = (window.hospitalLat && window.hospitalLng) 
+                ? { lat: window.hospitalLat, lng: window.hospitalLng }
+                : null;
+            
+            let positionToUse = fallbackPosition;
+            let zoomLevel = 15;
+
+            if (typeof window.enderecoParaGeocodificar !== 'undefined' && window.enderecoParaGeocodificar.trim().length > 10) {
+                try {
+                    const { Geocoder } = await google.maps.importLibrary("geocoding");
+                    const geocoder = new Geocoder();
+                    
+                    const response = await geocoder.geocode({ address: window.enderecoParaGeocodificar });
+                    
+                    if (response.results && response.results[0]) {
+                        positionToUse = response.results[0].geometry.location;
+                        zoomLevel = 17;
+                    } else {
+                        console.warn('Geocodificação do Google falhou, usando fallback.');
+                    }
+                } catch (e) {
+                    console.error('Erro na Geocodificação:', e);
+                }
+            }
+            
+            if (!positionToUse) {
+                mapContainer.innerHTML = '<p style="margin: 12px; color: #666; font-size: 14px;">Localização não pôde ser encontrada.</p>';
+                return;
+            }
+
+            try {
+                const { Map, InfoWindow } = await google.maps.importLibrary("maps");
+                const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+
+                map = new Map(mapContainer, {
+                    zoom: zoomLevel,
+                    center: positionToUse,
+                    mapId: 'SAUDE_ACCESS_MAP_ID'
+                });
+
+                const popupHtml = `
+                    <div style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.5;">
+                        <b style="font-size: 16px;">${window.hospitalNome || 'Hospital'}</b>
+                        <br>
+                        ${window.hospitalEndereco || ''}
+                        <br>
+                        ${window.hospitalBairro || ''}
+                        <br>
+                        CEP: ${window.hospitalCep || ''}
+                    </div>`;
+
+                const infoWindow = new InfoWindow({
+                    content: popupHtml,
+                    ariaLabel: window.hospitalNome,
+                });
+
+                const marker = new AdvancedMarkerElement({
+                    map: map,
+                    position: positionToUse,
+                    title: window.hospitalNome,
+                });
+
+                marker.addListener("click", () => {
+                    infoWindow.open({
+                        anchor: marker,
+                        map,
+                    });
+                });
+
+                const enderecoSection = document.querySelectorAll('.collapsible-section')[2];
+                if (enderecoSection) {
+                    const observer = new MutationObserver(() => {
+                        if (enderecoSection.classList.contains('open')) {
+                            setTimeout(() => {
+                                google.maps.event.trigger(map, 'resize');
+                                map.setCenter(positionToUse);
+                            }, 100); 
+                        }
+                    });
+                    observer.observe(enderecoSection, { attributes: true, attributeFilter: ['class'] });
+                }
+
+                // Inicializar rotas
+                const { DirectionsService } = await google.maps.importLibrary("routes");
+                directionsService = new DirectionsService();
+                initRoutes(positionToUse);
+
+            } catch (e) {
+                console.error("Falha ao carregar a biblioteca do Google Maps.", e);
+                mapContainer.innerHTML = '<p style="margin: 12px; color: #666; font-size: 14px;">Erro ao carregar o mapa. Verifique a chave de API.</p>';
+            }
+        }
+
+        function initRoutes(destination) {
+            // Obter localização do usuário
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        userLocation = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        calculateAllRoutes(destination);
+                    },
+                    (error) => {
+                        console.error('Erro ao obter localização:', error);
+                        showRouteError('Não foi possível obter sua localização. Permita o acesso para ver as rotas.');
+                    }
+                );
+            } else {
+                showRouteError('Seu navegador não suporta geolocalização.');
+            }
+        }
+
+        function showRouteError(message) {
+            const errorDiv = document.getElementById('rotasError');
+            const errorText = document.getElementById('rotasErrorText');
+            errorText.textContent = message;
+            errorDiv.style.display = 'flex';
+            
+            // Remover skeleton loading
+            document.querySelectorAll('.rota-opcao').forEach(opt => {
+                opt.classList.add('loading');
+                opt.style.pointerEvents = 'none';
+            });
+        }
+
+        async function calculateAllRoutes(destination) {
+            const modes = [
+                { mode: 'DRIVING', element: document.querySelector('[data-mode="DRIVING"]') },
+                { mode: 'TRANSIT', element: document.querySelector('[data-mode="TRANSIT"]') },
+                { mode: 'TWO_WHEELER', element: document.querySelector('[data-mode="TWO_WHEELER"]') }
+            ];
+
+            for (const { mode, element } of modes) {
+                try {
+                    const result = await calculateRoute(userLocation, destination, mode);
+                    updateRouteDisplay(element, result);
+                } catch (error) {
+                    console.error(`Erro ao calcular rota ${mode}:`, error);
+                    updateRouteDisplay(element, null);
+                }
+            }
+        }
+
+        function calculateRoute(origin, destination, travelMode) {
+            return new Promise((resolve, reject) => {
+                directionsService.route(
+                    {
+                        origin: origin,
+                        destination: destination,
+                        travelMode: google.maps.TravelMode[travelMode],
+                    },
+                    (result, status) => {
+                        if (status === 'OK') {
+                            resolve(result);
+                        } else {
+                            reject(status);
+                        }
+                    }
+                );
+            });
+        }
+
+        function updateRouteDisplay(element, result) {
+            const tempoDiv = element.querySelector('.rota-tempo');
+
+            if (result && result.routes[0]) {
+                const leg = result.routes[0].legs[0];
+                tempoDiv.textContent = leg.duration.text;
+                tempoDiv.classList.remove('skeleton-loading');
+                tempoDiv.style.width = 'auto';
+                
+                element.classList.remove('loading');
+            } else {
+                tempoDiv.textContent = 'Indisponível';
+                tempoDiv.classList.remove('skeleton-loading');
+                element.style.opacity = '0.5';
+            }
+        }
+        
+        // Lógica Collapsible
         document.addEventListener('DOMContentLoaded', () => {
             const collapsibleHeaders = document.querySelectorAll('.collapsible-header');
-
             collapsibleHeaders.forEach(header => {
                 header.addEventListener('click', () => {
                     const section = header.closest('.collapsible-section');
