@@ -3,24 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Saúde Access</title>
+    <title>Saúde Access - Início</title>
+    
     <link rel="stylesheet" href="/css/styleGenerico.css">
     <link rel="stylesheet" href="/css/searchbar.css">
     <link rel="stylesheet" href="/css/protected.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="js/auth-utils.js"></script>
+    
     <link rel="icon" type="image/x-icon" href="/favorite.ico">
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="js/auth-utils.js" defer></script>
+    <script src="js/global.js" defer></script>
+    
 </head>
 <body class="protected">
     <header>
         <h1>Início</h1>
     </header>
     <main>
+        
         <section class="busca-container">
             <h2>Encontre hospitais</h2>
             <form action="#" class="form-busca-hospital">
-                <input type="search" name="pesquisar-hospitais" class="inp-busca-hospital" placeholder="Pesquisar" autocomplete="off">
-                <button type="submit" class="btn-busca-hospital">
+                <input 
+                    type="search" 
+                    name="pesquisar-hospitais" 
+                    class="inp-busca-hospital" 
+                    placeholder="Pesquisar hospital ou especialidade" 
+                    autocomplete="off">
+                <button type="submit" class="btn-busca-hospital" aria-label="Pesquisar">
                     <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" fill="currentColor" viewBox="0 0 256 256">
                         <path d="M229.66,218.34l-50.07-50.06a88.11,88.11,0,1,0-11.31,11.31l50.06,50.07a8,8,0,0,0,11.32-11.32ZM40,112a72,72,0,1,1,72,72A72.08,72.08,0,0,1,40,112Z"></path>
                     </svg>
@@ -29,8 +40,8 @@
             <div id="search-results-container"></div>
         </section>
 
-        <section class="ajuda-container">
-            <h2>Opções de busca</h2>
+        <section class="opcoes-busca-container">
+            <h2>Opções de Busca Rápida</h2>
             <div class="ajuda-butoes">
                 <a href="/hospitais?ordenar=alfabetica" class="botao-hospital">
                     <span class="botao-hospital-nota">
@@ -102,8 +113,9 @@
             </div>
         </section>
     </main>
+    
     <%- include ('partials/navbar.ejs') %>
-    <script src="js/global.js"></script>
+    
     <script src="/js/searchbar.js"></script>
 </body>
 </html>

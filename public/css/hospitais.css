@@ -4,38 +4,31 @@
 /* CORES DAS NOTAS                             */
 /* ============================================ */
 
-/* Define a cor padrão do texto dentro da bolinha como branco para consistência */
 .botao-hospital-nota {
     color: #ffffff; 
 }
 
-/* Cor Padrão (Cinza) para hospitais sem nota ou com nota 0 */
 .botao-hospital-nota.rating-0 {
     background-color: #cccccc;
     color: #333333;
 }
 
-/* Nota 1 (Vermelho - mesma cor da estrela) */
 .botao-hospital-nota.rating-1 {
     background-color: #ef4444;
 }
 
-/* Nota 2 (Laranja - mesma cor da estrela) */
 .botao-hospital-nota.rating-2 {
     background-color: #f97316;
 }
 
-/* Nota 3 (Amarelo - mesma cor da estrela) */
 .botao-hospital-nota.rating-3 {
     background-color: #facc15;
 }
 
-/* Nota 4 (Verde Claro - mesma cor da estrela) */
 .botao-hospital-nota.rating-4 {
     background-color: #84cc16;
 }
 
-/* Nota 5 (Verde Escuro - mesma cor da estrela) */
 .botao-hospital-nota.rating-5 {
     background-color: #22c55e;
 }
@@ -47,9 +40,9 @@
 .botao-hospital {
     display: block;
     width: 100%;
-    padding: 1rem;
-    margin-bottom: 0.75rem;
-    border-radius: 12px;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    border-radius: 10px;
     background-color: var(--cinza-botao-bom);
     transition: transform 0.2s ease, box-shadow 0.2s ease;
     text-decoration: none;
@@ -74,344 +67,66 @@
     box-shadow: 0 4px 12px var(--hover-shadow);
 }
 
-/* Header do botão (nota + nome + distância) */
 .botao-hospital-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 0.75rem;
-}
-
-/* Lado esquerdo: nota + nome */
-.botao-hospital-esquerda {
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    flex: 1;
-    min-width: 0;
-}
-
-/* Bolinha da nota */
-.botao-hospital-nota {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 50%;
-    font-weight: 700;
-    font-size: 0.9rem;
-    flex-shrink: 0;
-}
-
-/* Nome do hospital */
-.botao-hospital-nome {
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--color-fg);
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-}
-
-/* Lado direito: distância */
-.botao-hospital-direita {
-    display: flex;
-    align-items: center;
-    flex-shrink: 0;
-}
-
-/* Badge de distância */
-.distancia-badge {
-    display: flex;
-    align-items: center;
-    gap: 0.35rem;
-    padding: 0.4rem 0.75rem;
-    background-color: var(--azul-generico);
-    color: white;
-    border-radius: 20px;
-    font-size: 0.85rem;
-    font-weight: 600;
-    white-space: nowrap;
-}
-
-.distancia-badge svg {
-    width: 16px;
-    height: 16px;
-    flex-shrink: 0;
-}
-
-/* ============================================ */
-/* CONTAINERS E LISTAGENS                      */
-/* ============================================ */
-
-.container-hospitais {
-    width: 100%;
-}
-
-.div-butoes {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-}
-
-#mensagem-status {
-    text-align: center;
-    padding: 2rem 1rem;
-    color: var(--color-fg);
-    opacity: 0.7;
-}
-
-.mensagem-vazia {
-    text-align: center;
-    padding: 2rem 1rem;
-    color: var(--color-fg);
-    opacity: 0.6;
-}
-
-.erro-container {
-    text-align: center;
-    padding: 2rem 1rem;
-}
-
-.erro-container p {
-    color: var(--color-fg);
-    margin-bottom: 1.5rem;
-    line-height: 1.6;
-}
-
-.btn-retentar {
-    padding: 0.75rem 1.5rem;
-    background-color: var(--azul-generico);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 1rem;
-    font-weight: 600;
-    transition: transform 0.2s ease, opacity 0.2s ease;
-}
-
-.btn-retentar:hover {
-    transform: translateY(-2px);
-    opacity: 0.9;
-}
-
-/* ============================================ */
-/* FORMULÁRIO DE BUSCA                         */
-/* ============================================ */
-
-.form-busca-hospital {
-    display: flex;
-    width: 100%;
-    margin-bottom: 1.5rem;
     gap: 0.5rem;
 }
 
-.inp-busca-hospital {
-    flex: 1;
-    padding: 0.75rem 1rem;
-    border: 2px solid var(--cinza-generico);
-    border-radius: 10px;
-    background-color: var(--color-bg);
-    color: var(--color-fg);
-    font-size: 1rem;
-}
-
-.inp-busca-hospital::placeholder {
-    color: var(--input-placeholder);
-}
-
-.inp-busca-hospital:focus {
-    border-color: var(--azul-generico);
-}
-
-.btn-busca-hospital {
-    padding: 0.75rem;
-    background-color: var(--azul-generico);
-    color: white;
-    border-radius: 10px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: opacity 0.2s ease;
-}
-
-.btn-busca-hospital:hover {
-    opacity: 0.9;
-}
-
-.btn-busca-hospital svg {
-    width: 24px;
-    height: 24px;
-}
-
-/* ============================================ */
-/* RESPONSIVIDADE                              */
-/* ============================================ */
-
-@media screen and (max-width: 480px) {
-    .botao-hospital-nota {
-        min-width: 2.2rem;
-        height: 2.2rem;
-        font-size: 0.8rem;
-    }
-    
-    .botao-hospital-nome {
-        font-size: 0.9rem;
-    }
-    
-    .distancia-badge {
-        font-size: 0.75rem;
-        padding: 0.35rem 0.6rem;
-    }
-    
-    .distancia-badge svg {
-        width: 14px;
-        height: 14px;
-    }
-}
-/* public/css/hospitais.css */
-
-/* ============================================ */
-/* CORES DAS NOTAS                             */
-/* ============================================ */
-
-/* Define a cor padrão do texto dentro da bolinha como branco para consistência */
-.botao-hospital-nota {
-    color: #ffffff; 
-}
-
-/* Cor Padrão (Cinza) para hospitais sem nota ou com nota 0 */
-.botao-hospital-nota.rating-0 {
-    background-color: #cccccc;
-    color: #333333;
-}
-
-/* Nota 1 (Vermelho - mesma cor da estrela) */
-.botao-hospital-nota.rating-1 {
-    background-color: #ef4444;
-}
-
-/* Nota 2 (Laranja - mesma cor da estrela) */
-.botao-hospital-nota.rating-2 {
-    background-color: #f97316;
-}
-
-/* Nota 3 (Amarelo - mesma cor da estrela) */
-.botao-hospital-nota.rating-3 {
-    background-color: #facc15;
-}
-
-/* Nota 4 (Verde Claro - mesma cor da estrela) */
-.botao-hospital-nota.rating-4 {
-    background-color: #84cc16;
-}
-
-/* Nota 5 (Verde Escuro - mesma cor da estrela) */
-.botao-hospital-nota.rating-5 {
-    background-color: #22c55e;
-}
-
-/* ============================================ */
-/* LAYOUT DOS CARDS DE HOSPITAIS              */
-/* ============================================ */
-
-.botao-hospital {
-    display: block;
-    width: 100%;
-    padding: 1rem;
-    margin-bottom: 0.75rem;
-    border-radius: 12px;
-    background-color: var(--cinza-botao-bom);
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-    text-decoration: none;
-    cursor: pointer;
-    opacity: 0;
-    animation: fadeInUp 0.4s ease forwards;
-}
-
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.botao-hospital:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px var(--hover-shadow);
-}
-
-/* Header do botão (nota + nome + distância) */
-.botao-hospital-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 0.75rem;
-}
-
-/* Lado esquerdo: nota + nome */
 .botao-hospital-esquerda {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: 0.5rem;
     flex: 1;
     min-width: 0;
 }
 
-/* Bolinha da nota */
 .botao-hospital-nota {
     display: flex;
     align-items: center;
     justify-content: center;
-    min-width: 2.5rem;
-    height: 2.5rem;
+    min-width: 2rem;
+    width: 2rem;
+    height: 2rem;
     border-radius: 50%;
     font-weight: 700;
-    font-size: 0.9rem;
+    font-size: 0.75rem;
     flex-shrink: 0;
 }
 
-/* Nome do hospital */
 .botao-hospital-nome {
-    font-size: 1rem;
+    font-size: 0.875rem;
     font-weight: 600;
     color: var(--color-fg);
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    line-height: 1.2;
 }
 
-/* Lado direito: distância */
 .botao-hospital-direita {
     display: flex;
     align-items: center;
     flex-shrink: 0;
 }
 
-/* Badge de distância */
 .distancia-badge {
     display: flex;
     align-items: center;
-    gap: 0.35rem;
-    padding: 0.4rem 0.75rem;
+    gap: 0.25rem;
+    padding: 0.3rem 0.5rem;
     background-color: var(--azul-generico);
     color: white;
-    border-radius: 20px;
-    font-size: 0.85rem;
+    border-radius: 16px;
+    font-size: 0.7rem;
     font-weight: 600;
     white-space: nowrap;
 }
 
 .distancia-badge svg {
-    width: 16px;
-    height: 16px;
+    width: 12px;
+    height: 12px;
     flex-shrink: 0;
 }
 
@@ -421,47 +136,53 @@
 
 .container-hospitais {
     width: 100%;
+    max-width: 100%;
+    padding: 0;
 }
 
 .div-butoes {
     display: flex;
     flex-direction: column;
     width: 100%;
+    padding: 0;
 }
 
 #mensagem-status {
     text-align: center;
-    padding: 2rem 1rem;
+    padding: 1.5rem 0.75rem;
     color: var(--color-fg);
     opacity: 0.7;
+    font-size: 0.875rem;
 }
 
 .mensagem-vazia {
     text-align: center;
-    padding: 2rem 1rem;
+    padding: 1.5rem 0.75rem;
     color: var(--color-fg);
     opacity: 0.6;
+    font-size: 0.875rem;
 }
 
 .erro-container {
     text-align: center;
-    padding: 2rem 1rem;
+    padding: 1.5rem 0.75rem;
 }
 
 .erro-container p {
     color: var(--color-fg);
-    margin-bottom: 1.5rem;
-    line-height: 1.6;
+    margin-bottom: 1rem;
+    line-height: 1.5;
+    font-size: 0.875rem;
 }
 
 .btn-retentar {
-    padding: 0.75rem 1.5rem;
+    padding: 0.65rem 1.25rem;
     background-color: var(--azul-generico);
     color: white;
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    font-size: 1rem;
+    font-size: 0.875rem;
     font-weight: 600;
     transition: transform 0.2s ease, opacity 0.2s ease;
 }
@@ -477,14 +198,16 @@
 
 .abas-ordenacao {
     display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
+    gap: 0.375rem;
+    margin-bottom: 1rem;
     overflow-x: auto;
     padding-bottom: 0.5rem;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
 }
 
 .abas-ordenacao::-webkit-scrollbar {
-    height: 4px;
+    height: 3px;
 }
 
 .abas-ordenacao::-webkit-scrollbar-track {
@@ -500,12 +223,12 @@
 .aba-btn {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1rem;
+    gap: 0.375rem;
+    padding: 0.5rem 0.75rem;
     background-color: var(--cinza-botao);
     color: var(--color-fg);
     border-radius: 8px;
-    font-size: 0.9rem;
+    font-size: 0.75rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
@@ -515,6 +238,8 @@
 
 .aba-btn svg {
     flex-shrink: 0;
+    width: 14px;
+    height: 14px;
 }
 
 .aba-btn:hover {
@@ -539,18 +264,19 @@
 .form-busca-hospital {
     display: flex;
     width: 100%;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     gap: 0.5rem;
 }
 
 .inp-busca-hospital {
     flex: 1;
-    padding: 0.75rem 1rem;
+    padding: 0.625rem 0.875rem;
     border: 2px solid var(--cinza-generico);
     border-radius: 10px;
     background-color: var(--color-bg);
     color: var(--color-fg);
-    font-size: 1rem;
+    font-size: 0.875rem;
+    min-width: 0;
 }
 
 .inp-busca-hospital::placeholder {
@@ -559,18 +285,21 @@
 
 .inp-busca-hospital:focus {
     border-color: var(--azul-generico);
+    outline: none;
 }
 
 .btn-busca-hospital {
-    padding: 0.75rem;
+    padding: 0.625rem;
     background-color: var(--azul-generico);
     color: white;
+    border: none;
     border-radius: 10px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
     transition: opacity 0.2s ease;
+    flex-shrink: 0;
 }
 
 .btn-busca-hospital:hover {
@@ -578,42 +307,413 @@
 }
 
 .btn-busca-hospital svg {
-    width: 24px;
-    height: 24px;
+    width: 20px;
+    height: 20px;
 }
 
 /* ============================================ */
-/* RESPONSIVIDADE                              */
+/* RESPONSIVIDADE - MOBILE FIRST              */
 /* ============================================ */
 
-@media screen and (max-width: 480px) {
+/* Dispositivos muito pequenos (320px - 375px) */
+@media screen and (max-width: 375px) {
+    .botao-hospital {
+        padding: 0.6rem;
+        margin-bottom: 0.4rem;
+        border-radius: 8px;
+    }
+
+    .botao-hospital-header {
+        gap: 0.4rem;
+    }
+
+    .botao-hospital-esquerda {
+        gap: 0.4rem;
+    }
+
+    .botao-hospital-nota {
+        min-width: 1.75rem;
+        width: 1.75rem;
+        height: 1.75rem;
+        font-size: 0.7rem;
+    }
+    
+    .botao-hospital-nome {
+        font-size: 0.8rem;
+    }
+    
+    .distancia-badge {
+        font-size: 0.65rem;
+        padding: 0.25rem 0.45rem;
+        gap: 0.2rem;
+    }
+    
+    .distancia-badge svg {
+        width: 11px;
+        height: 11px;
+    }
+
+    .abas-ordenacao {
+        gap: 0.3rem;
+        margin-bottom: 0.875rem;
+    }
+
+    .aba-btn {
+        padding: 0.45rem 0.65rem;
+        font-size: 0.7rem;
+        gap: 0.3rem;
+    }
+
+    .aba-btn svg {
+        width: 13px;
+        height: 13px;
+    }
+
+    .form-busca-hospital {
+        gap: 0.4rem;
+        margin-bottom: 0.875rem;
+    }
+
+    .inp-busca-hospital {
+        font-size: 0.8rem;
+        padding: 0.55rem 0.75rem;
+    }
+
+    .btn-busca-hospital {
+        padding: 0.55rem;
+    }
+
+    .btn-busca-hospital svg {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+/* Smartphones pequenos (376px - 480px) */
+@media screen and (min-width: 376px) and (max-width: 480px) {
+    .botao-hospital {
+        padding: 0.65rem;
+        margin-bottom: 0.45rem;
+    }
+
+    .botao-hospital-nota {
+        min-width: 1.85rem;
+        width: 1.85rem;
+        height: 1.85rem;
+        font-size: 0.72rem;
+    }
+    
+    .botao-hospital-nome {
+        font-size: 0.825rem;
+    }
+    
+    .distancia-badge {
+        font-size: 0.675rem;
+        padding: 0.275rem 0.475rem;
+    }
+
+    .aba-btn {
+        padding: 0.475rem 0.7rem;
+        font-size: 0.725rem;
+    }
+
+    .inp-busca-hospital {
+        font-size: 0.825rem;
+        padding: 0.575rem 0.8rem;
+    }
+}
+
+/* Smartphones médios (481px - 600px) */
+@media screen and (min-width: 481px) and (max-width: 600px) {
+    .botao-hospital {
+        padding: 0.7rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .botao-hospital-nota {
+        min-width: 1.9rem;
+        width: 1.9rem;
+        height: 1.9rem;
+        font-size: 0.74rem;
+    }
+    
+    .botao-hospital-nome {
+        font-size: 0.85rem;
+    }
+    
+    .distancia-badge {
+        font-size: 0.7rem;
+        padding: 0.3rem 0.5rem;
+    }
+    
+    .distancia-badge svg {
+        width: 12px;
+        height: 12px;
+    }
+
+    .aba-btn {
+        padding: 0.5rem 0.75rem;
+        font-size: 0.75rem;
+    }
+
+    .aba-btn svg {
+        width: 14px;
+        height: 14px;
+    }
+}
+
+/* Tablets pequenos (601px - 768px) */
+@media screen and (min-width: 601px) and (max-width: 768px) {
+    .botao-hospital {
+        padding: 0.8rem;
+        margin-bottom: 0.6rem;
+        border-radius: 11px;
+    }
+
     .botao-hospital-nota {
         min-width: 2.2rem;
+        width: 2.2rem;
         height: 2.2rem;
         font-size: 0.8rem;
     }
     
     .botao-hospital-nome {
-        font-size: 0.9rem;
+        font-size: 0.925rem;
     }
     
     .distancia-badge {
-        font-size: 0.75rem;
+        font-size: 0.775rem;
         padding: 0.35rem 0.6rem;
     }
     
     .distancia-badge svg {
-        width: 14px;
-        height: 14px;
+        width: 13px;
+        height: 13px;
     }
 
     .aba-btn {
-        padding: 0.6rem 0.8rem;
-        font-size: 0.85rem;
+        padding: 0.6rem 0.85rem;
+        font-size: 0.825rem;
     }
 
     .aba-btn svg {
         width: 16px;
         height: 16px;
+    }
+
+    .inp-busca-hospital {
+        font-size: 0.925rem;
+        padding: 0.7rem 0.9rem;
+    }
+
+    .btn-busca-hospital svg {
+        width: 22px;
+        height: 22px;
+    }
+}
+
+/* Tablets e pequenos desktops (769px - 1024px) */
+@media screen and (min-width: 769px) and (max-width: 1024px) {
+    .botao-hospital {
+        padding: 0.9rem;
+        margin-bottom: 0.65rem;
+        border-radius: 12px;
+    }
+
+    .botao-hospital-nota {
+        min-width: 2.4rem;
+        width: 2.4rem;
+        height: 2.4rem;
+        font-size: 0.875rem;
+    }
+    
+    .botao-hospital-nome {
+        font-size: 0.975rem;
+    }
+    
+    .distancia-badge {
+        font-size: 0.825rem;
+        padding: 0.375rem 0.7rem;
+    }
+    
+    .distancia-badge svg {
+        width: 15px;
+        height: 15px;
+    }
+
+    .abas-ordenacao {
+        gap: 0.5rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .aba-btn {
+        padding: 0.7rem 0.95rem;
+        font-size: 0.875rem;
+    }
+
+    .aba-btn svg {
+        width: 17px;
+        height: 17px;
+    }
+
+    .inp-busca-hospital {
+        font-size: 0.975rem;
+        padding: 0.75rem 1rem;
+    }
+
+    .btn-busca-hospital svg {
+        width: 23px;
+        height: 23px;
+    }
+}
+
+/* Desktops (1025px+) */
+@media screen and (min-width: 1025px) {
+    .container-hospitais {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .botao-hospital {
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        border-radius: 12px;
+    }
+
+    .botao-hospital-nota {
+        min-width: 2.5rem;
+        width: 2.5rem;
+        height: 2.5rem;
+        font-size: 0.9rem;
+    }
+
+    .botao-hospital-nome {
+        font-size: 1rem;
+    }
+
+    .distancia-badge {
+        font-size: 0.85rem;
+        padding: 0.4rem 0.75rem;
+        gap: 0.35rem;
+    }
+
+    .distancia-badge svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    .abas-ordenacao {
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .aba-btn {
+        padding: 0.75rem 1rem;
+        font-size: 0.9rem;
+        gap: 0.5rem;
+    }
+
+    .aba-btn svg {
+        width: 18px;
+        height: 18px;
+    }
+
+    .form-busca-hospital {
+        margin-bottom: 1.5rem;
+    }
+
+    .inp-busca-hospital {
+        font-size: 1rem;
+        padding: 0.75rem 1rem;
+    }
+
+    .btn-busca-hospital {
+        padding: 0.75rem;
+    }
+
+    .btn-busca-hospital svg {
+        width: 24px;
+        height: 24px;
+    }
+}
+
+/* Desktops grandes (1400px+) */
+@media screen and (min-width: 1400px) {
+    .container-hospitais {
+        max-width: 1400px;
+    }
+
+    .botao-hospital {
+        padding: 1.1rem;
+    }
+
+    .botao-hospital-nota {
+        min-width: 2.75rem;
+        width: 2.75rem;
+        height: 2.75rem;
+        font-size: 1rem;
+    }
+
+    .botao-hospital-nome {
+        font-size: 1.05rem;
+    }
+
+    .distancia-badge {
+        font-size: 0.9rem;
+        padding: 0.45rem 0.85rem;
+    }
+
+    .distancia-badge svg {
+        width: 17px;
+        height: 17px;
+    }
+}
+
+/* Modo paisagem mobile - otimização especial */
+@media screen and (max-height: 500px) and (orientation: landscape) {
+    .botao-hospital {
+        padding: 0.5rem;
+        margin-bottom: 0.35rem;
+    }
+
+    .botao-hospital-nota {
+        min-width: 1.6rem;
+        width: 1.6rem;
+        height: 1.6rem;
+        font-size: 0.65rem;
+    }
+
+    .botao-hospital-nome {
+        font-size: 0.75rem;
+    }
+
+    .distancia-badge {
+        font-size: 0.6rem;
+        padding: 0.2rem 0.4rem;
+    }
+
+    .abas-ordenacao {
+        margin-bottom: 0.6rem;
+        gap: 0.3rem;
+    }
+
+    .aba-btn {
+        padding: 0.4rem 0.6rem;
+        font-size: 0.65rem;
+    }
+
+    .aba-btn svg {
+        width: 12px;
+        height: 12px;
+    }
+
+    .form-busca-hospital {
+        margin-bottom: 0.6rem;
+    }
+
+    #mensagem-status,
+    .mensagem-vazia {
+        padding: 0.75rem;
+        font-size: 0.75rem;
     }
 }
