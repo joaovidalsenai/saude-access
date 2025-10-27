@@ -257,3 +257,117 @@ header h1 {
 .contato-site:hover {
     cursor: pointer;
 }
+
+#map {
+            height: 300px;
+            width: 100%;
+            border-radius: 8px;
+            margin-top: 12px;
+            background-color: #eee;
+        }
+
+        .rotas-container {
+            margin-top: 16px;
+        }
+
+        .rota-opcao {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            transition: all 0.2s ease;
+            border: 2px solid transparent;
+        }
+
+        .rota-opcao.loading {
+            opacity: 0.6;
+        }
+
+        .rota-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .rota-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: white;
+        }
+
+        .rota-icon svg {
+            width: 24px;
+            height: 24px;
+        }
+
+        .rota-detalhes h3 {
+            margin: 0;
+            font-size: 16px;
+            color: #212529;
+        }
+
+        .rota-tempo {
+            font-size: 20px;
+            font-weight: bold;
+            color: #0066cc;
+        }
+
+        .erro-localizacao {
+            padding: 16px;
+            background: #fff3cd;
+            border-radius: 8px;
+            color: #856404;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .skeleton-loading {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: loading 1.5s infinite;
+            border-radius: 4px;
+            height: 20px;
+        }
+
+        @keyframes loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+/* --- ESTILOS DARK MODE PARA SEÇÃO DE ROTAS --- */
+[data-theme="dark"] .erro-localizacao {
+    background: #332701; /* Cor de alerta escura, similar ao .alerta-card */
+    color: #ffda6a;
+}
+
+[data-theme="dark"] .rota-opcao {
+    background: #3a3a3a; /* Fundo escuro padrão para itens, similar ao .stat-item */
+    border-color: transparent;
+}
+
+[data-theme="dark"] .rota-icon {
+    background: #4a4a4a; /* Fundo do ícone ligeiramente mais claro */
+}
+
+[data-theme="dark"] .rota-detalhes h3 {
+    color: #e0e0e0; /* Texto claro */
+}
+
+[data-theme="dark"] .rota-tempo {
+    color: #299cff; /* Azul um pouco mais brilhante para contraste */
+}
+
+[data-theme="dark"] .skeleton-loading {
+    /* Gradiente para o skeleton no modo escuro */
+    background: linear-gradient(90deg, #3a3a3a 25%, #4a4a4a 50%, #3a3a3a 75%);
+    background-size: 200% 100%;
+}
