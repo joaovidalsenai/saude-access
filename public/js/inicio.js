@@ -1,48 +1,73 @@
-// Espera o documento carregar completamente
-document.addEventListener('DOMContentLoaded', () => {
-
-    // Variável para armazenar a localização do usuário (latitude e longitude)
-    let userLocation = null;
-    // Variável para saber se o usuário já negou a permissão
-    let locationDenied = false;
-
-    // 1. Tenta obter a localização assim que a página 'inicio' carregar
-    if ("geolocation" in navigator) {
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                // Sucesso: armazena as coordenadas
-                userLocation = {
-                    lat: position.coords.latitude,
-                    lng: position.coords.longitude
-                };
-                console.log("Localização obtida na página /inicio:", userLocation);
-            },
-            (error) => {
-                // Falha (ex: usuário negou a permissão)
-                locationDenied = true;
-                console.warn("Não foi possível obter localização (pode ter sido negada):", error.message);
-            }
-        );
-    } else {
-        console.warn("Geolocalização não é suportada por este navegador.");
-        locationDenied = true; // Trata como se fosse negada
+/**
+ * 1. Função Auxiliar "Promisified"
+ * Nós criamos uma nova função que retorna uma Promise
+ * que resolve ou rejeita com base nos callbacks da API de geolocalização.
+ */
+function getUserLocationPromise() {
+    // Primeiro, verifica se o navegador tem suporte
+    if (!("geolocation" in navigator)) {
+        // Se não tiver, já rejeita a Promise com um erro
+        return Promise.reject(new Error("Geolocalização não é suportada por este navegador."));
     }
 
-    // 2. Seleciona TODOS os botões de filtro (pela classe que adicionamos)
+    // Retorna a nova Promise
+    return new Promise((resolve, reject) => {
+        // Chama a API original
+        // - Se der certo (1º callback), a Promise "resolve"
+        // - Se der errado (2º callback), a Promise "rejeita"
+        navigator.geolocation.getCurrentPosition(
+            (position) => resolve(position),
+            (error) => reject(error)
+        );
+    });
+}
+
+
+/**
+ * 2. Event Listener Principal (agora com 'async')
+ * Marcamos o listener do DOMContentLoaded como 'async'
+ * para que possamos usar 'await' dentro dele.
+ */
+document.addEventListener('DOMContentLoaded', async () => {
+
+    let userLocation = null;
+    let locationDenied = false;
+
+    // 3. Bloco 'try...catch' com 'await'
+    // O 'await' vai pausar a execução aqui até que a Promise
+    // de 'getUserLocationPromise()' seja resolvida ou rejeitada.
+    try {
+        // Tenta obter a posição
+        const position = await getUserLocationPromise();
+
+        // SUCESSO: armazena as coordenadas
+        userLocation = {
+            lat: position.coords.latitude,
+            lng: position.coords.longitude
+        };
+        console.log("Localização obtida na página /inicio:", userLocation);
+
+    } catch (error) {
+        // FALHA: (usuário negou, não há suporte, etc.)
+        locationDenied = true;
+        console.warn("Não foi possível obter localização:", error.message);
+    }
+
+    // 4. Lógica dos Botões (Simplificada)
+    // Este código SÓ RODA DEPOIS que o 'await' acima foi concluído.
+    // Isso significa que não precisamos mais daquele "Caso 3" (de "aguarde...").
+    // No momento em que o usuário clicar, nós JÁ SABEMOS se temos a
+    // localização ou se ela foi negada.
+    
     const filterButtons = document.querySelectorAll('.botao-filtro');
 
-    // 3. Adiciona um event listener (monitor de clique) para CADA botão
     filterButtons.forEach(button => {
         button.addEventListener('click', () => {
             
-            // Pega a URL base do atributo 'data-url'
-            // (ex: /hospitais?ordenar=alfabetica)
             let baseUrl = button.dataset.url;
-            
-            // Verifica se este botão específico é o de "Ordenar por Distância"
             const isSortByDistance = baseUrl.includes('ordenar=distancia');
 
-            // 4. Lógica de redirecionamento
+            // 4. Lógica de redirecionamento (agora mais simples)
             
             if (userLocation) {
                 // CASO 1: TEMOS a localização.
@@ -53,14 +78,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 // CASO 2: O usuário NEGOU a permissão E está clicando em "Ordenar por Distância".
                 // Exibe um alerta de erro.
                 alert("Não foi possível obter sua localização. A ordenação por distância não está disponível. Por favor, libere a permissão de localização no seu navegador.");
-
-            } else if (!userLocation && isSortByDistance) {
-                // CASO 3: A localização AINDA não foi obtida (está em processo) E
-                // o usuário clica em "Ordenar por Distância". Pede para ele esperar.
-                alert("Aguarde, estamos tentando obter sua localização. Tente novamente em alguns segundos.");
-                
+            
             } else {
-                // CASO 4: Outros filtros (alfabetica, media_geral)
+                // CASO 3: (Antigo Caso 4)
+                // Outros filtros (alfabetica, media_geral)
                 // ou se o usuário negou a localização para esses filtros,
                 // apenas vai para a URL base sem a localização.
                 window.location.href = baseUrl;
