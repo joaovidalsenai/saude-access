@@ -148,7 +148,13 @@ pages.get('/hospital', protect.entirely, async (req, res) => {
                 *,
                 hospital_endereco(*),
                 hospital_contato(*),
-                avaliacao_hospital(*)
+                avaliacao_hospital(*),
+                hospital_especialidade (
+                    especialidade (
+                        especialidade_id,
+                        especialidade_nome
+                    )
+                )
             `)
             .eq('hospital_id', hospitalId)
             .single();
@@ -201,6 +207,9 @@ pages.get('/hospital', protect.entirely, async (req, res) => {
         const recentRatings = avaliacoes
             .sort((a, b) => new Date(b.avaliacao_data) - new Date(a.avaliacao_data));
 
+        const especialidades = (hospitalData.hospital_especialidade || []).map(item => {
+            return item.especialidade;
+        });
         
         const templateData = {
             hospital: {
@@ -221,7 +230,8 @@ pages.get('/hospital', protect.entirely, async (req, res) => {
                 stats: ratingStats,
                 recent: recentRatings
             },
-            alertas: alertas || [] 
+            alertas: alertas || [],
+            especialidades: especialidades
         };
 
         res.render('hospital', templateData);
