@@ -265,6 +265,11 @@ router.get('/:id', async (req, res) => {
             ? enderecos[0]
             : {};
 
+        // Processar contatos - pegar o primeiro se existir
+        const contatoData = Array.isArray(contatos) && contatos.length > 0
+            ? contatos[0]
+            : {};
+
         // Calcular estatísticas
         let stats = null;
         if (avaliacoes && avaliacoes.length > 0) {
@@ -299,10 +304,14 @@ router.get('/:id', async (req, res) => {
             hospital: {
                 hospital_id: hospital.hospital_id,
                 nome_hospital: hospital.hospital_nome,
-                hospital_cnpj: hospital.hospital_cnpj
+                hospital_cnpj: hospital.hospital_cnpj,
+                // Adicionar dados de contato ao objeto hospital
+                telefone: contatoData.hospital_telefone || null,
+                email: contatoData.hospital_email || null,
+                site: contatoData.hospital_site || null // Caso você adicione esse campo
             },
             address: enderecoData,
-            contacts: contatos || [],
+            contacts: contatos || [], // Manter o array completo também
             stats: stats,
             alertas: alertasFormatados,
             process: process
@@ -312,6 +321,8 @@ router.get('/:id', async (req, res) => {
         res.status(500).send('Erro ao carregar hospital');
     }
 });
+
+// ### O BLOCO DUPLICADO FOI REMOVIDO DAQUI ###
 
 /**
  * Calcula a distância entre duas coordenadas usando a fórmula de Haversine
@@ -329,8 +340,7 @@ function calcularDistanciaHaversine(lat1, lon1, lat2, lon2) {
     
     const a = 
         Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(grausParaRadianos(lat1)) * 
-        Math.cos(grausParaRadianos(lat2)) *
+        Math.cos(grausParaRadianos(lat1)) * Math.cos(grausParaRadianos(lat2)) *
         Math.sin(dLon / 2) * Math.sin(dLon / 2);
     
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
