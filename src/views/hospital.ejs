@@ -8,27 +8,29 @@
     <title>Saúde Access</title>
     <link rel="stylesheet" href="/css/protected.css">
     
-    <!-- Leaflet CSS -->
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="/js/global.js"></script>
-    <script src="/js/auth-utils.js" defer></script>
-    <script src="/js/hospital.js" defer></script>
-    
-    <!-- Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    
-    <link rel="icon" type="image/x-icon" href="/favorite.ico">
-    
     <style>
         #map {
             height: 300px;
             width: 100%;
             border-radius: 8px;
             margin-top: 12px;
+            background-color: #eee; /* Cor de fundo enquanto carrega */
         }
     </style>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="/js/global.js"></script>
+    <script src="/js/auth-utils.js" defer></script>
+    <script src="/js/hospital.js" defer></script>
+    
+    <link rel="icon" type="image/x-icon" href="/favorite.ico">
+    
+    <script 
+        async 
+        defer 
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAvFTn2ptqkklu71dIauAqO0R1s76KiQl8&callback=initMap&libraries=marker">
+    </script>
+
 </head>
 <body class="protected">
     <header>
@@ -124,30 +126,41 @@
             </div>
             <div class="collapsible-content">
                 <div class="endereco-info">
+                    <% if (address) { %>
+                        <div id="map" style="z-index: 0;"></div>
+                        <script>
+                            // Coordenadas de fallback (as que você disse serem imprecisas)
+                            window.hospitalLat = <%= address.latitude || 'null' %>;
+                            window.hospitalLng = <%= address.longitude || 'null' %>;
+
+                            // Informações para o popup e geocodificação
+                            window.hospitalNome = '<%= hospital.hospital_nome.replace(/'/g, "\\'") %>';
+                            window.hospitalEndereco = '<%= (address.endereco_logradouro || "").replace(/'/g, "\\'") %>, <%= (address.endereco_numero || "").replace(/'/g, "\\'") %>';
+                            window.hospitalCep = '<%= (address.endereco_cep || "").replace(/'/g, "\\'") %>';
+                            window.hospitalBairro = '<%= (address.endereco_bairro || "").replace(/'/g, "\\'") %>';
+
+                            // String de endereço para a busca na API
+                            window.enderecoParaGeocodificar = [
+                                '<%= (address.endereco_logradouro || "").replace(/'/g, "\\'") %>',
+                                '<%= (address.endereco_numero || "").replace(/'/g, "\\'") %>',
+                                '<%= (address.endereco_bairro || "").replace(/'/g, "\\'") %>',
+                                '<%= (address.endereco_cep || "").replace(/'/g, "\\'") %>'
+                            ].filter(Boolean).join(', ') + ', Brasil';
+                        </script>
+                    <% } else { %>
+                        <p style="margin-top: 12px; color: #666; font-size: 14px;">Localização não disponível</p>
+                    <% } %>
+                    
                     <div class="endereco-item">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M128,64a40,40,0,1,0,40,40A40,40,0,0,0,128,64Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,128Zm0-112a88.1,88.1,0,0,0-88,88c0,31.4,14.51,64.68,42,96.25a254.19,254.19,0,0,0,41.45,38.3,8,8,0,0,0,9.18,0A254.19,254.19,0,0,0,174,200.25c27.45-31.57,42-64.85,42-96.25A88.1,88.1,0,0,0,128,16Zm0,206c-16.53-13-72-60.75-72-118a72,72,0,0,1,144,0C200,161.23,144.53,209,128,222Z"></path></svg>
                         <div class="endereco-texto">
                             <span><%= address.endereco_logradouro %><%= address.endereco_numero ? ', ' + address.endereco_numero : '' %></span>
                             <span><%= address.endereco_bairro %> - CEP: <%= address.endereco_cep %></span>
                             <% if (address.endereco_complemento) { %>
-                            <span class="complemento"><%= address.endereco_complemento %></span>
+                                <span class="complemento"><%= address.endereco_complemento %></span>
                             <% } %>
                         </div>
                     </div>
-                    
-                    <!-- Mapa Leaflet -->
-                    <% if (address.latitude && address.longitude) { %>
-                        <div id="map" style="z-index: 0;"></div>
-                        <script>
-                            // Armazena as coordenadas em variáveis JavaScript
-                            window.hospitalLat = <%= address.latitude %>;
-                            window.hospitalLng = <%= address.longitude %>;
-                            window.hospitalNome = '<%= hospital.hospital_nome.replace(/'/g, "\\'") %>';
-                            window.hospitalEndereco = '<%= address.endereco_logradouro.replace(/'/g, "\\'") %>, <%= address.endereco_numero %>';
-                        </script>
-                    <% } else { %>
-                        <p style="margin-top: 12px; color: #666; font-size: 14px;">Localização não disponível</p>
-                    <% } %>
                 </div>
             </div>
         </section>
@@ -166,7 +179,7 @@
                     <% } %>
                     <% if (hospital_telefone) { %>
                     <div class="contato-item">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M164.39,145.34a8,8,0,0,1,7.59-.69l47.16,21.13a8,8,0,0,1,4.8,8.3A48.33,48.33,0,0,1,176,216,136,136,0,0,1,40,80,48.33,48.33,0,0,1,81.92,32.06a8,8,0,0,1,8.3,4.8l21.13,47.2a8,8,0,0,1-.66,7.53L89.32,117a7.93,7.93,0,0,0-.54,7.81c8.27,16.93,25.77,34.22,42.75,42.41a7.92,7.92,0,0,0,7.83-.59Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/></svg>                        <span>Telefone: <strong><%= hospital_telefone %></strong></span>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M164.39,145.34a8,8,0,0,1,7.59-.69l47.16,21.13a8,8,0,0,1,4.8,8.3A48.33,48.33,0,0,1,176,216,136,136,0,0,1,40,80,48.33,48.33,0,0,1,81.92,32.06a8,8,0,0,1,8.3,4.8l21.13,47.2a8,8,0,0,1-.66,7.53L89.32,117a7.93,7.93,0,0,0-.54,7.81c8.27,16.93,25.77,34.22,42.75,42.41a7.92,7.92,0,0,0,7.83-.59Z" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="16"/></svg>                        <span>Telefone: <strong><%= hospital_telefone %></strong></span>
                     </div>
                     <% } %>
                     <% if (hospital_email) { %>
@@ -189,41 +202,126 @@
     <%- include ('partials/navbar.ejs')%>
 
     <script>
+        // Esta função (initMap) DEVE estar no escopo global (window)
+        // para que o 'callback' da API do Google possa encontrá-la.
+        let map; // Variável global para guardar a instância do mapa
+
+        async function initMap() {
+            const mapContainer = document.getElementById('map');
+            if (!mapContainer) return; // Não faz nada se o mapa não estiver na página
+
+            // Coordenadas de fallback
+            const fallbackPosition = (window.hospitalLat && window.hospitalLng) 
+                ? { lat: window.hospitalLat, lng: window.hospitalLng }
+                : null;
+            
+            let positionToUse = fallbackPosition;
+            let zoomLevel = 15; // Zoom padrão para fallback
+
+            // 1. Tentar Geocodificação primeiro
+            if (typeof window.enderecoParaGeocodificar !== 'undefined' && window.enderecoParaGeocodificar.trim().length > 10) {
+                try {
+                    const { Geocoder } = await google.maps.importLibrary("geocoding");
+                    const geocoder = new Geocoder();
+                    
+                    const response = await geocoder.geocode({ address: window.enderecoParaGeocodificar });
+                    
+                    if (response.results && response.results[0]) {
+                        // Sucesso na Geocodificação
+                        positionToUse = response.results[0].geometry.location;
+                        zoomLevel = 17; // Zoom mais próximo para coordenada precisa
+                    } else {
+                        console.warn('Geocodificação do Google falhou, usando fallback.');
+                    }
+                } catch (e) {
+                    // Este 'catch' é importante. Se a chave for inválida,
+                    // a API de Geocodificação falhará aqui.
+                    console.error('Erro na Geocodificação (verifique a Chave de API e as APIs ativadas):', e);
+                    // Em caso de erro, o positionToUse continua sendo o fallback
+                }
+            }
+            
+            // 2. Verificar se temos uma posição para exibir
+            if (!positionToUse) {
+                mapContainer.innerHTML = '<p style="margin: 12px; color: #666; font-size: 14px;">Localização não pôde ser encontrada.</p>';
+                return;
+            }
+
+            // 3. Importar bibliotecas e criar o mapa
+            try {
+                const { Map, InfoWindow } = await google.maps.importLibrary("maps");
+                const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
+
+                map = new Map(mapContainer, {
+                    zoom: zoomLevel,
+                    center: positionToUse,
+                    mapId: 'SAUDE_ACCESS_MAP_ID' // Você pode customizar o ID
+                });
+
+                // 4. Criar o Popup (InfoWindow)
+                const popupHtml = `
+                    <div style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.5;">
+                        <b style="font-size: 16px;">${window.hospitalNome || 'Hospital'}</b>
+                        <br>
+                        ${window.hospitalEndereco || ''}
+                        <br>
+                        ${window.hospitalBairro || ''}
+                        <br>
+                        CEP: ${window.hospitalCep || ''}
+                    </div>`;
+
+                const infoWindow = new InfoWindow({
+                    content: popupHtml,
+                    ariaLabel: window.hospitalNome,
+                });
+
+                // 5. Criar o Marcador
+                const marker = new AdvancedMarkerElement({
+                    map: map,
+                    position: positionToUse,
+                    title: window.hospitalNome,
+                });
+
+                // 6. Adicionar evento de clique no marcador
+                marker.addListener("click", () => {
+                    infoWindow.open({
+                        anchor: marker,
+                        map,
+                    });
+                });
+
+                // 7. Lidar com o 'resize' da seção 'collapsible'
+                const enderecoSection = document.querySelectorAll('.collapsible-section')[1]; // A seção de endereço
+                if (enderecoSection) {
+                    const observer = new MutationObserver(() => {
+                        if (enderecoSection.classList.contains('open')) {
+                            // O Google Maps precisa de um 'resize' manual
+                            setTimeout(() => {
+                                google.maps.event.trigger(map, 'resize');
+                                map.setCenter(positionToUse); // Recentraliza o mapa
+                            }, 100); 
+                        }
+                    });
+                    observer.observe(enderecoSection, { attributes: true, attributeFilter: ['class'] });
+                }
+
+            } catch (e) {
+                // Se a chave for inválida, a importação da 'Map'
+                // também falhará.
+                console.error("Falha ao carregar a biblioteca do Google Maps. Verifique sua Chave de API.", e);
+                mapContainer.innerHTML = '<p style="margin: 12px; color: #666; font-size: 14px;">Erro ao carregar o mapa. Verifique a chave de API.</p>';
+            }
+        }
+        
+        // --- Lógica Collapsible (mantida) ---
         document.addEventListener('DOMContentLoaded', () => {
             const collapsibleHeaders = document.querySelectorAll('.collapsible-header');
-
             collapsibleHeaders.forEach(header => {
                 header.addEventListener('click', () => {
                     const section = header.closest('.collapsible-section');
                     section.classList.toggle('open');
                 });
             });
-
-            // Inicializar o mapa Leaflet se as coordenadas existirem
-            if (typeof window.hospitalLat !== 'undefined' && typeof window.hospitalLng !== 'undefined') {
-                const map = L.map('map').setView([window.hospitalLat, window.hospitalLng], 15);
-                
-                // Adicionar tiles do OpenStreetMap
-                L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                    attribution: '© OpenStreetMap contributors',
-                    maxZoom: 19
-                }).addTo(map);
-                
-                // Adicionar marcador
-                const marker = L.marker([window.hospitalLat, window.hospitalLng]).addTo(map);
-                marker.bindPopup('<b>' + window.hospitalNome + '</b><br>' + window.hospitalEndereco);
-                
-                // Ajustar o mapa quando a seção for expandida
-                const enderecoSection = document.querySelectorAll('.collapsible-section')[1]; // A seção de endereço
-                if (enderecoSection) {
-                    const observer = new MutationObserver(() => {
-                        if (enderecoSection.classList.contains('open')) {
-                            setTimeout(() => map.invalidateSize(), 100);
-                        }
-                    });
-                    observer.observe(enderecoSection, { attributes: true, attributeFilter: ['class'] });
-                }
-            }
         });
     </script>
 </body>
