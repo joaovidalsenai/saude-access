@@ -100,7 +100,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    voltarBtn.addEventListener('click', () => {
-        window.location.href = `/hospital?id=${hospitalId}`;
+   voltarBtn.addEventListener('click', () => {
+        
+        window.location.href = `/hospitais/${hospitalId}`; 
     });
 });
