@@ -1,10 +1,4 @@
 // Script para atualizar o valor do range
-const rangeSlider = document.getElementById('raio-range');
-const rangeValue = document.querySelector('.range-value');
-
-rangeSlider.addEventListener('input', function () {
-    rangeValue.textContent = this.value + ' km';
-});
 
 document.addEventListener('DOMContentLoaded', function () {
     const temaToggle = document.getElementById('tema-toggle');
