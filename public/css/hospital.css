@@ -163,6 +163,7 @@ header h1 {
 
 .collapsible-section.open .collapsible-content {
     max-height: 600px; 
+    overflow-y: auto; /* <-- ADICIONE ESTA LINHA */
     padding-top: 1.5rem;
     transition: max-height 0.5s ease-in, padding-top 0.5s ease-in;
 }
