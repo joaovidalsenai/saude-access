@@ -16,10 +16,18 @@
     
     <link rel="icon" type="image/x-icon" href="/favorite.ico">
     
+    <script>
+    // Define a função initMap no escopo global para o loader encontrá-la
+    window.initMap = async function() {
+        // O código da sua função initMap (que já está no final do <body>) 
+        // será chamado automaticamente por este loader.
+        // Você NÃO precisa mover seu código para cá. 
+        // Apenas deixe sua função `async function initMap() { ... }` onde ela já está.
+    };
+    </script>
     <script 
         async 
-        defer 
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAvFTn2ptqkklu71dIauAqO0R1s76KiQl8&callback=initMap&libraries=marker">
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAvFTn2ptqkklu71dIauAqO0R1s76KiQl8&loading=async&libraries=marker,maps,geocoding&callback=initMap">
     </script>
 
 </head>
