@@ -16,10 +16,18 @@
     
     <link rel="icon" type="image/x-icon" href="/favorite.ico">
     
+    <script>
+    // Define a função initMap no escopo global para o loader encontrá-la
+    window.initMap = async function() {
+        // O código da sua função initMap (que já está no final do <body>) 
+        // será chamado automaticamente por este loader.
+        // Você NÃO precisa mover seu código para cá. 
+        // Apenas deixe sua função `async function initMap() { ... }` onde ela já está.
+    };
+    </script>
     <script 
         async 
-        defer 
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAvFTn2ptqkklu71dIauAqO0R1s76KiQl8&callback=initMap&libraries=marker">
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAvFTn2ptqkklu71dIauAqO0R1s76KiQl8&loading=async&libraries=marker,maps,geocoding&callback=initMap">
     </script>
 
 </head>
@@ -107,9 +115,9 @@
                     <svg class="arrow-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"></path></svg>
                 </div>
                 <div class="collapsible-content">
-                    <ul class="especialidades-lista" style="list-style: none; padding-left: 10px; margin: 0;">
+                    <ul class="especialidades-lista">
                         <% especialidades.forEach(esp => { %>
-                            <li style="padding: 8px 0; border-bottom: 1px solid #333;"><%= esp.especialidade_nome %></li>
+                            <li><%= esp.especialidade_nome %></li>
                         <% }); %>
                     </ul>
                 </div>
@@ -147,7 +155,7 @@
                                 '<%= (address.endereco_numero || "").replace(/'/g, "\\'") %>',
                                 '<%= (address.endereco_bairro || "").replace(/'/g, "\\'") %>',
                                 '<%= (address.endereco_cep || "").replace(/'/g, "\\'") %>'
-                            ].filter(Boolean).join(', ') + ', Brasil';
+                                ].filter(Boolean).join(', ') + ', Salvador, Bahia, Brasil';
                         </script>
                     <% } else { %>
                         <p style="margin-top: 12px; color: #666; font-size: 14px;">Localização não disponível</p>
@@ -156,10 +164,10 @@
                     <div class="endereco-item">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" viewBox="0 0 256 256"><path d="M128,64a40,40,0,1,0,40,40A40,40,0,0,0,128,64Zm0,64a24,24,0,1,1,24-24A24,24,0,0,1,128,128Zm0-112a88.1,88.1,0,0,0-88,88c0,31.4,14.51,64.68,42,96.25a254.19,254.19,0,0,0,41.45,38.3,8,8,0,0,0,9.18,0A254.19,254.19,0,0,0,174,200.25c27.45-31.57,42-64.85,42-96.25A88.1,88.1,0,0,0,128,16Zm0,206c-16.53-13-72-60.75-72-118a72,72,0,0,1,144,0C200,161.23,144.53,209,128,222Z"></path></svg>
                         <div class="endereco-texto">
-                            <span><%= address.endereco_logradouro %><%= address.endereco_numero ? ', ' + address.endereco_numero : '' %></span>
-                            <span><%= address.endereco_bairro %> - CEP: <%= address.endereco_cep %></span>
+                            <span id="map-address-line1"><%= address.endereco_logradouro %><%= address.endereco_numero ? ', ' + address.endereco_numero : '' %></span>
+                            <span id="map-address-line2"><%= address.endereco_bairro %> - CEP: <%= address.endereco_cep %></span>
                             <% if (address.endereco_complemento) { %>
-                                <span class="complemento"><%= address.endereco_complemento %></span>
+                                <span class="complemento" id="map-address-complemento"><%= address.endereco_complemento %></span>
                             <% } %>
                         </div>
                     </div>
@@ -207,49 +215,141 @@
     <script>
         let map;
 
+        /**
+         * Atualiza os spans de texto do endereço na página com os dados
+         * da geocodificação do Google, que são mais precisos.
+         */
+        function updateDisplayedAddress(components) {
+            // Função auxiliar para encontrar um componente de endereço
+            const getComponent = (type) => components.find(c => c.types.includes(type))?.long_name || '';
+
+            const rua = getComponent('route');
+            const numero = getComponent('street_number');
+            const bairro = getComponent('sublocality_level_1'); // 'sublocality_level_1' é geralmente o bairro
+            const cep = getComponent('postal_code');
+
+            const line1El = document.getElementById('map-address-line1');
+            const line2El = document.getElementById('map-address-line2');
+            const complementoEl = document.getElementById('map-address-complemento');
+
+            // Atualiza Linha 1 (Rua, Número)
+            if (line1El && (rua || numero)) {
+                line1El.textContent = `${rua}${numero ? ', ' + numero : ''}`;
+            }
+            
+            // Atualiza Linha 2 (Bairro, CEP)
+            if (line2El && (bairro || cep)) {
+                let line2Text = '';
+                if (bairro) line2Text += bairro;
+                if (cep) line2Text += ` - CEP: ${cep}`;
+                line2El.textContent = line2Text;
+            }
+
+            // O complemento é do nosso DB, a geocodificação não o conhece.
+            // Se atualizamos o endereço, o complemento antigo pode não fazer sentido.
+            // É mais seguro escondê-lo para evitar inconsistência.
+            if (complementoEl) {
+                complementoEl.style.display = 'none';
+                console.log('Complemento (do DB) oculto, pois o endereço foi atualizado pela geocodificação.');
+            }
+        }
+
         async function initMap() {
             const mapContainer = document.getElementById('map');
             if (!mapContainer) return;
 
             let positionToUse = null;
             let zoomLevel = 15;
-            let geocodificacaoSucesso = false;
+            let attemptStatus = 'failed';
+            
+            let Geocoder;
+            try {
+                const lib = await google.maps.importLibrary("geocoding");
+                Geocoder = lib.Geocoder;
+            } catch (e) {
+                console.error("Falha ao carregar a biblioteca de Geocoding.", e);
+                mapContainer.innerHTML = '<p style="margin: 12px; color: #666; font-size: 14px;">Erro ao carregar o serviço de mapa.</p>';
+                return;
+            }
+            
+            const geocoder = new Geocoder();
+            const salvadorRestrictions = {
+                locality: 'Salvador',
+                administrativeArea: 'BA',
+                country: 'BR'
+            };
 
-            // PRIORIDADE 1: Tentar geocodificação do endereço completo
-            if (typeof window.enderecoParaGeocodificar !== 'undefined' && window.enderecoParaGeocodificar.trim().length > 10) {
+            // --- PRIORIDADE 1: Pesquisar pelo NOME restrito a Salvador ---
+            if (typeof window.hospitalNome !== 'undefined' && window.hospitalNome.trim().length > 0) {
                 try {
-                    const { Geocoder } = await google.maps.importLibrary("geocoding");
-                    const geocoder = new Geocoder();
+                    console.log('Tentativa 1: Geocodificação por NOME:', window.hospitalNome);
+                    const response = await geocoder.geocode({
+                        address: window.hospitalNome,
+                        componentRestrictions: salvadorRestrictions
+                    });
                     
+                    if (response.results && response.results[0]) {
+                        let inSalvador = response.results[0].address_components.some(
+                            comp => (comp.types.includes('locality') || comp.types.includes('administrative_area_level_2')) && comp.long_name === 'Salvador'
+                        );
+
+                        if (inSalvador) {
+                            positionToUse = response.results[0].geometry.location;
+                            zoomLevel = 17;
+                            attemptStatus = 'success_name';
+                            console.log('✓ PRIORIDADE 1: Localizado por NOME');
+
+                            // ATUALIZA O ENDEREÇO EXIBIDO
+                            updateDisplayedAddress(response.results[0].address_components);
+                        } else {
+                            console.warn('Nome encontrado, mas fora de Salvador. Ignorando.');
+                        }
+                    }
+                } catch (e) {
+                    console.warn('Geocodificação por NOME falhou:', e.status);
+                }
+            }
+
+            // --- PRIORIDADE 2: Geocodificação do ENDEREÇO (Fallback) ---
+            if (attemptStatus === 'failed' && typeof window.enderecoParaGeocodificar !== 'undefined' && window.enderecoParaGeocodificar.trim().length > 10) {
+                try {
+                    console.log('Tentativa 2: Geocodificação por ENDEREÇO:', window.enderecoParaGeocodificar);
                     const response = await geocoder.geocode({ 
                         address: window.enderecoParaGeocodificar,
-                        region: 'br' // Prioriza resultados no Brasil
+                        componentRestrictions: salvadorRestrictions
                     });
                     
                     if (response.results && response.results[0]) {
                         positionToUse = response.results[0].geometry.location;
-                        zoomLevel = 18; // Mais zoom para endereço preciso
-                        geocodificacaoSucesso = true;
-                        console.log('✓ Endereço geocodificado com sucesso:', window.enderecoParaGeocodificar);
+                        zoomLevel = 18;
+                        attemptStatus = 'success_address';
+                        console.log('✓ PRIORIDADE 2: Localizado por ENDEREÇO');
+
+                        // ATUALIZA O ENDEREÇO EXIBIDO
+                        updateDisplayedAddress(response.results[0].address_components);
                     }
                 } catch (e) {
-                    console.warn('Geocodificação falhou:', e);
+                    console.warn('Geocodificação por ENDEREÇO falhou:', e.status);
                 }
             }
 
-            // PRIORIDADE 2: Usar coordenadas do DB como fallback
-            if (!geocodificacaoSucesso && window.hospitalLat && window.hospitalLng) {
+            // --- PRIORIDADE 3: Usar coordenadas do DB (Fallback) ---
+            // Se cair aqui, o endereço do DB já está correto (pois é o que o EJS renderizou).
+            if (attemptStatus === 'failed' && window.hospitalLat && window.hospitalLng) {
                 positionToUse = { lat: window.hospitalLat, lng: window.hospitalLng };
                 zoomLevel = 15;
-                console.log('⚠ Usando coordenadas do banco (imprecisas)');
+                attemptStatus = 'success_db_coords';
+                console.log('⚠ PRIORIDADE 3: Usando coordenadas do banco (imprecisas)');
             }
             
-            // Se nenhuma localização foi encontrada
-            if (!positionToUse) {
+            // Se NENHUMA localização foi encontrada
+            if (!positionToUse || attemptStatus === 'failed') {
                 mapContainer.innerHTML = '<p style="margin: 12px; color: #666; font-size: 14px;">Localização não disponível para este hospital.</p>';
+                console.error('Falha em todas as tentativas de localização.');
                 return;
             }
 
+            // --- Renderização do Mapa ---
             try {
                 const { Map, InfoWindow } = await google.maps.importLibrary("maps");
                 const { AdvancedMarkerElement } = await google.maps.importLibrary("marker");
@@ -259,16 +359,20 @@
                     center: positionToUse,
                     mapId: 'SAUDE_ACCESS_MAP_ID'
                 });
+                
+                // O popup do mapa usará as variáveis globais, que são o "pior caso" (do DB).
+                // Vamos atualizá-las se tivermos um endereço melhor.
+                // Usaremos o texto dos spans que acabamos de atualizar.
+                const displayAddressLine1 = document.getElementById('map-address-line1')?.textContent || '';
+                const displayAddressLine2 = document.getElementById('map-address-line2')?.textContent || '';
 
                 const popupHtml = `
                     <div style="font-family: Arial, sans-serif; font-size: 14px; line-height: 1.5;">
                         <b style="font-size: 16px;">${window.hospitalNome || 'Hospital'}</b>
                         <br>
-                        ${window.hospitalEndereco || ''}
+                        ${displayAddressLine1}
                         <br>
-                        ${window.hospitalBairro || ''}
-                        <br>
-                        CEP: ${window.hospitalCep || ''}
+                        ${displayAddressLine2.replace(' - CEP: ', '<br>CEP: ')}
                     </div>`;
 
                 const infoWindow = new InfoWindow({
@@ -303,7 +407,7 @@
                 }
 
             } catch (e) {
-                console.error("Falha ao carregar a biblioteca do Google Maps.", e);
+                console.error("Falha ao carregar a biblioteca do Google Maps (Maps/Marker).", e);
                 mapContainer.innerHTML = '<p style="margin: 12px; color: #666; font-size: 14px;">Erro ao carregar o mapa. Verifique a chave de API.</p>';
             }
         }
