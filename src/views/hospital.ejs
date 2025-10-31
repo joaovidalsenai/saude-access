@@ -147,7 +147,7 @@
                                 '<%= (address.endereco_numero || "").replace(/'/g, "\\'") %>',
                                 '<%= (address.endereco_bairro || "").replace(/'/g, "\\'") %>',
                                 '<%= (address.endereco_cep || "").replace(/'/g, "\\'") %>'
-                            ].filter(Boolean).join(', ') + ', Brasil';
+                                ].filter(Boolean).join(', ') + ', Salvador, Bahia, Brasil';
                         </script>
                     <% } else { %>
                         <p style="margin-top: 12px; color: #666; font-size: 14px;">Localização não disponível</p>
@@ -223,7 +223,14 @@
                     
                     const response = await geocoder.geocode({ 
                         address: window.enderecoParaGeocodificar,
-                        region: 'br' // Prioriza resultados no Brasil
+                        region: 'br', // Prioriza resultados no Brasil
+                        
+                        // --- ADIÇÃO: Força a busca dentro de Salvador ---
+                        componentRestrictions: {
+                            locality: 'Salvador',
+                            administrativeArea: 'BA', // Bahia
+                            country: 'BR'
+                        }
                     });
                     
                     if (response.results && response.results[0]) {
