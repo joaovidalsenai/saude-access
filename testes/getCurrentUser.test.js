@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { getCurrentUser } from '../auth.js';
-import supabase from '../db/supabase.js';
+import { getCurrentUser } from '../src/routes/auth.routes.js';
+import supabase from '../src/db/supabase.js';
 
 // Mock do módulo supabase
-vi.mock('../db/supabase.js', () => ({
+vi.mock('../src/db/supabase.js', () => ({
   default: {
     auth: {
       getUser: vi.fn()

@@ -1,5 +1,5 @@
 
-import dadosUsuario, { AuthError, NotFoundError } from '../services/dadosUsuario.js';
+import dadosUsuario, { AuthError, NotFoundError } from '../src/middlewares/dadosUsuario.js';
 
 // Mock do Supabase
 const mockSupabase = {

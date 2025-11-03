@@ -21,7 +21,8 @@
     "express": "^5.1.0",
     "jsonwebtoken": "^9.0.2",
     "mysql2": "^3.14.3",
-    "supabase": "^2.33.9"
+    "supabase": "^2.33.9",
+    "vitest": "^4.0.6"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.9.1",
