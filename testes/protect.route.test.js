@@ -1,6 +1,7 @@
 import { jest } from '@jest/globals';
+import supabase from '../src/db/supabase.js';
+import protect from '../src/middlewares/protect.route.js';
 import getCurrentUser from '../src/middlewares/getCurrentUser.js';
-
 import dadosUsuarioService from '../src/middlewares/dadosUsuario.js'; 
 
 const mockSupabase = {

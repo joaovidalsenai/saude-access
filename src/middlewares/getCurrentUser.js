@@ -10,3 +10,5 @@ export async function getCurrentUser(req) {
   const { data, error } = await supabase.auth.getUser(token);
   return { user: data?.user ?? null, error };
 }
+
+export default getCurrentUser;

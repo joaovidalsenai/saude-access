@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { getCurrentUser } from '../src/routes/auth.routes.js';
+import { getCurrentUser } from '../src/middlewares/getCurrentUser.js';
+import { jest } from '@jest/globals';
 import supabase from '../src/db/supabase.js';
 
 // Mock do módulo supabase

@@ -1,5 +1,6 @@
 
 import dadosUsuario, { AuthError, NotFoundError } from '../src/middlewares/dadosUsuario.js';
+import { jest } from '@jest/globals';
 
 // Mock do Supabase
 const mockSupabase = {
@@ -10,7 +11,7 @@ const mockSupabase = {
 };
 
 // Mock do módulo supabase
-jest.mock('../db/supabase.js', () => mockSupabase);
+jest.mock('../src/db/supabase.js', () => mockSupabase);
 
 describe('dadosUsuario Service', () => {
   let mockFrom;
