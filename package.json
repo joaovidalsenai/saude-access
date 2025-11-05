@@ -30,20 +30,5 @@
     "jest-environment-jsdom": "^30.0.0",
     "nodemon": "^3.1.10",
     "supertest": "^7.1.4"
-  },
-  "jest": {
-    "testEnvironment": "jsdom",
-    "transform": {},
-    "testMatch": [
-      "**/__tests__/**/*.test.js",
-      "**/?(*.)+(spec|test).js"
-    ],
-    "collectCoverageFrom": [
-      "public/**/*.js",
-      "!**/node_modules/**",
-      "!**/coverage/**"
-    ]
   }
-
-  
 }
