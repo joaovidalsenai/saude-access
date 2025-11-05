@@ -1,4 +1,4 @@
-// Em 'services/dadosUsuario.js' ou similar
+// src/middlewares/dadosUsuario.js
 import supabase from "../db/supabase.js";
 
 // Criamos classes de erro personalizadas para melhor controle na rota
@@ -24,6 +24,7 @@ export default async function dadosUsuario(tokenDeAcesso) {
 
     // 2. Autenticação do usuário com o Supabase
     const { data: { user }, error: erroAuth } = await supabase.auth.getUser(tokenDeAcesso);
+    
     if (erroAuth || !user) {
         throw new AuthError('Usuário não autenticado ou token inválido.');
     }
@@ -42,12 +43,14 @@ export default async function dadosUsuario(tokenDeAcesso) {
     }
 
     // 4. Formatação e retorno dos dados
+    // Cria o objeto sem cliente_endereco usando destructuring
+    const { cliente_endereco, enderecos, ...restoDosDados } = dadosDoPerfil;
+    
     const perfilCompleto = {
-        ...dadosDoPerfil,
+        ...restoDosDados,
         email: user.email,
-        endereco: dadosDoPerfil.cliente_endereco,
+        endereco: cliente_endereco, // Renomeia para 'endereco'
     };
-    delete perfilCompleto.enderecos;
-
+    
     return perfilCompleto;
 }
